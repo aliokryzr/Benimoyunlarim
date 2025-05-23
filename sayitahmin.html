@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sayı Tahmin Oyunu </title>
+    <style>
+        body {
+            font-family: Georgia, serif;
+            background: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            padding-top: 40px;
+        }
+        .game-container {
+            background: #d1e7dd;
+            border: 3px solid #0f5132;
+            border-radius: 15px;
+            padding: 20px 30px;
+            width: 400px;
+            box-shadow: 0 0 15px #0f5132aa;
+            text-align: center;
+        }
+        h1 {
+            color: #0f5132;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        input[type=text], input[type=number] {
+            width: 90%;
+            font-size: 18px;
+            padding: 8px;
+            margin: 10px 0 15px 0;
+            border-radius: 5px;
+            border: 1.5px solid #0f5132;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            background-color: #0f5132;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 95%;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: default;
+        }
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 20px;
+            min-height: 30px;
+            color: #0f5132;
+        }
+        .status {
+            margin-top: 5px;
+            font-size: 16px;
+            color: #155724;
+        }
+        #playerList {
+            margin-top: 20px;
+            text-align: left;
+            background: #e6f4ea;
+            border: 2px solid #0f5132;
+            border-radius: 10px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        #playerList h2 {
+            text-align: center;
+            color: #0f5132;
+        }
+        #playerList ul {
+            list-style: none;
+            padding-left: 5px;
+        }
+        #playerList li {
+            margin: 5px 0;
+            font-weight: bold;
+            color: #0f5132;
+        }
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b02a37;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>🎯 Sayı Tahmin Oyunu</h1>
+
+    <div id="player-input">
+        <input type="text" id="playerName" placeholder="Adınızı girin" />
+        <button id="startBtn">Oyunu Başlat</button>
+    </div>
+
+    <div id="game" style="display:none;">
+        <div class="timer">Kalan Süre: <span id="timer">20</span> saniye</div>
+        <p>Tahmin hakkınız: <span id="tahminHakki">3</span></p>
+        <input type="number" id="guessInput" min="1" max="20" placeholder="1-20 arasında sayı belirt." />
+        <button id="guessBtn">Tahmin Et</button>
+        <div class="message" id="message"></div>
+        <button id="restartBtn" style="display:none;">Yeniden Başla</button>
+    </div>
+
+    <div id="playerList" style="display:none;">
+        <h2>🏆 Başarılı Oyuncular</h2>
+        <ul id="successList"></ul>
+    </div>
+</div>
+
+<script>
+    const startBtn = document.getElementById("startBtn");
+    const playerNameInput = document.getElementById("playerName");
+    const playerInputDiv = document.getElementById("player-input");
+
+    const gameDiv = document.getElementById("game");
+    const tahminHakkiSpan = document.getElementById("tahminHakki");
+    const guessInput = document.getElementById("guessInput");
+    const guessBtn = document.getElementById("guessBtn");
+    const messageDiv = document.getElementById("message");
+    const restartBtn = document.getElementById("restartBtn");
+    const timerSpan = document.getElementById("timer");
+
+    const playerListDiv = document.getElementById("playerList");
+    const successList = document.getElementById("successList");
+
+    let tutulanSayi = 0;
+    let tahminHakki = 3;
+    let oyuncuAdi = "";
+    let timer = null;
+    let kalanSure = 20;
+
+    let basariliOyuncular = [];
+
+    function baslat() {
+        oyuncuAdi = playerNameInput.value.trim();
+        if (oyuncuAdi === "") {
+            alert("Lütfen isminizi girin.");
+            return;
+        }
+        tutulanSayi = Math.floor(Math.random() * 20) + 1;
+        tahminHakki = 3;
+        kalanSure = 20;
+        tahminHakkiSpan.textContent = tahminHakki;
+        timerSpan.textContent = kalanSure;
+        messageDiv.textContent = `Hoşgeldiniz, ${oyuncuAdi}! 1 ile 20 arasında bir sayı tutuyorum, tahmin etmeye çalışın.`;
+        guessInput.value = "";
+        guessInput.disabled = false;
+        guessBtn.disabled = false;
+        restartBtn.style.display = "none";
+        playerInputDiv.style.display = "none";
+        gameDiv.style.display = "block";
+        playerListDiv.style.display = "block";
+        guessInput.focus();
+
+        if(timer) clearInterval(timer);
+        timer = setInterval(() => {
+            kalanSure--;
+            timerSpan.textContent = kalanSure;
+            if (kalanSure <= 0) {
+                clearInterval(timer);
+                messageDiv.textContent = `⏰ Süre doldu! Doğru sayı ${tutulanSayi} idi.`;
+                bitirOyun();
+            }
+        }, 1000);
+    }
+
+    function tahminEt() {
+        const tahmin = Number(guessInput.value);
+        if (!tahmin || tahmin < 1 || tahmin > 20) {
+            alert("Lütfen 1 ile 20 arasında geçerli bir sayı girin.");
+            return;
+        }
+
+        if (tahmin === tutulanSayi) {
+            messageDiv.textContent = `🎉 Tebrikler ${oyuncuAdi}, doğru tahmin! Sayı ${tahmin} Süreniz: ${20 - kalanSure} saniye.`;
+            basariliOyuncular.push({ isim: oyuncuAdi, sure: 20 - kalanSure });
+            guncelleBasariliOyuncular();
+            bitirOyun();
+        } else {
+            tahminHakki--;
+            tahminHakkiSpan.textContent = tahminHakki;
+            if (tahminHakki === 0) {
+                messageDiv.textContent = `😞 Hakkınız bitti! Doğru sayı ${tutulanSayi} idi.`;
+                bitirOyun();
+            } else {
+                messageDiv.textContent = tahmin < tutulanSayi ? "⬆️ Daha büyük bir sayı deneyin." : "⬇️ Daha küçük bir sayı deneyin.";
+            }
+        }
+        guessInput.value = "";
+        guessInput.focus();
+    }
+
+    function bitirOyun() {
+        guessInput.disabled = true;
+        guessBtn.disabled = true;
+        restartBtn.style.display = "inline-block";
+        clearInterval(timer);
+    }
+
+    function yenidenBaslat() {
+        playerInputDiv.style.display = "block";
+        gameDiv.style.display = "none";
+        messageDiv.textContent = "";
+        playerNameInput.value = "";
+    }
+
+    function guncelleBasariliOyuncular() {
+        successList.innerHTML = "";
+        basariliOyuncular.forEach((oyuncu, index) => {
+            const li = document.createElement("li");
+            li.textContent = `${index + 1}. ${oyuncu.isim} - Süre: ${oyuncu.sure} sn`;
+            successList.appendChild(li);
+        });
+    }
+
+    startBtn.addEventListener("click", baslat);
+    guessBtn.addEventListener("click", tahminEt);
+    restartBtn.addEventListener("click", yenidenBaslat);
+
+    guessInput.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            tahminEt();
+        }
+    });
+</script>
+
+</body>
+</html>
