@@ -82,6 +82,7 @@
     main {
       flex: 1;
       display: flex;
+      align-items: stretch;
       gap: 50px;
       max-width: 1200px;
       margin: 0 auto;
@@ -114,22 +115,27 @@
 
     .game-list {
       flex: 1;
-      background: rgba(255, 255, 255, 0.15);
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
       border-radius: 15px;
       padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      max-height: 400px;
-      overflow-y: auto;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.15);
+      max-height: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 2px solid rgba(255,255,255,0.4);
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
     }
 
     .game-list h3 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      font-size: 1.2rem;
-      border-bottom: 2px solid #fff;
-      padding-bottom: 10px;
+      font-size: 1.4rem;
+      color: #ffd700;
+      text-shadow: 0 0 10px #fff, 0 0 15px #ffd700;
       text-align: center;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+      border-bottom: 2px dashed #fff;
+      padding-bottom: 10px;
     }
 
     .game-list ul {
@@ -145,17 +151,20 @@
 
     .game-list li a {
       color: #fff;
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px 15px;
+      border-radius: 12px;
       display: block;
-      background: rgba(255, 255, 255, 0.08);
-      transition: all 0.3s ease;
+      font-weight: bold;
+      transition: all 0.3s ease-in-out;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
     }
 
     .game-list li a:hover {
-      background: #3b40a4;
-      text-shadow: 0 0 8px #fff;
+      background: #ffeb3b;
+      color: #000;
+      box-shadow: 0 0 10px #fff;
+      transform: scale(1.05);
     }
 
     footer {
@@ -168,32 +177,32 @@
     }
 
     .animated-text {
-  font-size: 1.1rem;
-  animation: glow-text 2s infinite alternate;
-  color: #ffffff;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-}
+      font-size: 1.1rem;
+      animation: glow-text 2s infinite alternate;
+      color: #ffffff;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    }
 
-.oyun-adi {
-  color: #ffd700;
-  font-weight: bold;
-  text-shadow: 1px 1px 3px #000;
-  transition: color 0.3s ease-in-out;
-}
+    .oyun-adi {
+      color: #ffd700;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px #000;
+      transition: color 0.3s ease-in-out;
+    }
 
-.oyun-adi:hover {
-  color: #ff5722;
-  text-shadow: 0 0 8px #fff;
-}
+    .oyun-adi:hover {
+      color: #ff5722;
+      text-shadow: 0 0 8px #fff;
+    }
 
-@keyframes glow-text {
-  from {
-    text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.2);
-  }
-  to {
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
-  }
-}
+    @keyframes glow-text {
+      from {
+        text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.2);
+      }
+      to {
+        text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+      }
+    }
 
     @media (max-width: 768px) {
       main {
@@ -219,21 +228,21 @@
 </header>
 
 <main>
- <section class="intro">
-  <p class="animated-text">🎯 Web tabanlı mini oyun projeleriyle hem öğrenin hem eğlenin!</p>
-  <p class="emojis">
-    <span class="oyun-adi">🐍 Yılan Oyunu:</span> Reflekslerinizi test edin!<br>
-    <span class="oyun-adi">⏳ Zamanla Yarış:</span> Rekora ulaşın.<br>
-    <span class="oyun-adi">🧠 Mini Oyunlar:</span> Akıllı çözümlerle dolu.<br>
-    <span class="oyun-adi">🕹️ Web Arayüzü:</span> Uyumlu ve şık.<br>
-    <span class="oyun-adi">🌟 Yeni Oyunlar:</span> Çok yakında!
-  </p>
-</section>
+  <section class="intro">
+    <p class="animated-text">🎯 Web tabanlı mini oyun projeleriyle hem öğrenin hem eğlenin!</p>
+    <p class="emojis">
+      <span class="oyun-adi">🐍 Yılan Oyunu:</span> Reflekslerinizi test edin!<br>
+      <span class="oyun-adi">⏳ Zamanla Yarış:</span> Rekora ulaşın.<br>
+      <span class="oyun-adi">🧠 Mini Oyunlar:</span> Akıllı çözümlerle dolu.<br>
+      <span class="oyun-adi">🕹️ Web Arayüzü:</span> Uyumlu ve şık.<br>
+      <span class="oyun-adi">🌟 Yeni Oyunlar:</span> Çok yakında!
+    </p>
+  </section>
 
   <aside class="game-list">
     <h3>🗂️ Oyunlar Listesi</h3>
     <ul>
-      <li><a href="snake.html" style="color: #ffd700; font-weight: bold;">🐍 Yılan Oyunu</a></li>
+      <li><a href="snake.html">🐍 Yılan Oyunu</a></li>
       <li><a href="#">🎲 Oyun 2 (yakında)</a></li>
       <li><a href="#">🧩 Oyun 3 (yakında)</a></li>
       <li><a href="#">🚀 Oyun 4 (yakında)</a></li>
