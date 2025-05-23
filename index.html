@@ -1,11 +1,75 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <title>Benim Oyunlarım</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Benim Oyunlarım - Ana Sayfa</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.2em;
+      text-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2em;
+      color: #d0d0ff;
+    }
+
+    .btn {
+      background: #fff;
+      color: #000dff;
+      font-weight: bold;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: background 0.3s ease, color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: #000dff;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(0,0,255,0.7);
+    }
+
+    footer {
+      margin-top: auto;
+      font-size: 0.9rem;
+      color: #bbb;
+      padding: 10px 0 5px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Hoşgeldin! Bu benim oyunlarım sitesi.</h1>
-    <p>Burada yaptığım oyunları görebilirsin.</p>
+
+  <h1>Benim Oyunlarım 🎮</h1>
+  <p>Hoş geldiniz! Kodladığım oyunları ve projeleri burada bulabilirsiniz.</p>
+
+  <a href="snake.html" class="btn">Yılan Oyununa Başla</a>
+
+  <footer>© 2025 aliokryzr | Tüm hakları saklıdır.</footer>
+
 </body>
 </html>
