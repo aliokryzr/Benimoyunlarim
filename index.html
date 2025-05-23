@@ -59,40 +59,44 @@
         1px 1px 2px rgba(0,0,0,0.7);
     }
 
-    main {
-      flex: 1;
-      display: flex;
-      gap: 50px;
-      max-width: 1200px;
-      margin: 0 auto 40px auto;
-      width: 100%;
-      z-index: 1;
-      position: relative;
-      align-items: flex-start;
-    }
+  main {
+  flex: 1;
+  display: flex;
+  gap: 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  z-index: 1;
+  position: relative;
 
-    .intro {
-      flex: 2;
-      padding-right: 20px;
-      border-right: 2px solid rgba(255, 255, 255, 0.2);
-      color: #f1f1ff;
-      font-size: 1rem;
-      line-height: 1.7;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    }
+  /* Yeni eklenen: sol ve sağ bölümü tam ortalamak için */
+  align-items: center; /* dikey ortalama */
+}
 
-    .game-list {
-      flex: 1;
-      background: linear-gradient(135deg, #3a3f9f, #1a1e6c);
-      border-radius: 20px;
-      padding: 25px 30px;
-      box-shadow:
-        0 8px 30px rgba(255, 235, 59, 0.6),
-        inset 0 0 20px rgba(255, 235, 59, 0.4);
-      max-height: 400px;
-      overflow-y: auto;
-      color: #fff;
-    }
+.intro {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* metinler kendi içinde dikey ortalanıyor */
+  padding-right: 20px;
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
+  height: 100%; /* tam yüksekliği alsın */
+}
+
+.game-list {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  max-height: 400px;
+  overflow-y: auto;
+
+  /* Sağdaki kutuyu da dikey ortalamak için */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
     .game-list h3 {
       margin-top: 0;
