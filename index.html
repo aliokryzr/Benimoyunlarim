@@ -23,15 +23,27 @@
     }
 
     header {
-      text-align: center;
+      text-align: left;
       margin-bottom: 30px;
-      text-shadow: 0 0 5px rgba(0,0,0,0.3);
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
     }
 
     header h1 {
       margin: 0;
-      font-size: 3rem;
-      letter-spacing: 3px;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      color: #ffeb3b;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 2px 2px 5px rgba(255,255,255,0.2);
+      }
+      to {
+        text-shadow: 0 0 15px #ffd700;
+      }
     }
 
     main {
@@ -52,36 +64,17 @@
       border-right: 2px solid rgba(255, 255, 255, 0.2);
     }
 
-    .intro h2 {
-      font-size: 2.2rem;
-      margin-bottom: 10px;
-    }
-
     .intro p {
-      font-size: 1.2rem;
-      line-height: 1.5;
-      color: #e0e0ff;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #f1f1ff;
       margin-bottom: 25px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
     }
 
-    .intro a.btn-start {
-      align-self: start;
-      background: #fff;
-      color: #4e54c8;
-      font-weight: 700;
-      padding: 15px 35px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-size: 1.2rem;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      transition: background 0.3s ease, color 0.3s ease;
-      margin-bottom: 10px;
-    }
-
-    .intro a.btn-start:hover {
-      background: #3b40a4;
-      color: #fff;
-      box-shadow: 0 8px 20px rgba(0,0,150,0.7);
+    .intro .emojis {
+      font-size: 1.3rem;
+      line-height: 2;
     }
 
     .game-list {
@@ -97,10 +90,11 @@
     .game-list h3 {
       margin-top: 0;
       margin-bottom: 15px;
-      font-size: 1.6rem;
+      font-size: 1.2rem;
       border-bottom: 2px solid #fff;
       padding-bottom: 10px;
       text-align: center;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .game-list ul {
@@ -110,8 +104,8 @@
     }
 
     .game-list li {
-      margin-bottom: 12px;
-      font-size: 1.1rem;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
     }
 
     .game-list li a {
@@ -120,19 +114,20 @@
       padding: 8px 12px;
       border-radius: 10px;
       display: block;
-      background: rgba(255, 255, 255, 0.1);
-      transition: background 0.25s ease;
+      background: rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
     }
 
     .game-list li a:hover {
       background: #3b40a4;
+      text-shadow: 0 0 8px #fff;
     }
 
     footer {
       margin-top: 40px;
       text-align: center;
-      color: #ddd;
-      font-size: 0.9rem;
+      color: #ccc;
+      font-size: 0.8rem;
     }
 
     /* Responsive */
@@ -154,22 +149,28 @@
 <body>
 
   <header>
-    <h1>Oyun Dünyasına Hoşgeldiniz. 🎮</h1>
+    <h1>🎮 Oyun Dünyasına Hoşgeldiniz</h1>
   </header>
 
   <main>
     <section class="intro">
-      <p>Oyunlarım, tamamen özgün kodlarla hazırlanmış olup, HTML, CSS ve JavaScript teknolojileri kullanılarak web ortamında çalışacak şekilde optimize edilmiştir. Her bir proje, temel programlama becerilerini pekiştirmenin yanı sıra, kullanıcı dostu arayüzler ve akıcı oynanış sağlamayı hedefler.</p>
-      <a href="snake.html" class="btn-start">Yılan Oyununu Oyna</a>
+      <p>🎯 Web tabanlı mini oyun projeleriyle hem öğrenin hem eğlenin!</p>
+      <p class="emojis">
+        🐍 Yılan Oyunu: Reflekslerinizi test edin!<br>
+        ⏳ Zamanla yarışın, rekora ulaşın.<br>
+        🧠 Kodlarla hazırlanmış akıllı oyunlar.<br>
+        🕹️ Mobil uyumlu arayüzler.<br>
+        🌟 Yeni oyunlar çok yakında!
+      </p>
     </section>
 
     <aside class="game-list">
-      <h3>Oyunlar Listesi</h3>
+      <h3>🗂️ Oyunlar Listesi</h3>
       <ul>
-        <li><a href="snake.html" style="color: #ffd700; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">Yılan Oyunu</a></li>
-        <li><a href="#">Oyun 2 (yakında)</a></li>
-        <li><a href="#">Oyun 3 (yakında)</a></li>
-        <li><a href="#">Oyun 4 (yakında)</a></li>
+        <li><a href="snake.html" style="color: #ffd700; font-weight: bold;">🐍 Yılan Oyunu</a></li>
+        <li><a href="#">🎲 Oyun 2 (yakında)</a></li>
+        <li><a href="#">🧩 Oyun 3 (yakında)</a></li>
+        <li><a href="#">🚀 Oyun 4 (yakında)</a></li>
       </ul>
     </aside>
   </main>
