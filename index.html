@@ -7,67 +7,172 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
-      background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
       color: #fff;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
+      padding: 20px 40px;
+    }
+
+    header {
       text-align: center;
-      padding: 20px;
+      margin-bottom: 30px;
+      text-shadow: 0 0 5px rgba(0,0,0,0.3);
     }
 
-    h1 {
+    header h1 {
+      margin: 0;
       font-size: 3rem;
-      margin-bottom: 0.2em;
-      text-shadow: 0 0 10px rgba(0,0,0,0.3);
+      letter-spacing: 3px;
     }
 
-    p {
+    main {
+      flex: 1;
+      display: flex;
+      gap: 50px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .intro {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 20px;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .intro h2 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    .intro p {
       font-size: 1.2rem;
-      margin-bottom: 2em;
-      color: #d0d0ff;
+      line-height: 1.5;
+      color: #e0e0ff;
+      margin-bottom: 25px;
     }
 
-    .btn {
+    .intro a.btn-start {
+      align-self: start;
       background: #fff;
-      color: #000dff;
-      font-weight: bold;
-      padding: 15px 30px;
-      border: none;
+      color: #4e54c8;
+      font-weight: 700;
+      padding: 15px 35px;
       border-radius: 30px;
-      font-size: 1.3rem;
-      cursor: pointer;
+      text-decoration: none;
+      font-size: 1.2rem;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
       transition: background 0.3s ease, color 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
     }
 
-    .btn:hover {
-      background: #000dff;
+    .intro a.btn-start:hover {
+      background: #3b40a4;
       color: #fff;
-      box-shadow: 0 8px 20px rgba(0,0,255,0.7);
+      box-shadow: 0 8px 20px rgba(0,0,150,0.7);
+    }
+
+    .game-list {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .game-list h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.6rem;
+      border-bottom: 2px solid #fff;
+      padding-bottom: 10px;
+      text-align: center;
+    }
+
+    .game-list ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .game-list li {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+
+    .game-list li a {
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 10px;
+      display: block;
+      background: rgba(255, 255, 255, 0.1);
+      transition: background 0.25s ease;
+    }
+
+    .game-list li a:hover {
+      background: #3b40a4;
     }
 
     footer {
-      margin-top: auto;
+      margin-top: 40px;
+      text-align: center;
+      color: #ddd;
       font-size: 0.9rem;
-      color: #bbb;
-      padding: 10px 0 5px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      main {
+        flex-direction: column;
+      }
+      .intro {
+        border-right: none;
+        padding-right: 0;
+        margin-bottom: 30px;
+      }
+      .game-list {
+        max-height: none;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>Benim Oyunlarım 🎮</h1>
-  <p>Hoş geldiniz! Kodladığım oyunları ve projeleri burada bulabilirsiniz.</p>
+  <header>
+    <h1>Benim Oyunlarım 🎮</h1>
+  </header>
 
-  <a href="snake.html" class="btn">Yılan Oyununa Başla</a>
+  <main>
+    <section class="intro">
+      <h2>Hoş geldiniz!</h2>
+      <p>Burada kodladığım oyunları ve projeleri bulabilir, oynayabilir ve deneyimleyebilirsiniz. Yeni oyunlar eklemek için repo’yu güncel tutuyorum.</p>
+      <a href="snake.html" class="btn-start">Yılan Oyununu Oyna</a>
+    </section>
+
+    <aside class="game-list">
+      <h3>Oyunlar Listesi</h3>
+      <ul>
+        <li><a href="snake.html">Yılan Oyunu</a></li>
+        <li><a href="#">Oyun 2 (yakında)</a></li>
+        <li><a href="#">Oyun 3 (yakında)</a></li>
+        <li><a href="#">Oyun 4 (yakında)</a></li>
+      </ul>
+    </aside>
+  </main>
 
   <footer>© 2025 aliokryzr | Tüm hakları saklıdır.</footer>
 
