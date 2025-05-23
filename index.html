@@ -85,40 +85,46 @@
 
 .game-list {
   flex: 1;
-  background: rgba(30, 30, 30, 0.9); /* biraz daha koyu, şeffaf */
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-  max-height: 400px;
+  background: #1a1f3d; /* koyu gece mavisi */
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(26, 31, 61, 0.8);
+  max-height: 420px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  color: #eee; /* biraz açık ton */
+  color: #dcdcdc; /* açık gri, zarif */
   font-weight: 600;
-  font-size: 1rem;
-  border: 2px solid #555; /* net, ama soft çerçeve */
+  font-size: 1.05rem;
+  border: 2px solid #2e357b; /* koyu mavi çerçeve */
+  transition: border-color 0.4s ease;
+}
+
+.game-list:hover {
+  border-color: #ff8c42; /* mercan turuncusu vurgu */
 }
 
 .game-list li {
-  padding: 10px 8px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  padding: 12px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-  background: rgba(50, 50, 50, 0.8);
-  color: #eee;
-  border: 1px solid transparent;
+  background: #2e357b; /* koyu mavi arkaplan */
+  color: #dcdcdc;
+  box-shadow: 0 3px 8px rgba(46, 53, 123, 0.6);
+  transition: background-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+  border: 1.5px solid transparent;
 }
 
 .game-list li:hover {
-  background-color: #ffdd57; /* parlak altın sarısı */
-  color: #222; /* koyu yazı */
+  background-color: #ff8c42; /* mercan turuncusu */
+  color: #1a1f3d; /* koyu gece mavisi */
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(255, 221, 87, 0.8);
-  border-color: #e6c84e;
+  box-shadow: 0 6px 18px rgba(255, 140, 66, 0.85);
+  border-color: #ff8c42;
 }
+
 
 
  .footer-text {
