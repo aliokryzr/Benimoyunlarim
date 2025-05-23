@@ -53,52 +53,95 @@
       }
     }
 
-   header {
-  text-align: center;
-  margin-bottom: 30px;
-  text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
-  z-index: 1;
-  position: relative;
-}
+    header {
+      text-align: center;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
+      z-index: 1;
+      position: relative;
+    }
 
-header h1 {
-  margin: 0;
-  font-size: 2.8rem;
-  letter-spacing: 2px;
-  color: #ffeb3b;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  animation: glow 2s ease-in-out infinite alternate;
-}
+    header h1 {
+      margin: 0;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      color: #ffeb3b;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
 
-.header-subtitle {
-  margin-top: 8px;
-  font-size: 1.2rem;
-  color: #e0e0ff;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-  font-weight: 500;
-}
+    @keyframes glow {
+      from {
+        text-shadow: 2px 2px 5px rgba(255,255,255,0.2);
+      }
+      to {
+        text-shadow: 0 0 15px #ffd700;
+      }
+    }
 
-main {
-  flex: 1;
-  display: flex;
-  gap: 50px;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  z-index: 1;
-  position: relative;
-  align-items: flex-start; /* Üstten hizalama */
-}
+    /* Yeni fancy metin stili */
+    .fancy-text {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffeb3b;
+      text-shadow:
+        2px 2px 4px rgba(0, 0, 0, 0.7),
+        0 0 10px #ffd700,
+        0 0 20px #ffeb3b;
+      line-height: 1.5;
+      margin: 10px 0 30px 0;
+      text-align: center;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-.intro {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* Yukarı hizalı */
-  padding-right: 20px;
-  border-right: 2px solid rgba(255, 255, 255, 0.2);
-}
+    .confetti {
+      font-size: 1.8rem;
+      text-align: center;
+      user-select: none;
+      animation: confetti-float 4s linear infinite;
+      filter: drop-shadow(0 0 2px #fff);
+      margin-bottom: 40px;
+    }
 
+    @keyframes confetti-float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(-10px) rotate(10deg);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      gap: 50px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      z-index: 1;
+      position: relative;
+      align-items: flex-start; /* hizalama için */
+    }
+
+    .intro {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-right: 20px;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+      margin-top: 0;
+    }
 
     .intro p {
       font-size: 0.95rem;
@@ -113,71 +156,59 @@ main {
       line-height: 2;
     }
 
-   .game-list {
-  flex: 1;
-  background: transparent; /* Çerçeve kaldırıldı */
-  border-radius: 0;
-  padding: 10px 15px 0 15px;
-  box-shadow: none;
-  max-height: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  border: none;
-  backdrop-filter: none;
-  transition: none;
-  margin-top: 10px; /* Üst boşluk azaltıldı */
-}
+    .game-list {
+      flex: 1;
+      background: linear-gradient(135deg, #3a3f9f, #1a1e6c);
+      border-radius: 20px;
+      padding: 25px 30px;
+      box-shadow:
+        0 8px 30px rgba(255, 235, 59, 0.6),
+        inset 0 0 20px rgba(255, 235, 59, 0.4);
+      max-height: 400px;
+      overflow-y: auto;
+      color: #fff;
+    }
 
-.game-list h3 {
-  font-size: 1.4rem;
-  color: #ffe066; /* Daha sıcak, uyumlu bir sarı */
-  text-shadow: none; /* Okunaklılığı arttırmak için kaldırıldı */
-  text-align: left; /* Sol hizalandı */
-  margin-bottom: 15px; /* Daha dengeli boşluk */
-  border-bottom: none; /* Alt çizgi kaldırıldı */
-  padding-bottom: 0;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
-.game-list ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-.game-list li {
-  margin-bottom: 12px;
-  font-size: 1rem;
-}
-
-.game-list li a {
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  display: inline-block;
-  font-weight: 500;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  text-shadow: 0 0 3px rgba(0,0,0,0.4);
-  text-decoration: none;
-}
-
-.game-list li a:hover {
-  background-color: #ffe066;
-  color: #222;
-  box-shadow: 0 0 10px #ffe066aa;
-  transform: scale(1.07);
-}
-
-
-    footer {
-      margin-top: 40px;
+    .game-list h3 {
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-size: 1.4rem;
       text-align: center;
-      color: #ccc;
-      font-size: 0.8rem;
-      z-index: 1;
-      position: relative;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #ffeb3b;
+      text-shadow: 0 0 10px #ffd700;
+      border-bottom: none;
+    }
+
+    .game-list ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .game-list li {
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+
+    .game-list li a {
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 12px;
+      display: block;
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      font-weight: 600;
+      box-shadow: 0 0 5px rgba(255, 235, 59, 0.5);
+    }
+
+    .game-list li a:hover {
+      background: #ffd700;
+      color: #333;
+      text-shadow: 0 0 10px #fff;
+      box-shadow: 0 0 15px #ffd700;
     }
 
     .animated-text {
@@ -229,46 +260,35 @@ main {
 
 <header>
   <h1>🎮 Oyun Dünyasına Hoşgeldiniz</h1>
-  <p class="header-subtitle">🎯 Web tabanlı mini oyun projeleriyle hem öğrenin hem eğlenin!</p>
+  <p class="fancy-text">
+    🎉 Mini oyunların ve eğlence amaçlı web tabanlı oyunların buluşma noktasıdır.<br>
+    🚀 Hem öğrenirken hem de eğlenirken vakit geçirebileceğiniz projelerle doludur.<br>
+    🕹️ Yılan Oyunu gibi klasiklerden yeni mini oyunlara kadar birçok farklı oyun sizi bekliyor!
+  </p>
+  <div class="confetti">🎊🎈✨🎉🎮🕹️🎯</div>
 </header>
 
 <main>
-<section class="intro">
+ <section class="intro">
+  <p class="animated-text">🎯 Web tabanlı mini oyun projeleriyle hem öğrenin hem eğlenin!</p>
   <p class="emojis">
-    Bu site, mini oyunların ve eğlence amaçlı web tabanlı oyunların buluşma noktasıdır.  
-    Hem öğrenirken hem de eğlenirken vakit geçirebileceğiniz projelerle doludur.  
-    Yılan Oyunu gibi klasiklerden yeni mini oyunlara kadar birçok farklı oyun sizi bekliyor!
+    <span class="oyun-adi">🐍 Yılan Oyunu:</span> Reflekslerinizi test edin!<br>
+    <span class="oyun-adi">⏳ Zamanla Yarış:</span> Rekora ulaşın.<br>
+    <span class="oyun-adi">🧠 Mini Oyunlar:</span> Akıllı çözümlerle dolu.<br>
+    <span class="oyun-adi">🌟 Yeni Oyunlar:</span> Çok yakında!
   </p>
 </section>
-
-
 
   <aside class="game-list">
     <h3>🗂️ Oyunlar Listesi</h3>
     <ul>
-      <li><a href="snake.html">🐍 Yılan Oyunu</a></li>
+      <li><a href="snake.html" style="color: #ffd700; font-weight: bold;">🐍 Yılan Oyunu</a></li>
       <li><a href="#">🎲 Oyun 2 (yakında)</a></li>
       <li><a href="#">🧩 Oyun 3 (yakında)</a></li>
       <li><a href="#">🚀 Oyun 4 (yakında)</a></li>
     </ul>
   </aside>
 </main>
-
-<footer>© 2025 Mylife | Tüm hakları saklıdır.</footer>
-
-<script>
-  const starsContainer = document.querySelector('.stars');
-
-  for (let i = 0; i < 120; i++) {
-    const star = document.createElement('div');
-    star.classList.add('star');
-    star.style.left = Math.random() * 100 + 'vw';
-    star.style.animationDuration = (2 + Math.random() * 3).toFixed(2) + 's';
-    star.style.opacity = Math.random().toFixed(2);
-    star.style.animationDelay = Math.random().toFixed(2) + 's';
-    starsContainer.appendChild(star);
-  }
-</script>
 
 </body>
 </html>
