@@ -113,59 +113,63 @@
       line-height: 2;
     }
 
-    .game-list {
-      flex: 1;
-      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.15);
-      max-height: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border: 2px solid rgba(255,255,255,0.4);
-      backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-    }
+   .game-list {
+  flex: 1;
+  background: transparent; /* Çerçeve kaldırıldı */
+  border-radius: 0;
+  padding: 10px 15px 0 15px;
+  box-shadow: none;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border: none;
+  backdrop-filter: none;
+  transition: none;
+  margin-top: 10px; /* Üst boşluk azaltıldı */
+}
 
-    .game-list h3 {
-      font-size: 1.4rem;
-      color: #ffd700;
-      text-shadow: 0 0 10px #fff, 0 0 15px #ffd700;
-      text-align: center;
-      margin-bottom: 20px;
-      border-bottom: 2px dashed #fff;
-      padding-bottom: 10px;
-    }
+.game-list h3 {
+  font-size: 1.4rem;
+  color: #ffe066; /* Daha sıcak, uyumlu bir sarı */
+  text-shadow: none; /* Okunaklılığı arttırmak için kaldırıldı */
+  text-align: left; /* Sol hizalandı */
+  margin-bottom: 15px; /* Daha dengeli boşluk */
+  border-bottom: none; /* Alt çizgi kaldırıldı */
+  padding-bottom: 0;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
 
-    .game-list ul {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-    }
+.game-list ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
 
-    .game-list li {
-      margin-bottom: 10px;
-      font-size: 0.95rem;
-    }
+.game-list li {
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
 
-    .game-list li a {
-      color: #fff;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 10px 15px;
-      border-radius: 12px;
-      display: block;
-      font-weight: bold;
-      transition: all 0.3s ease-in-out;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
-    }
+.game-list li a {
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-shadow: 0 0 3px rgba(0,0,0,0.4);
+  text-decoration: none;
+}
 
-    .game-list li a:hover {
-      background: #ffeb3b;
-      color: #000;
-      box-shadow: 0 0 10px #fff;
-      transform: scale(1.05);
-    }
+.game-list li a:hover {
+  background-color: #ffe066;
+  color: #222;
+  box-shadow: 0 0 10px #ffe066aa;
+  transform: scale(1.07);
+}
+
 
     footer {
       margin-top: 40px;
