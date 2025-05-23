@@ -254,246 +254,100 @@
   </div>
 
  <script>
-    <!-- Önce index.html içinde Firebase SDK'larını aşağıdaki gibi include etmen gerekiyor -->
-<script type="module">
-  // Firebase modüllerini import et
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
-  import { getDatabase, ref, push, query, orderByChild, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+ <script type="module">
+  // Firebase Ayarları
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push, query, orderByChild, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // Firebase config
   const firebaseConfig = {
-    apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
-    authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
-    databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
-    projectId: "benimoyunlarim-9c38c",
-    storageBucket: "benimoyunlarim-9c38c.firebasestorage.app",
-    messagingSenderId: "48251257364",
-    appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
-    measurementId: "G-23MZX1FJ5V"
+    apiKey: "API_KEYİNİ_YERLEŞTİR",
+    authDomain: "PROJEN.firebaseapp.com",
+    databaseURL: "https://PROJEN-default-rtdb.firebaseio.com",
+    projectId: "PROJEN",
+    storageBucket: "PROJEN.appspot.com",
+    messagingSenderId: "SENDER_ID",
+    appId: "APP_ID"
   };
-
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const database = getDatabase(app);
+  const db = getDatabase(app);
 
-  // Buraya aşağıdaki tüm oyun script'i gelecek,
-  // ancak Firebase fonksiyonlarını aşağıda tanımlıyoruz
-
-  // Firebase'e skor kaydetme fonksiyonu
-  function saveScoreToFirebase(name, score) {
-    const scoresRef = ref(database, 'snakeScores');
-    push(scoresRef, { name, score });
-  }
-
-  // Firebase’den canlı skorları dinleme fonksiyonu
-  function listenToLiveScores() {
-    const scoresRef = query(ref(database, 'snakeScores'), orderByChild('score'), limitToLast(10));
-
-    onValue(scoresRef, (snapshot) => {
-      const scoresData = snapshot.val();
-      const scoresArray = [];
-
-      for (let key in scoresData) {
-        scoresArray.push(scoresData[key]);
-      }
-
-      scoresArray.sort((a, b) => b.score - a.score);
-
-      liveScoresList.innerHTML = '';
-      scoresArray.forEach(({ name, score }) => {
-        const li = document.createElement('li');
-        li.textContent = `${name}: ${score}`;
-        liveScoresList.appendChild(li);
-      });
-    });
-  }
-
-  // ***********************
-  // OYUN SCRIPTİ BAŞLANGICI
-  // ***********************
-
+  // Elemanlar
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
-  const clickToStart = document.getElementById('clickToStart');
-  const gameOverScreen = document.getElementById('gameOverScreen');
-  const restartButton = document.getElementById('restartButton');
-  const mainMenu = document.getElementById('mainMenu');
-  const gameContainer = document.getElementById('gameContainer');
   const nicknameInput = document.getElementById('nicknameInput');
   const startButton = document.getElementById('startButton');
-  const currentScoreDisplay = document.getElementById('currentScore');
-  const topScoresList = document.getElementById('topScores');
-  const liveScoresList = document.getElementById('liveScores');
+  const restartButton = document.getElementById('restartButton');
+  const gameContainer = document.getElementById('gameContainer');
+  const mainMenu = document.getElementById('mainMenu');
+  const scoreDisplay = document.getElementById('currentScore');
+  const clickToStart = document.getElementById('clickToStart');
+  const gameOverScreen = document.getElementById('gameOverScreen');
+  const topScores = document.getElementById('topScores');
+  const liveScores = document.getElementById('liveScores');
 
-  const gridSize = 20;
-  const tileCount = canvas.width / gridSize;
-
+  let nickname = '';
   let snake = [];
+  let food = {};
   let velocityX = 0;
   let velocityY = 0;
-  let apple = {};
-  let superApple = null;
   let score = 0;
-  let normalAppleCount = 0; 
+  let gameInterval;
   let isRunning = false;
   let isPaused = false;
-  let gameInterval;
-  let nickname = '';
   let hasStarted = false;
 
-  function loadScores() {
-    let storedScores = localStorage.getItem('snakeHighScores');
-    if (storedScores) {
-      return JSON.parse(storedScores);
-    }
-    return [];
+  function drawRect(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x * 20, y * 20, 20, 20);
   }
 
-  function saveScores(scores) {
-    localStorage.setItem('snakeHighScores', JSON.stringify(scores));
-  }
-
-  function updateScoreLists() {
-    const scores = loadScores();
-    // Ana menüdeki liste
-    topScoresList.innerHTML = '';
-    scores.forEach(({name, score}, i) => {
-      const li = document.createElement('li');
-      li.textContent = `${name}: ${score}`;
-      topScoresList.appendChild(li);
-    });
-
-    // Firebase'den gelen canlı skorlar listesi Firebase event listener ile güncellenecek
-    // Burada sadece localStorage skorları gösteriliyor
-  }
-
-  function placeApple() {
-    apple.x = Math.floor(Math.random() * tileCount);
-    apple.y = Math.floor(Math.random() * tileCount);
-
-    if (snake.some(segment => segment.x === apple.x && segment.y === apple.y) ||
-        (superApple && superApple.x === apple.x && superApple.y === apple.y)) {
-      placeApple();
-    }
-  }
-
-  function placeSuperApple() {
-    superApple = {};
-    superApple.x = Math.floor(Math.random() * tileCount);
-    superApple.y = Math.floor(Math.random() * tileCount);
-
-    if (snake.some(segment => segment.x === superApple.x && segment.y === superApple.y) ||
-        (apple.x === superApple.x && apple.y === superApple.y)) {
-      placeSuperApple();
-    }
+  function placeFood() {
+    food = {
+      x: Math.floor(Math.random() * 20),
+      y: Math.floor(Math.random() * 20)
+    };
   }
 
   function startGame() {
-    if (!nickname.trim()) {
-      alert('Lütfen kullanıcı adınızı girin.');
+    nickname = nicknameInput.value.trim();
+    if (!nickname) {
+      alert("Lütfen kullanıcı adınızı girin.");
       return;
     }
 
     mainMenu.style.display = 'none';
     gameContainer.style.display = 'flex';
 
-    snake = [
-      {x: 8, y: 10},
-      {x: 7, y: 10},
-      {x: 6, y: 10}
-    ];
-    velocityX = 1;
+    snake = [{x: 10, y: 10}];
+    velocityX = 0;
     velocityY = 0;
     score = 0;
-    normalAppleCount = 0;
-    currentScoreDisplay.textContent = 'Skor: 0';
-    superApple = null; 
-    placeApple();
-    isPaused = false;
+    scoreDisplay.textContent = `Skor: ${score}`;
     isRunning = false;
+    isPaused = false;
     hasStarted = false;
     clickToStart.style.display = 'block';
-    gameOverScreen.style.display = 'none';
-
-    updateScoreLists();
-    drawGame();
-  }
-
-  function drawGame() {
-    ctx.fillStyle = '#111';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    if (!superApple) { 
-      ctx.fillStyle = '#ff4444';
-      ctx.beginPath();
-      const appleCenterX = apple.x * gridSize + gridSize / 2;
-      const appleCenterY = apple.y * gridSize + gridSize / 2;
-      ctx.arc(appleCenterX, appleCenterY, gridSize / 2.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    if (superApple) {
-      ctx.fillStyle = '#ffd700'; 
-      ctx.beginPath();
-      const superCenterX = superApple.x * gridSize + gridSize / 2;
-      const superCenterY = superApple.y * gridSize + gridSize / 2;
-      ctx.arc(superCenterX, superCenterY, gridSize / 2.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    snake.forEach((segment, index) => {
-      ctx.fillStyle = index === 0 ? '#00ffff' : '#00cccc';
-      ctx.strokeStyle = '#005555';
-      ctx.lineWidth = 2;
-
-      const centerX = segment.x * gridSize + gridSize / 2;
-      const centerY = segment.y * gridSize + gridSize / 2;
-      const radius = gridSize / 2.5;
-
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-    });
+    placeFood();
+    clearInterval(gameInterval);
+    gameInterval = setInterval(gameLoop, 100);
   }
 
   function gameStep() {
-    if (isPaused) return;
+    let head = {...snake[0]};
+    head.x += velocityX;
+    head.y += velocityY;
 
-    const headX = snake[0].x + velocityX;
-    const headY = snake[0].y + velocityY;
-
-    if (headX < 0 || headX >= tileCount || headY < 0 || headY >= tileCount) {
+    if (head.x < 0 || head.y < 0 || head.x >= 20 || head.y >= 20 || snake.some(seg => seg.x === head.x && seg.y === head.y)) {
       endGame();
       return;
     }
 
-    if (snake.some(segment => segment.x === headX && segment.y === headY)) {
-      endGame();
-      return;
-    }
+    snake.unshift(head);
 
-    snake.unshift({x: headX, y: headY});
-
-    if (superApple && headX === superApple.x && headY === superApple.y) {
-      score += 50;
-      currentScoreDisplay.textContent = `Skor: ${score}`;
-      superApple = null;
-      normalAppleCount = 0; 
-      placeApple();
-    }
-    else if (!superApple && headX === apple.x && headY === apple.y) {
-      score += 1;
-      currentScoreDisplay.textContent = `Skor: ${score}`;
-      normalAppleCount++;
-      if (normalAppleCount >= 10) {
-        superApple = {};
-        placeSuperApple();
-      } else {
-        placeApple();
-      }
+    if (head.x === food.x && head.y === food.y) {
+      score++;
+      scoreDisplay.textContent = `Skor: ${score}`;
+      placeFood();
     } else {
       snake.pop();
     }
@@ -501,24 +355,57 @@
     drawGame();
   }
 
-  function endGame() {
-    isPaused = true;
-    isRunning = false;
-    hasStarted = false;
-    clickToStart.style.display = 'none';
+  function drawGame() {
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, 400, 400);
 
-    // LocalStorage’a kaydet
-    let scores = loadScores();
+    snake.forEach((segment, index) => {
+      drawRect(segment.x, segment.y, index === 0 ? '#0ff' : '#0a0');
+    });
+
+    drawRect(food.x, food.y, '#f00');
+  }
+
+  function endGame() {
+    isRunning = false;
+    clearInterval(gameInterval);
+    clickToStart.style.display = 'none';
+    gameOverScreen.style.display = 'block';
+
+    let scores = JSON.parse(localStorage.getItem('scores')) || [];
     scores.push({name: nickname, score});
     scores.sort((a,b) => b.score - a.score);
     if (scores.length > 10) scores.length = 10;
-    saveScores(scores);
-    updateScoreLists();
+    localStorage.setItem('scores', JSON.stringify(scores));
+    updateTopScores();
 
-    // Firebase'e kaydet
-    saveScoreToFirebase(nickname, score);
+    const scoresRef = ref(db, 'scores');
+    push(scoresRef, { name: nickname, score });
+  }
 
-    gameOverScreen.style.display = 'block';
+  function updateTopScores() {
+    let scores = JSON.parse(localStorage.getItem('scores')) || [];
+    topScores.innerHTML = '';
+    scores.forEach(s => {
+      let li = document.createElement('li');
+      li.textContent = `${s.name}: ${s.score}`;
+      topScores.appendChild(li);
+    });
+  }
+
+  function listenToFirebaseScores() {
+    const q = query(ref(db, 'scores'), orderByChild('score'), limitToLast(10));
+    onValue(q, (snapshot) => {
+      let scores = [];
+      snapshot.forEach(child => scores.push(child.val()));
+      scores.sort((a,b) => b.score - a.score);
+      liveScores.innerHTML = '';
+      scores.forEach(s => {
+        let li = document.createElement('li');
+        li.textContent = `${s.name}: ${s.score}`;
+        liveScores.appendChild(li);
+      });
+    });
   }
 
   function gameLoop() {
@@ -527,26 +414,26 @@
     }
   }
 
-  document.addEventListener('keydown', (event) => {
+  document.addEventListener('keydown', (e) => {
     if (!hasStarted) return;
 
-    const key = event.key;
-
-    if (key === 'ArrowUp' && velocityY !== 1) {
-      velocityX = 0;
-      velocityY = -1;
-    } else if (key === 'ArrowDown' && velocityY !== -1) {
-      velocityX = 0;
-      velocityY = 1;
-    } else if (key === 'ArrowLeft' && velocityX !== 1) {
-      velocityX = -1;
-      velocityY = 0;
-    } else if (key === 'ArrowRight' && velocityX !== -1) {
-      velocityX = 1;
-      velocityY = 0;
-    } else if (key === 'p' || key === 'P') {
-      isPaused = !isPaused;
-      clickToStart.style.display = isPaused ? 'block' : 'none';
+    switch (e.key) {
+      case 'ArrowUp':
+        if (velocityY !== 1) { velocityX = 0; velocityY = -1; }
+        break;
+      case 'ArrowDown':
+        if (velocityY !== -1) { velocityX = 0; velocityY = 1; }
+        break;
+      case 'ArrowLeft':
+        if (velocityX !== 1) { velocityX = -1; velocityY = 0; }
+        break;
+      case 'ArrowRight':
+        if (velocityX !== -1) { velocityX = 1; velocityY = 0; }
+        break;
+      case ' ':
+        isPaused = !isPaused;
+        clickToStart.style.display = isPaused ? 'block' : 'none';
+        break;
     }
   });
 
@@ -556,9 +443,12 @@
       isPaused = false;
       hasStarted = true;
       clickToStart.style.display = 'none';
-      gameLoop();
-      gameInterval = setInterval(gameLoop, 100);
     }
+  });
+
+  startButton.addEventListener('click', () => {
+    startGame();
+    listenToFirebaseScores();
   });
 
   restartButton.addEventListener('click', () => {
@@ -566,21 +456,7 @@
     startGame();
   });
 
-  startButton.addEventListener('click', () => {
-    nickname = nicknameInput.value.trim();
-    if (!nickname) {
-      alert('Lütfen kullanıcı adınızı girin.');
-      return;
-    }
-    startGame();
-    listenToLiveScores();
-  });
-
-  // Ana sayfa skor listesini güncelle
-  updateScoreLists();
-
-</script>
-
+  updateTopScores();
 </script>
 
 </body>
