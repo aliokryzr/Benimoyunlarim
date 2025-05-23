@@ -85,60 +85,41 @@
 
 .game-list {
   flex: 1;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(30, 30, 30, 0.9); /* biraz daha koyu, şeffaf */
   border-radius: 15px;
   padding: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
   max-height: 400px;
   overflow-y: auto;
-
-  /* Sağdaki kutuyu da dikey ortalamak için */
   display: flex;
   flex-direction: column;
   justify-content: center;
+  color: #eee; /* biraz açık ton */
+  font-weight: 600;
+  font-size: 1rem;
+  border: 2px solid #555; /* net, ama soft çerçeve */
 }
 
-    .game-list h3 {
-      margin-top: 0;
-      margin-bottom: 25px;
-      font-size: 1.4rem;
-      text-align: center;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: #ffeb3b;
-      text-shadow: 0 0 10px #ffd700;
-      border-bottom: none;
-    }
+.game-list li {
+  padding: 10px 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  background: rgba(50, 50, 50, 0.8);
+  color: #eee;
+  border: 1px solid transparent;
+}
 
-    .game-list ul {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-    }
+.game-list li:hover {
+  background-color: #ffdd57; /* parlak altın sarısı */
+  color: #222; /* koyu yazı */
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(255, 221, 87, 0.8);
+  border-color: #e6c84e;
+}
 
-    .game-list li {
-      margin-bottom: 12px;
-      font-size: 1rem;
-    }
-
-    .game-list li a {
-      color: #fff;
-      text-decoration: none;
-      padding: 10px 14px;
-      border-radius: 12px;
-      display: block;
-      background: rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-      font-weight: 600;
-      box-shadow: 0 0 5px rgba(255, 235, 59, 0.5);
-    }
-
-    .game-list li a:hover {
-      background: #ffd700;
-      color: #333;
-      text-shadow: 0 0 10px #fff;
-      box-shadow: 0 0 15px #ffd700;
-    }
 
  .footer-text {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
