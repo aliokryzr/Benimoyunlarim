@@ -1,3 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🐍 Yılan Oyunu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    body {
+      background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px #000;
+      user-select: none;
+    }
+
+ 
+    #mainMenu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 40px;
+      width: 320px;
+      max-width: 90vw;
+    }
+    #nicknameInput {
+      padding: 10px 15px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+      width: 100%;
+      max-width: 320px;
+      outline: none;
+      transition: box-shadow 0.3s ease;
+    }
+    #nicknameInput:focus {
+      box-shadow: 0 0 8px #0ff;
+    }
+    #startButton {
+      padding: 10px 25px;
+      font-size: 1.1em;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background-color: #28a745;
+      transition: background-color 0.3s ease;
+      color: white;
+      width: 100%;
+      max-width: 320px;
+      user-select: none;
+    }
+    #startButton:hover {
+      background-color: #218838;
+    }
+
+    #scoreTable {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px 25px;
+      border-radius: 12px;
+      width: 100%;
+      max-height: 230px;
+      overflow-y: auto;
+      text-align: center;
+      user-select: none;
+    }
+    #scoreTable h2 {
+      font-size: 1.3em;
+      margin-bottom: 12px;
+    }
+    #scoreTable ol {
+      font-size: 0.9em;
+      padding-left: 0;
+      list-style-position: inside;
+      color: #d0f0f0;
+      margin: 0;
+    }
+
+
+    #gameContainer {
+      display: flex;
+      flex-direction: row;
+      gap: 25px;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 760px;
+    }
+    #gameFrame {
+      position: relative;
+      background-color: #111;
+      width: 400px;
+      height: 400px;
+      border: 10px double #ddd;
+      box-shadow: 0 0 15px 5px #00ffcc;
+      overflow: hidden;
+      border-radius: 15px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
+      background: #111;
+    }
+    #clickToStart {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.6em;
+      color: #0ff;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 12px 25px;
+      border-radius: 12px;
+      display: none;
+      animation: blink 1s infinite;
+      user-select: none;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    @Keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    #scorePanel {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 15px;
+      padding: 25px 20px;
+      width: 280px;
+      box-shadow: 0 0 15px #00ffff;
+      font-family: 'Orbitron', Arial, sans-serif;
+      color: white;
+      user-select: none;
+    }
+    #scorePanel h3 {
+      text-align: center;
+      color: #0ff;
+      border-bottom: 1px solid #888;
+      padding-bottom: 10px;
+      font-size: 1.4em;
+      text-shadow: 1px 1px 2px #000;
+      margin-bottom: 15px;
+    }
+    #currentScore, #instructions {
+      font-size: 1.1em;
+      margin-bottom: 15px;
+      line-height: 1.3em;
+    }
+    #liveScores {
+      padding-left: 15px;
+      margin: 0;
+    }
+    #liveScores li {
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 1px 1px 3px #00ffff;
+      margin-bottom: 7px;
+      list-style: decimal;
+    }
+
+
+    #gameOverScreen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 40px 50px;
+      border-radius: 15px;
+      text-align: center;
+      z-index: 1000;
+      display: none;
+      user-select: none;
+    }
+    #gameOverScreen h2 {
+      font-size: 2em;
+      margin-bottom: 25px;
+      color: #ff4444;
+      text-shadow: 2px 2px 6px #000;
+    }
+    #restartButton {
+      padding: 12px 28px;
+      font-size: 1.1em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    #restartButton:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐍 Yılan Oyunu</h1>
+
+  <div id="mainMenu">
+    <input
+      type="text"
+      id="nicknameInput"
+      placeholder="Kullanıcı adınızı girin"
+      maxlength="12"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <button id="startButton">Oyuna Başla</button>
+
+    <div id="scoreTable">
+      <h2>🏆 En İyi Skorlar</h2>
+      <ol id="topScores"></ol>
+    </div>
+  </div>
+
+  <div id="gameContainer" style="display:none;">
+    <div id="gameFrame">
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
+      <div id="clickToStart">Başlamak için tıklayın</div>
+      <div id="gameOverScreen">
+        <h2>Game Over</h2>
+        <button id="restartButton">Tamam</button>
+      </div>
+    </div>
+
+    <div id="scorePanel">
+      <h3>Bilgilendirme</h3>
+      <p id="instructions">
+        Oyun yön tuşlarıyla oynanır.<br />
+        Boşluk tuşu: Başlat / Duraklat<br />
+        Duvara veya kendine çarparsan oyun biter.
+      </p>
+      <div id="currentScore">Skor: 0</div>
+      <h3>Skor Tablosu</h3>
+      <ol id="liveScores"></ol>
+    </div>
+  </div>
+
  <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -44,7 +299,7 @@
 
     function updateScoreLists() {
       const scores = loadScores();
-      // Ana menüdeki liste
+      
       topScoresList.innerHTML = '';
       scores.forEach(({name, score}, i) => {
         const li = document.createElement('li');
@@ -303,7 +558,7 @@
 
  
     restartButton.addEventListener('click', () => {
-      // Oyun ekranını gizle, ana menüyü göster
+     
       gameContainer.style.display = 'none';
       mainMenu.style.display = 'flex';
 
@@ -322,3 +577,6 @@
    
     updateScoreLists();
 </script>
+
+</body>
+</html>
