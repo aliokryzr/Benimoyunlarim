@@ -210,6 +210,19 @@
 /* === Mobil uyumluluk eklemeleri (güncellendi) === */
 /* === Mobil uyumluluk eklemeleri (yeni düzen) === */
 @media (max-width: 600px) {
+ /* Score paneli en üste alıyoruz */
+  #scorePanel {
+    order: -1;               /* Flex içinde ilk sıraya al */
+    margin-bottom: 15px;     /* Çerçeveyle arada boşluk */
+    width: 90vw;             /* İstersen genişliği çerçeve kadar yap */
+    max-width: 360px;        /* Eski genişliği korumak için limit */
+  }
+
+   /* Oyun çerçevesinin sırası ayarlanabilir, gerekirse: */
+  #gameFrame {
+    order: 0;
+  }
+  
   /* Container dikey yığına dönsün */
   #gameContainer {
     flex-direction: column !important;
