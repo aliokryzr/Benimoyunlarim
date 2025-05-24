@@ -102,19 +102,24 @@
     #restartButton:hover { background:#0056b3; }
 
     /* —— Mobil Skor Gösterimi —— */
-    #mobileScore {
-      display:none;
-      position:absolute;
-      top:-30px;       /* çerçevenin hemen üstüne */
-      left:50%;
-      transform:translateX(-50%);
-      background:rgba(0,0,0,0.5);
-      padding:6px 12px; border-radius:8px;
-      font-size:1rem; color:#0ff;
-      box-shadow:0 0 10px #0ff;
-      user-select:none; z-index:50;
-    }
-
+#mobileScore {
+  display: none;              /* önce gizli */
+  position: absolute;
+  top: -30px;                 /* çerçevenin hemen üstünde */
+  left: 10px;                 /* sol tarafa 10px içeride */
+  transform: none;            /* ortalamayı kaldırdık */
+  background: rgba(0,0,0,0.5);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: 'Orbitron', sans-serif !important;  /* okunaklı neon font */
+  font-size: 1.4rem !important;                     /* biraz daha büyük */
+  font-weight: bold !important;
+  color: #0ff !important;
+  text-shadow: 0 0 4px rgba(0,0,0,0.7) !important;  /* siyah hafif gölge */
+  box-shadow: 0 0 10px #0ff !important;
+  user-select: none;
+  z-index: 50;
+}
     /* —— Sağ Panel —— */
     #scorePanel {
       width:280px; background:rgba(0,0,0,0.5);
@@ -150,7 +155,10 @@
         margin-bottom:2vh;
       }
       /* mobil skor */
-      #mobileScore             { display:block !important; }
+      #mobileScore {
+    display: block !important;
+  }
+}
       #scorePanel #currentScore { display: none !important; }
 
       /* oklar */
