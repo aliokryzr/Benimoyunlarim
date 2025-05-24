@@ -68,8 +68,10 @@
       font-size: 1.3em;
       margin-bottom: 12px;
     }
+    /* Oyun içindeki Skor Tablosu başlığı */
     #scorePanel h3.score-header {
       color: #0ff;
+      margin-top: 20px;
     }
     #scorePanel p#instructions {
       font-size: 1.1em;
@@ -144,12 +146,17 @@
     #scoreTable h2 {
       font-size: 1.3em;
       margin-bottom: 12px;
+      color: #ff0;
     }
     #scoreTable ol {
       font-size: 0.9em;
-      padding-left: 0;
+      padding-left: 20px;
+      list-style-type: decimal;
       list-style-position: inside;
       color: #d0f0f0;
+    }
+    #scoreTable ol li span.medal {
+      margin-right: 6px;
     }
 
     /* Canvas & Overlay */
@@ -377,27 +384,34 @@
           const scores = [];
           snapshot.forEach(child => scores.unshift(child.val()));
           scores.sort((a,b) => b.score - a.score);
+
           // Menüdeki En İyi Skorlar
           topScoresList.innerHTML = '';
           scores.forEach((entry, idx) => {
-            const rank = idx + 1;
+            const medal = idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':'';
             const li = document.createElement('li');
-            li.textContent = `${rank}. ${entry.name}: ${entry.score}`;
-            topScoresList.appendChild(li);
-          });
-          // Oyun içindeki Skor Tablosu
-          liveScoresList.innerHTML = '';
-          scores.forEach((entry, idx) => {
-            const rank = idx + 1;
-            const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'';
-            const li = document.createElement('li');
-            if(medal) {
+            if (medal) {
               const span = document.createElement('span');
               span.className = 'medal';
               span.textContent = medal;
               li.appendChild(span);
             }
-            li.appendChild(document.createTextNode(`${rank}. ${entry.name}: ${entry.score}`));
+            li.appendChild(document.createTextNode(`${entry.name}: ${entry.score}`));
+            topScoresList.appendChild(li);
+          });
+
+          // Oyun içindeki Skor Tablosu
+          liveScoresList.innerHTML = '';
+          scores.forEach((entry, idx) => {
+            const medal = idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':'';
+            const li = document.createElement('li');
+            if (medal) {
+              const span = document.createElement('span');
+              span.className = 'medal';
+              span.textContent = medal;
+              li.appendChild(span);
+            }
+            li.appendChild(document.createTextNode(`${idx+1}. ${entry.name}: ${entry.score}`));
             liveScoresList.appendChild(li);
           });
         })
@@ -453,7 +467,7 @@
         ctx.arc(superApple.x*gridSize+gridSize/2, superApple.y*gridSize+gridSize/2, gridSize/2.5, 0, Math.PI*2);
         ctx.fill();
       }
-      snake.forEach((seg,i) => {
+      snake.forEach((seg, i) => {
         ctx.fillStyle = i===0 ? '#00ffff' : '#00cccc';
         ctx.strokeStyle = '#005555';
         ctx.lineWidth = 2;
@@ -525,8 +539,8 @@
 
     clickToStart.addEventListener('click', () => {
       if (!hasStarted) {
-        isRunning = true; isPaused = false; hasStarted = true;
-        clickToStart.style.display = 'none';
+        isRunning=true; isPaused=false; hasStarted=true;
+        clickToStart.style.display='none';
         runGameLoop();
       }
     });
@@ -535,16 +549,16 @@
     });
     document.getElementById('gameFrame').addEventListener('touchstart', e => {
       e.preventDefault();
-      if (clickToStart.style.display === 'block') clickToStart.click();
+      if (clickToStart.style.display==='block') clickToStart.click();
     });
 
     restartButton.addEventListener('click', () => {
-      gameContainer.style.display = 'none';
-      mainMenu.style.display = 'flex';
-      nicknameInput.value = ''; nicknameInput.focus();
-      gameOverScreen.style.display = 'none';
+      gameContainer.style.display='none';
+      mainMenu.style.display='flex';
+      nicknameInput.value=''; nicknameInput.focus();
+      gameOverScreen.style.display='none';
       clearInterval(gameInterval);
-      isRunning = isPaused = hasStarted = false;
+      isRunning=isPaused=hasStarted=false;
       updateScoreLists();
     });
     restartButton.addEventListener('touchend', e => {
