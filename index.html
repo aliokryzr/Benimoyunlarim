@@ -13,15 +13,10 @@
     }
 
     body {
-      margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(135deg, #4e54c8, #8f94fb);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 20px 40px;
-      overflow-x: hidden;
+      background-color: #0f0f0f;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px;
     }
 
     header {
@@ -74,14 +69,18 @@
 }
 
 .intro {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* metinler kendi içinde dikey ortalanıyor */
-  padding-right: 20px;
-  border-right: 2px solid rgba(255, 255, 255, 0.2);
-  height: 100%; /* tam yüksekliği alsın */
-}
+      font-size: 0.9em; /* Yazı boyutu bir seviye küçük */
+      background: linear-gradient(to right, #1f1f1f, #2c2c2c);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      border: 1px solid #444;
+    }
+
+    .intro p {
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
 
 .game-list-container {
   flex: 1;
@@ -172,11 +171,17 @@
 
 <header>
   <h1>🎮 Oyun Dünyasına Hoşgeldiniz</h1>
-  <p>🎯 Web tabanlı mini oyun projeleriyle hem öğrenin hem eğlenin!</p>
+  <p>🎯 Web tabanlı mini oyun projeleriyle eğlenin!</p>
 </header>
 
 <main>
   <section class="intro">
+    <p>
+      Mini oyunlar; hızlı oynanabilir, basit kurallara sahip ama oldukça eğlenceli oyunlardır.<br />
+      Genellikle tarayıcı tabanlı ya da mobil platformlarda karşımıza çıkarlar. <br />
+      Hafif yapıları sayesinde hem vakit geçirmek hem de refleksleri ve düşünme becerilerini geliştirmek için idealdirler.<br /> 
+      Sayı tahmin oyunları, yılan oyunu, hafıza kartları veya basit bulmacalar bu kategoriye örnektir.<br />
+      Mini oyunlar, kullanıcı dostu arayüzleri ve bağımlılık yapan yapılarıyla her yaştan oyuncuya hitap eder.</p>
     <p>
       🎉 Mini oyunların ve eğlence amaçlı web tabanlı oyunların buluşma noktasıdır.<br />
       🚀 Hem öğrenirken hem de eğlenirken vakit geçirebileceğiniz projelerle doludur.<br />
