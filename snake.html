@@ -133,6 +133,13 @@
 clickToStart.addEventListener('touchstart', e => {
   e.preventDefault();
   clickToStart.click();
+   if (!hasStarted) {
+    isRunning = true;
+    isPaused  = false;
+    hasStarted = true;
+    clickToStart.style.display = 'none';
+    runGameLoop();
+  }
 });
     
     @keyframes blink {
@@ -610,6 +617,7 @@ document.getElementById('gameFrame').addEventListener('touchstart', e => {
     });
 
     restartButton.addEventListener('click', () => {
+      
       gameContainer.style.display='none';
       mainMenu.style.display='flex';
       nicknameInput.value=''; nicknameInput.focus();
@@ -620,6 +628,21 @@ document.getElementById('gameFrame').addEventListener('touchstart', e => {
     });
 
     updateScoreLists();
+
+    restartButton.addEventListener('touchend', e => {
+  e.preventDefault(); // dokunma sonrası beklenmedik kaymayı engelle
+  // tıpkı click handler’ınız gibi:
+  gameContainer.style.display = 'none';
+  mainMenu.style.display     = 'flex';
+  nicknameInput.value        = '';
+  nicknameInput.focus();
+  gameOverScreen.style.display = 'none';
+  if (gameInterval) clearInterval(gameInterval);
+  isRunning = false;
+  isPaused  = false;
+  hasStarted = false;
+  updateScoreLists();
+});
 
     /* Mobil dokunmatik yön kontrollerini bağla */
     function bindTouchControls() {
