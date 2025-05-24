@@ -22,6 +22,7 @@
       min-height: 100vh;
     }
     h1 {
+      text-align: center !important;
       font-size: 3em;
       margin-bottom: 30px;
       text-shadow: 2px 2px 4px #000;
@@ -129,6 +130,11 @@
       pointer-events: auto;
       cursor: pointer;
     }
+clickToStart.addEventListener('touchstart', e => {
+  e.preventDefault();
+  clickToStart.click();
+});
+    
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
@@ -211,29 +217,37 @@
 /* === Mobil uyumluluk eklemeleri (yeni düzen) === */
 /* === Mobilde skor göstergesini oyunun üstüne overlay olarak yerleştirme === */
 @media (max-width: 600px) {
-  /* 1) Container’ı göreli yapıyoruz, böylece içindeki absolute elemanlar canvas’a göre konumlanır */
+  /* 1) Container’ı göreli ve dikey yığına al */
   #gameContainer {
     position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
 
-  /* 2) Skor panelini absolute ile canvas’ın üstüne taşıyoruz */
+  /* 2) Oyun çerçevesini %90 kare yap */
+  #gameFrame {
+    width: 90vw !important;
+    height: 90vw !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+
+  /* 3) Skor panelini overlay olarak canvas’ın üstüne yerleştir */
   #scorePanel {
     position: absolute !important;
-    top: 12px !important;               /* Canvas’ın 12px üstünde */
-    left: 50% !important;               
+    top: 12px !important;
+    left: 50% !important;
     transform: translateX(-50%) !important;
     background: rgba(0, 0, 0, 0.7) !important;
     padding: 6px 12px !important;
     border-radius: 8px !important;
     z-index: 100 !important;
   }
-
-  /* 3) Panelin içindeki başlık, açıklama ve listeyi gizleyip sadece skoru bırakıyoruz */
+  /* Skor panelinde sadece #currentScore görünsün */
   #scorePanel > *:not(#currentScore) {
     display: none !important;
   }
-
-  /* 4) Skor metnini okunaklı ve yeterince büyük yapıyoruz */
   #currentScore {
     display: block !important;
     font-size: 1.3rem !important;
@@ -241,6 +255,38 @@
     margin: 0 !important;
     user-select: none !important;
   }
+
+  /* 4) Ok tuşlarını eski alt konumuna geri taşı ve düzenle */
+  .touch-controls {
+    display: grid !important;
+    position: absolute !important;
+    bottom: 20px !important;            /* ALTTA KALSIN */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    grid-template-columns: 80px 80px 80px;
+    grid-template-rows:    80px 80px;
+    grid-template-areas:
+      ".    up    ."
+      "left down right";
+    gap: 15px;
+    z-index: 200 !important;
+  }
+  .touch-controls button {
+    width: 80px !important;
+    height: 80px !important;
+    font-size: 2rem !important;
+    border: none !important;
+    border-radius: 50% !important;
+    opacity: 0.85 !important;
+    touch-action: none !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+  }
+  /* Grid‐area atamaları */
+  #upBtn    { grid-area: up; }
+  #leftBtn  { grid-area: left; }
+  #downBtn  { grid-area: down; }
+  #rightBtn { grid-area: right; }
 }
 
 
