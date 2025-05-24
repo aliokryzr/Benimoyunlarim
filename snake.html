@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🐍 Yılan Oyunu</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
   <style>
@@ -11,6 +11,10 @@
       font-family: 'Orbitron', Arial, sans-serif;
     }
     body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
       background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
       color: white;
       margin: 0;
@@ -20,6 +24,18 @@
       align-items: center;
       min-height: 100vh;
     }
+
+    canvas {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  height: auto;
+  max-width: 600px; /* İsteğe bağlı: Maksimum genişlik belirleyebilirsiniz */
+  border: 2px solid #333;
+  background-color: #fff;
+}
+
+    
     h1 {
       font-size: 3em;
       margin-bottom: 30px;
@@ -604,6 +620,16 @@ const db = firebase.database();
 
    
     updateScoreLists();
+
+    function resizeCanvas() {
+  const canvas = document.getElementById('gameCanvas');
+  const size = Math.min(window.innerWidth, window.innerHeight) * 0.9; // %90'ını kullan
+  canvas.width = size;
+  canvas.height = size;
+}
+
+window.addEventListener('load', resizeCanvas);
+window.addEventListener('resize', resizeCanvas);
 
     
 </script>
