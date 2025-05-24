@@ -248,10 +248,62 @@
         Duvara veya kendine çarparsan oyun biter.
       </p>
       <div id="currentScore">Skor: 0</div>
-      <h3>Skor Tablosu</h3>
-      <ol id="liveScores"></ol>
-    </div>
-  </div>
+     <h3>🏆 En İyi Skorlar</h3>
+  <ul id="skorTablosu"></ul>
+
+  <!-- Firebase SDK (CDN ile) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+  <script>
+    // Firebase yapılandırma
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
+      authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+      databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
+      projectId: "benimoyunlarim-9c38c",
+      storageBucket: "benimoyunlarim-9c38c.firebasestorage.app",
+      messagingSenderId: "48251257364",
+      appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
+      measurementId: "G-23MZX1FJ5V"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Skoru kaydetme fonksiyonu
+    function kaydetSkor(oyuncuAdi, skor) {
+      const yeniSkor = {
+        oyuncu: oyuncuAdi,
+        skor: skor,
+        tarih: new Date().toLocaleString()
+      };
+      db.ref("skorlar").push(yeniSkor);
+    }
+
+    // Skorları gösterme fonksiyonu
+    function skorTablosunuYukle() {
+      const skorListesi = [];
+      db.ref("skorlar").on("value", snapshot => {
+        skorListesi.length = 0;
+        snapshot.forEach(childSnapshot => {
+          const veri = childSnapshot.val();
+          skorListesi.push(veri);
+        });
+
+        skorListesi.sort((a, b) => b.skor - a.skor);
+
+        const skorHTML = skorListesi.map((s, i) =>
+          `<li>${i + 1}. ${s.oyuncu}: ${s.skor} 🏅</li>`
+        ).join("");
+
+        document.getElementById("skorTablosu").innerHTML = skorHTML;
+      });
+    }
+
+    // Sayfa açılınca skorlar yüklensin
+    window.onload = () => {
+      skorTablosunuYukle();
+    };
+
 
  <script>
     const canvas = document.getElementById('gameCanvas');
