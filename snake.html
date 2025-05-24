@@ -6,7 +6,6 @@
   <title>🐍 Yılan Oyunu</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
   <style>
-    /* ===== Global Reset ===== */
     * { box-sizing:border-box; margin:0; padding:0; font-family:'Orbitron',sans-serif; }
     body {
       background: linear-gradient(145deg,#0f2027,#203a43,#2c5364);
@@ -18,7 +17,7 @@
       user-select:none; text-align:center;
     }
 
-    /* ===== MENÜ ===== */
+    /* Menü */
     #mainMenu {
       display:flex; flex-direction:column; align-items:center;
       gap:15px; margin-bottom:40px; width:320px; max-width:90vw;
@@ -37,7 +36,7 @@
     }
     #startButton:hover { background:#218838; }
 
-    /* —— SADECE EN YÜKSEK SKOR —— */
+    /* Sadece En Yüksek Skor */
     #scoreTable {
       width:100%; background:rgba(255,255,255,0.1);
       padding:15px 25px; border-radius:12px; text-align:left;
@@ -54,7 +53,7 @@
     #topScores li { margin-bottom:6px; }
     #topScores .medal { margin-right:6px; }
 
-    /* ===== OYUN EKRANI ===== */
+    /* Oyun Ekranı */
     #gameContainer {
       display:none; flex-direction:row; gap:25px;
       align-items:flex-start; width:100%; max-width:760px;
@@ -87,7 +86,7 @@
     }
     #restartButton:hover { background:#0056b3; }
 
-    /* ===== SAĞ PANEL ===== */
+    /* Sağ Panel */
     #scorePanel {
       width:280px; background:rgba(0,0,0,0.5);
       padding:20px; border-radius:15px; box-shadow:0 0 15px #0ff;
@@ -108,9 +107,8 @@
     #liveScores li { margin-bottom:8px; }
     #liveScores .medal { margin-right:6px; }
 
-    /* ===== MOBİL TAŞIMA ===== */
+    /* Mobil - Skor panelini üstte dışarı taşı */
     @media only screen and (pointer: coarse) and (hover: none) {
-      /* Skor panelini oyun karesinin dışına çıkarıyoruz */
       #scorePanel {
         position:absolute!important;
         top:-40px!important;
@@ -184,7 +182,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
-    // Tam Firebase konfigürasyonun
+    // Firebase konfigürasyonun
     const firebaseConfig = {
       apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
       authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
@@ -360,6 +358,7 @@
       attachScoreListener();
     });
 
+    // MOBİL: Dokunmatik yön kontrolleri
     function bindTouchControls(){
       ['up','left','right','down'].forEach(dir=>{
         document.getElementById(dir+'Btn').addEventListener('touchstart',e=>{
@@ -373,6 +372,33 @@
         });
       });
     }
+
+    // PC: Klavye yön tuşları ve boşluk desteği
+    window.addEventListener('keydown', function(e) {
+      if (!isRunning && !hasStarted) return;
+      switch(e.key) {
+        case 'ArrowUp':
+          if (velocityY !== 1) { velocityX = 0; velocityY = -1; }
+          break;
+        case 'ArrowDown':
+          if (velocityY !== -1) { velocityX = 0; velocityY = 1; }
+          break;
+        case 'ArrowLeft':
+          if (velocityX !== 1) { velocityX = -1; velocityY = 0; }
+          break;
+        case 'ArrowRight':
+          if (velocityX !== -1) { velocityX = 1; velocityY = 0; }
+          break;
+        case ' ':
+          if (!hasStarted) return;
+          isPaused = !isPaused;
+          currentScoreDisplay.textContent = isPaused
+            ? 'Oyun Duraklatıldı (Boşluk ile devam ettir)'
+            : `Skor: ${score}`;
+          break;
+      }
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+    });
   </script>
 </body>
 </html>
