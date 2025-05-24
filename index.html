@@ -71,18 +71,28 @@
 }
 
 .intro {
-      font-size: 0.9em; /* Yazı boyutu bir seviye küçük */
-      background: linear-gradient(to right, #1f1f1f, #2c2c2c);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-      border: 1px solid #444;
-    }
+  font-size: 0.9em; /* Yazı boyutu bir seviye küçük */
+  background: rgba(10, 10, 10, 0.85); /* Yarı saydam koyu zemin */
+  padding: 25px 30px;
+  border-radius: 14px;
+  box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), /* neon dış parlama */
+              inset 0 0 10px 2px rgba(0, 128, 255, 0.4); /* iç parlama */
+  border: 1.5px solid rgba(0, 255, 255, 0.7);
+  color: #d0f0ff; /* açık, okunabilir yazı rengi */
+  line-height: 1.65;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3); /* yazıya hafif parıltı */
+  transition: box-shadow 0.3s ease;
+}
 
-    .intro p {
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
+.intro:hover {
+  box-shadow: 0 0 25px 6px rgba(0, 255, 255, 0.9),
+              inset 0 0 18px 4px rgba(0, 200, 255, 0.7);
+}
+  
+.intro p {
+  margin-bottom: 16px;
+}
+
 
 .game-list-container {
   flex: 1;
