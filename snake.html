@@ -65,7 +65,6 @@
     }
     #scorePanel h3 {
       text-align: left;
-      color: #fff;
       font-size: 1.3em;
       margin-bottom: 12px;
     }
@@ -375,14 +374,16 @@
         .then(snapshot => {
           const scores = [];
           snapshot.forEach(child => scores.unshift(child.val()));
-          // Menudeki yüksek skorlar
+
+          // Menüdeki En İyi Skorlar
           topScoresList.innerHTML = '';
           scores.forEach(({name, score}) => {
             const li = document.createElement('li');
             li.textContent = `${name}: ${score}`;
             topScoresList.appendChild(li);
           });
-          // Oyun içindeki canlı skor tablosu
+
+          // Oyun içindeki Skor Tablosu
           liveScoresList.innerHTML = '';
           scores.forEach(({name, score}) => {
             const li = document.createElement('li');
@@ -429,28 +430,28 @@
     // Çizim
     function drawGame() {
       ctx.fillStyle = '#111';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0,0,canvas.width,canvas.height);
       // Normal elma
       if (!superApple) {
         ctx.fillStyle = '#ff4444';
         ctx.beginPath();
-        ctx.arc(apple.x*gridSize+gridSize/2, apple.y*gridSize+gridSize/2, gridSize/2.5, 0, Math.PI*2);
+        ctx.arc(apple.x*gridSize+gridSize/2, apple.y*gridSize+gridSize/2, gridSize/2.5,0,Math.PI*2);
         ctx.fill();
       }
       // Süper elma
       if (superApple) {
         ctx.fillStyle = '#ffd700';
         ctx.beginPath();
-        ctx.arc(superApple.x*gridSize+gridSize/2, superApple.y*gridSize+gridSize/2, gridSize/2.5, 0, Math.PI*2);
+        ctx.arc(superApple.x*gridSize+gridSize/2, superApple.y*gridSize+gridSize/2, gridSize/2.5,0,Math.PI*2);
         ctx.fill();
       }
       // Yılan
-      snake.forEach((seg, i) => {
+      snake.forEach((seg,i) => {
         ctx.fillStyle = i===0 ? '#00ffff' : '#00cccc';
         ctx.strokeStyle = '#005555';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(seg.x*gridSize+gridSize/2, seg.y*gridSize+gridSize/2, gridSize/2.5, 0, Math.PI*2);
+        ctx.arc(seg.x*gridSize+gridSize/2, seg.y*gridSize+gridSize/2, gridSize/2.5,0,Math.PI*2);
         ctx.fill(); ctx.stroke();
       });
     }
@@ -459,17 +460,16 @@
     function gameStep() {
       if (isPaused) return;
       const headX = snake[0].x + velocityX, headY = snake[0].y + velocityY;
-      if (headX < 0 || headX >= tileCount || headY < 0 || headY >= tileCount) { endGame(); return; }
-      if (snake.some(s => s.x===headX && s.y===headY)) { endGame(); return; }
-      snake.unshift({x: headX, y: headY});
+      if (headX<0||headX>=tileCount||headY<0||headY>=tileCount) { endGame(); return; }
+      if (snake.some(s=>s.x===headX&&s.y===headY)) { endGame(); return; }
+      snake.unshift({x:headX,y:headY});
       if (superApple && headX===superApple.x && headY===superApple.y) {
         score += 50; currentScoreDisplay.textContent = `Skor: ${score}`;
         superApple = null; normalAppleCount = 0; placeApple();
-      }
-      else if (!superApple && headX===apple.x && headY===apple.y) {
+      } else if (!superApple && headX===apple.x && headY===apple.y) {
         score += 1; currentScoreDisplay.textContent = `Skor: ${score}`;
         normalAppleCount++;
-        if (normalAppleCount >= 10) placeSuperApple();
+        if (normalAppleCount>=10) placeSuperApple();
         else placeApple();
       } else {
         snake.pop();
@@ -497,11 +497,11 @@
       const keys = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '];
       if (keys.includes(e.key)) e.preventDefault();
       if (!isRunning && !hasStarted) return;
-      switch (e.key) {
-        case 'ArrowUp':    if (velocityY !== 1) { velocityX = 0; velocityY = -1; } break;
-        case 'ArrowDown':  if (velocityY !== -1){ velocityX = 0; velocityY = 1; } break;
-        case 'ArrowLeft':  if (velocityX !== 1) { velocityX = -1; velocityY = 0; } break;
-        case 'ArrowRight': if (velocityX !== -1){ velocityX = 1; velocityY = 0; } break;
+      switch(e.key){
+        case 'ArrowUp':    if(velocityY!==1){velocityX=0;velocityY=-1;} break;
+        case 'ArrowDown':  if(velocityY!==-1){velocityX=0;velocityY=1;} break;
+        case 'ArrowLeft':  if(velocityX!==1){velocityX=-1;velocityY=0;} break;
+        case 'ArrowRight': if(velocityX!==-1){velocityX=1;velocityY=0;} break;
         case ' ':
           if (!hasStarted) return;
           isPaused = !isPaused;
@@ -511,55 +511,55 @@
           break;
       }
     });
-
     // Başlat Butonu (Menü)
     startButton.addEventListener('click', () => {
       nickname = nicknameInput.value.trim();
       if (!nickname) { alert('Lütfen kullanıcı adınızı girin.'); nicknameInput.focus(); return; }
       startGame();
     });
-
     // “Başlamak için tıklayın” overlay – click / touch
     clickToStart.addEventListener('click', () => {
       if (!hasStarted) {
-        isRunning = true; isPaused = false; hasStarted = true;
-        clickToStart.style.display = 'none';
+        isRunning=true; isPaused=false; hasStarted=true;
+        clickToStart.style.display='none';
         runGameLoop();
       }
     });
     clickToStart.addEventListener('touchend', e => {
-      e.preventDefault();
-      clickToStart.click();
+      e.preventDefault(); clickToStart.click();
     });
     document.getElementById('gameFrame').addEventListener('touchstart', e => {
       e.preventDefault();
-      if (clickToStart.style.display === 'block') clickToStart.click();
+      if (clickToStart.style.display==='block') clickToStart.click();
     });
-
     // “Tamam” butonu – click / touch
     restartButton.addEventListener('click', () => {
-      gameContainer.style.display = 'none';
-      mainMenu.style.display = 'flex';
-      nicknameInput.value = '';
-      nicknameInput.focus();
-      gameOverScreen.style.display = 'none';
+      gameContainer.style.display='none';
+      mainMenu.style.display='flex';
+      nicknameInput.value=''; nicknameInput.focus();
+      gameOverScreen.style.display='none';
       clearInterval(gameInterval);
-      isRunning = isPaused = hasStarted = false;
+      isRunning=isPaused=hasStarted=false;
       updateScoreLists();
     });
     restartButton.addEventListener('touchend', e => {
-      e.preventDefault();
-      restartButton.click();
+      e.preventDefault(); restartButton.click();
     });
-
     // Dokunmatik yön kontrolleri
     function bindTouchControls(){
-      document.getElementById('upBtn')   .addEventListener('touchstart', e=>{ e.preventDefault(); if(isRunning&&hasStarted&&velocityY!==1){ velocityX=0; velocityY=-1; } });
-      document.getElementById('leftBtn') .addEventListener('touchstart', e=>{ e.preventDefault(); if(isRunning&&hasStarted&&velocityX!==1){ velocityX=-1; velocityY=0; } });
-      document.getElementById('rightBtn').addEventListener('touchstart', e=>{ e.preventDefault(); if(isRunning&&hasStarted&&velocityX!==-1){ velocityX=1; velocityY=0; } });
-      document.getElementById('downBtn') .addEventListener('touchstart', e=>{ e.preventDefault(); if(isRunning&&hasStarted&&velocityY!==-1){ velocityX=0; velocityY=1; } });
+      document.getElementById('upBtn').addEventListener('touchstart', e=>{
+        e.preventDefault(); if(isRunning&&hasStarted&&velocityY!==1){velocityX=0;velocityY=-1;}
+      });
+      document.getElementById('leftBtn').addEventListener('touchstart', e=>{
+        e.preventDefault(); if(isRunning&&hasStarted&&velocityX!==1){velocityX=-1;velocityY=0;}
+      });
+      document.getElementById('rightBtn').addEventListener('touchstart', e=>{
+        e.preventDefault(); if(isRunning&&hasStarted&&velocityX!==-1){velocityX=1;velocityY=0;}
+      });
+      document.getElementById('downBtn').addEventListener('touchstart', e=>{
+        e.preventDefault(); if(isRunning&&hasStarted&&velocityY!==-1){velocityX=0;velocityY=1;}
+      });
     }
-
     // Yüklenince
     window.addEventListener('load', () => {
       bindTouchControls();
