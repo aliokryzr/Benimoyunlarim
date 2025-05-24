@@ -45,6 +45,8 @@
     to {background-position: -10000px 5000px;}
       }
     body {
+  padding: 0;
+  box-sizing: border-box;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
@@ -53,10 +55,20 @@
       color: #e0e0e0;
     }
 
-    .container {
-  width: 800px;
-  height: 600px;
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
 }
+
+canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 
 
     header {
