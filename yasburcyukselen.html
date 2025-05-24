@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yaş, Burç ve Yükselen Hesaplama</title>
+  <style>
+    body {
+      background: #f4f4f4;
+      font-family: Arial, sans-serif;
+    }
+    .kutu {
+      max-width: 400px;
+      margin: 60px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    h2 {
+      text-align: center;
+      color: #4CAF50;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #sonuc {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f5e9;
+      border-left: 5px solid #4CAF50;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="kutu">
+    <h2>🎂 Yaş, Burç ve Yükselen Hesapla</h2>
+    <label for="ad">Adınız:</label>
+    <input type="text" id="ad" />
+    
+    <label for="soyad">Soyadınız:</label>
+    <input type="text" id="soyad" />
+    
+    <label for="dogum">Doğum Tarihiniz (GG.AA.YYYY):</label>
+    <input type="text" id="dogum" placeholder="Örn: 15.03.1990" />
+    
+    <label for="saat">Doğum Saati (24 saat format, Örn: 14:30):</label>
+    <input type="text" id="saat" placeholder="Örn: 14:30" />
+    
+    <button onclick="hesapla()">Hesapla</button>
+    
+    <div id="sonuc"></div>
+  </div>
+
+  <script>
+    function burcHesapla(gun, ay) {
+      
+      if ((ay == 3 && gun >= 21) || (ay == 4 && gun <= 20)) return "Koç ♈";
+      if ((ay == 4 && gun >= 21) || (ay == 5 && gun <= 21)) return "Boğa ♉";
+      if ((ay == 5 && gun >= 22) || (ay == 6 && gun <= 22)) return "İkizler ♊";
+      if ((ay == 6 && gun >= 23) || (ay == 7 && gun <= 22)) return "Yengeç ♋";
+      if ((ay == 7 && gun >= 23) || (ay == 8 && gun <= 22)) return "Aslan ♌";
+      if ((ay == 8 && gun >= 23) || (ay == 9 && gun <= 22)) return "Başak ♍";
+      if ((ay == 9 && gun >= 23) || (ay == 10 && gun <= 22)) return "Terazi ♎";
+      if ((ay == 10 && gun >= 23) || (ay == 11 && gun <= 21)) return "Akrep ♏";
+      if ((ay == 11 && gun >= 22) || (ay == 12 && gun <= 21)) return "Yay ♐";
+      if ((ay == 12 && gun >= 22) || (ay == 1 && gun <= 21)) return "Oğlak ♑";
+      if ((ay == 1 && gun >= 22) || (ay == 2 && gun <= 19)) return "Kova ♒";
+      if ((ay == 2 && gun >= 20) || (ay == 3 && gun <= 20)) return "Balık ♓";
+      return "Bilinmiyor";
+    }
+
+    function yukselenHesapla(saat, dakika) {
+
+
+      
+      let saatDecimal = saat + dakika / 60;
+
+     
+      const burclar = [
+        "Koç ♈", "Boğa ♉", "İkizler ♊", "Yengeç ♋", 
+        "Aslan ♌", "Başak ♍", "Terazi ♎", "Akrep ♏", 
+        "Yay ♐", "Oğlak ♑", "Kova ♒", "Balık ♓"
+      ];
+
+      
+      let index = Math.floor(saatDecimal / 2);
+      if (index >= 12) index = 11; 
+
+      return burclar[index];
+    }
+
+    function hesapla() {
+      const ad = document.getElementById("ad").value.trim();
+      const soyad = document.getElementById("soyad").value.trim();
+      const dogum = document.getElementById("dogum").value.trim();
+      const saatStr = document.getElementById("saat").value.trim();
+
+      if (!ad || !soyad || !dogum || !saatStr) {
+        document.getElementById("sonuc").innerHTML = "❗ Lütfen tüm alanları doldurun.";
+        return;
+      }
+
+     
+      const parcalar = dogum.split(".");
+      if (parcalar.length !== 3) {
+        document.getElementById("sonuc").innerHTML = "❗ Doğum tarihini GG.AA.YYYY formatında girin.";
+        return;
+      }
+      const gun = parseInt(parcalar[0]);
+      const ay = parseInt(parcalar[1]);
+      const yil = parseInt(parcalar[2]);
+
+     
+      const saatParcala = saatStr.split(":");
+      if (saatParcala.length !== 2) {
+        document.getElementById("sonuc").innerHTML = "❗ Doğum saatini HH:MM formatında girin.";
+        return;
+      }
+      const saat = parseInt(saatParcala[0]);
+      const dakika = parseInt(saatParcala[1]);
+
+      if (isNaN(gun) || isNaN(ay) || isNaN(yil) || isNaN(saat) || isNaN(dakika)) {
+        document.getElementById("sonuc").innerHTML = "❗ Tarih ve saat rakamlarını doğru girin.";
+        return;
+      }
+
+      const dogumTarihi = new Date(yil, ay - 1, gun);
+      if (isNaN(dogumTarihi.getTime())) {
+        document.getElementById("sonuc").innerHTML = "❗ Geçerli bir doğum tarihi girin.";
+        return;
+      }
+
+      const simdi = new Date();
+      const fark = simdi - dogumTarihi;
+      const gunler = Math.floor(fark / (1000 * 60 * 60 * 24));
+      const yilSayisi = Math.floor(gunler / 365.25);
+      const aylar = Math.floor(gunler / 30.4375);
+      const saatler = Math.floor(fark / (1000 * 60 * 60));
+
+      const burc = burcHesapla(gun, ay);
+      const yukselen = yukselenHesapla(saat, dakika);
+
+      const sonuc = `
+        <strong>👤 Merhaba ${ad} ${soyad}</strong><br><br>
+        Doğduğunuzdan bu yana yaklaşık:<br>
+        📆 <strong>${yilSayisi}</strong> yıl<br>
+        📅 <strong>${gunler}</strong> gün<br>
+        🗓️ <strong>${aylar}</strong> ay<br>
+        ⏰ <strong>${saatler}</strong> saat geçti.<br><br>
+        🔮 Burcunuz: <strong>${burc}</strong><br>
+        🌟 Yaklaşık Yükseleniniz: <strong>${yukselen}</strong><br>
+        <small style="color:#888;">(Yükselen saati yaklaşık 2 saat aralıklarla hesaplanmıştır.)</small>
+      `;
+
+      document.getElementById("sonuc").innerHTML = sonuc;
+    }
+  </script>
+</body>
+</html>
