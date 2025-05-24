@@ -253,7 +253,25 @@
     </div>
   </div>
 
- <script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  
+  <script>
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
+  authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+  databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
+  projectId: "benimoyunlarim-9c38c",
+  storageBucket: "benimoyunlarim-9c38c.appspot.com",
+  messagingSenderId: "48251257364",
+  appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
+  measurementId: "G-23MZX1FJ5V"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+  
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const clickToStart = document.getElementById('clickToStart');
@@ -297,24 +315,32 @@
     }
 
 
-    function updateScoreLists() {
-      const scores = loadScores();
-      
+   function updateScoreLists() {
+  db.ref('scores').orderByChild('score').limitToLast(10).once('value')
+    .then(snapshot => {
+      const scores = [];
+      snapshot.forEach(child => {
+        scores.unshift(child.val());
+      });
+
       topScoresList.innerHTML = '';
-      scores.forEach(({name, score}, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${name}: ${score}`;
-        topScoresList.appendChild(li);
-      });
-
-
       liveScoresList.innerHTML = '';
+
       scores.forEach(({name, score}) => {
-        const li = document.createElement('li');
-        li.textContent = `${name}: ${score}`;
-        liveScoresList.appendChild(li);
+        const li1 = document.createElement('li');
+        li1.textContent = `${name}: ${score}`;
+        topScoresList.appendChild(li1);
+
+        const li2 = document.createElement('li');
+        li2.textContent = `${name}: ${score}`;
+        liveScoresList.appendChild(li2);
       });
-    }
+    })
+    .catch(error => {
+      console.error('Firebase skor listesi güncellenirken hata:', error);
+    });
+}
+
 
 
     function placeApple() {
@@ -473,23 +499,25 @@
     }
 
  
-    function endGame() {
-      isPaused = true;
-      isRunning = false;
-      hasStarted = false;
-      clickToStart.style.display = 'none';
 
   
-      let scores = loadScores();
-      scores.push({name: nickname, score});
-      scores.sort((a,b) => b.score - a.score);
-      if (scores.length > 10) scores.length = 10; 
-      saveScores(scores);
-      updateScoreLists();
+     function endGame() {
+  isPaused = true;
+  isRunning = false;
+  hasStarted = false;
+  clickToStart.style.display = 'none';
 
-      
-      gameOverScreen.style.display = 'block';
-    }
+  
+  const scoreRef = db.ref('scores').push();
+  scoreRef.set({
+    name: nickname,
+    score: score,
+    timestamp: Date.now()
+  });
+
+  gameOverScreen.style.display = 'block';
+}
+
 
  
     window.addEventListener('keydown', (e) => {
