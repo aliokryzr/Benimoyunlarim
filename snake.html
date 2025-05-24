@@ -105,15 +105,14 @@
     #mobileScore {
       display:none;
       position:absolute;
-      top:-30px;      /* çerçevenin hemen üstü */
-      left:10px;      /* sol kenar 10px içeride */
+      top:-30px; left:10px;
       background:rgba(0,0,0,0.6);
       padding:6px 12px; border-radius:8px;
-      font-family:'Orbitron',sans-serif !important;
-      font-size:1.4rem !important; font-weight:bold !important;
-      color:#0ff !important;
-      text-shadow:0 0 4px rgba(0,0,0,0.7) !important;
-      box-shadow:0 0 10px #0ff !important;
+      font-family:'Orbitron',sans-serif!important;
+      font-size:1.4rem!important; font-weight:bold!important;
+      color:#0ff!important;
+      text-shadow:0 0 4px rgba(0,0,0,0.7)!important;
+      box-shadow:0 0 10px #0ff!important;
       z-index:50;
     }
 
@@ -152,30 +151,25 @@
 
     /* —— Mobil Responsive —— */
     @media (max-width:700px) {
-      /* Çerçeve içeri taşabilsin */
+      /* Çerçeve dışarı taşsın */
       #gameFrame {
         width:90vw; height:90vw; max-width:360px; max-height:360px;
         margin-bottom:2vh;
         overflow: visible !important;
       }
       /* Mobil skor görünür */
-      #mobileScore { display:block !important; }
-      /* Oyun içi panel skor gizle */
-      #scorePanel #currentScore { display:none !important; }
-
-      /* Dokunmatik oklar */
-      .touch-controls {
-        display:block !important;
-      }
+      #mobileScore { display:block!important; }
+      /* Panel içi skor saklansın */
+      #scorePanel #currentScore { display:none!important; }
+      /* Oklar */
+      .touch-controls { display:block!important; }
       #upBtn    { position:absolute; top:10px;    left:50%; transform:translateX(-50%); }
       #downBtn  { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); }
       #leftBtn  { position:absolute; left:10px;   top:50%; transform:translateY(-50%); }
       #rightBtn { position:absolute; right:10px;  top:50%; transform:translateY(-50%); }
-
-      /* Panel çerçeve altına iner */
+      /* Bilgi paneli alt alta */
       #gameContainer { flex-direction:column; align-items:center; }
     }
-
     @media (max-width:500px) {
       h1 { font-size:2rem; }
       #startButton { font-size:.9rem; padding:.6rem; }
@@ -223,11 +217,192 @@
     </div>
   </div>
 
-  <!-- Firebase + Oyun Scriptleri unchanged -->
+  <!-- Firebase ve Oyun Scriptleri -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
-    // … (JS tarafı aynen kalabilir, önceki en son sürüm) …
+    // Firebase yapılandırma
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
+      authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+      databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
+      projectId: "benimoyunlarim-9c38c",
+      storageBucket: "benimoyunlarim-9c38c.appspot.com",
+      messagingSenderId: "48251257364",
+      appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
+      measurementId: "G-23MZX1FJ5V"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // DOM referansları
+    const nicknameInput   = document.getElementById('nicknameInput');
+    const startButton     = document.getElementById('startButton');
+    const mainMenu        = document.getElementById('mainMenu');
+    const gameContainer   = document.getElementById('gameContainer');
+    const clickToStart    = document.getElementById('clickToStart');
+    const restartButton   = document.getElementById('restartButton');
+    const mobileScoreEl   = document.getElementById('mobileScore');
+    const currentScoreEl  = document.getElementById('currentScore');
+    const topScoresList   = document.getElementById('topScores');
+    const liveScoresList  = document.getElementById('liveScores');
+    const canvas          = document.getElementById('gameCanvas');
+    const ctx             = canvas.getContext('2d');
+
+    // Oyun değişkenleri
+    const gridSize = 20, tileCount = canvas.width / gridSize;
+    let snake = [], velocityX=0, velocityY=0, apple={}, superApple=null;
+    let score=0, normalAppleCount=0;
+    let isRunning=false, isPaused=false, hasStarted=false, gameInterval, nickname='';
+
+    // Skorları dinle
+    function attachScoreListener(){
+      db.ref('scores').orderByChild('score').limitToLast(1)
+        .on('value', snap=>{
+          const arr=[]; snap.forEach(c=>arr.unshift(c.val()));
+          topScoresList.innerHTML=''; liveScoresList.innerHTML='';
+          if(arr.length){
+            const e=arr[0];
+            [topScoresList, liveScoresList].forEach(list=>{
+              const li=document.createElement('li');
+              const span=document.createElement('span');
+              span.className='medal'; span.textContent='🥇';
+              li.appendChild(span);
+              li.append(` ${e.name}: ${e.score}`);
+              list.appendChild(li);
+            });
+          } else {
+            const li=document.createElement('li'); li.textContent='—: —';
+            topScoresList.appendChild(li);
+            liveScoresList.appendChild(li.cloneNode(true));
+          }
+        });
+    }
+    function saveScore(n,s){ return db.ref('scores').push({ name:n, score:s, timestamp:Date.now() }); }
+    function placeApple(){
+      apple={ x:Math.floor(Math.random()*tileCount), y:Math.floor(Math.random()*tileCount) };
+      if(snake.some(s=>s.x===apple.x&&s.y===apple.y)||(superApple&&superApple.x===apple.x&&superApple.y===apple.y))
+        placeApple();
+    }
+    function placeSuperApple(){
+      superApple={ x:Math.floor(Math.random()*tileCount), y:Math.floor(Math.random()*tileCount) };
+      if(snake.some(s=>s.x===superApple.x&&s.y===superApple.y)||(apple.x===superApple.x&&apple.y===superApple.y))
+        placeSuperApple();
+    }
+    function drawGame(){
+      ctx.fillStyle='#111'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      if(!superApple){
+        ctx.fillStyle='#ff4444'; ctx.beginPath();
+        ctx.arc(apple.x*gridSize+gridSize/2, apple.y*gridSize+gridSize/2, gridSize/2.5, 0, Math.PI*2);
+        ctx.fill();
+      }
+      if(superApple){
+        ctx.fillStyle='#ffd700'; ctx.beginPath();
+        ctx.arc(superApple.x*gridSize+gridSize/2, superApple.y*gridSize+gridSize/2, gridSize/2.5, 0, Math.PI*2);
+        ctx.fill();
+      }
+      snake.forEach((seg,i)=>{
+        ctx.fillStyle = i===0?'#00ffff':'#00cccc';
+        ctx.strokeStyle='#005555'; ctx.lineWidth=2;
+        ctx.beginPath();
+        ctx.arc(seg.x*gridSize+gridSize/2, seg.y*gridSize+gridSize/2, gridSize/2.5, 0, Math.PI*2);
+        ctx.fill(); ctx.stroke();
+      });
+    }
+    function gameStep(){
+      if(isPaused) return;
+      const nx = snake[0].x + velocityX, ny = snake[0].y + velocityY;
+      if(nx<0||nx>=tileCount||ny<0||ny>=tileCount||snake.some(s=>s.x===nx&&s.y===ny)){
+        endGame(); return;
+      }
+      snake.unshift({x:nx,y:ny});
+      if(!superApple && nx===apple.x && ny===apple.y){
+        score++; currentScoreEl.textContent=`Skor: ${score}`; mobileScoreEl.textContent=`Skor: ${score}`;
+        normalAppleCount++; normalAppleCount>=10?placeSuperApple():placeApple();
+      } else if(superApple && nx===superApple.x && ny===superApple.y){
+        score+=50; currentScoreEl.textContent=`Skor: ${score}`; mobileScoreEl.textContent=`Skor: ${score}`;
+        superApple=null; normalAppleCount=0; placeApple();
+      } else {
+        snake.pop();
+      }
+      drawGame();
+    }
+    function endGame(){
+      isPaused=isRunning=false;
+      clickToStart.style.display='none';
+      saveScore(nickname,score);
+      document.getElementById('gameOverScreen').style.display='block';
+    }
+    function runGameLoop(){
+      clearInterval(gameInterval);
+      gameInterval=setInterval(gameStep,120);
+    }
+
+    window.addEventListener('load',()=>{
+      attachScoreListener();
+      bindTouchControls();
+      window.addEventListener('keydown', e=>{
+        if(!isRunning&&!hasStarted) return;
+        if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)){
+          e.preventDefault();
+          switch(e.key){
+            case 'ArrowUp':    if(velocityY!==1)  { velocityX=0; velocityY=-1; } break;
+            case 'ArrowDown':  if(velocityY!==-1) { velocityX=0; velocityY=1;  } break;
+            case 'ArrowLeft':  if(velocityX!==1)  { velocityX=-1; velocityY=0; } break;
+            case 'ArrowRight': if(velocityX!==-1) { velocityX=1; velocityY=0;  } break;
+            case ' ':
+              if(!hasStarted) return;
+              isPaused = !isPaused;
+              currentScoreEl.textContent = isPaused
+                ? 'Oyun Duraklatıldı (Boşluk ile devam ettir)'
+                : `Skor: ${score}`;
+          }
+        }
+      });
+    });
+
+    startButton.addEventListener('click', ()=>{
+      nickname = nicknameInput.value.trim();
+      if(!nickname){ alert('Kullanıcı adı gerekli'); nicknameInput.focus(); return; }
+      mainMenu.style.display='none'; gameContainer.style.display='flex';
+      snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];
+      velocityX=1; velocityY=0; score=0; normalAppleCount=0;
+      currentScoreEl.textContent='Skor: 0'; mobileScoreEl.textContent='Skor: 0';
+      superApple=null; placeApple();
+      isPaused=isRunning=false; hasStarted=false;
+      clickToStart.style.display='block'; drawGame();
+    });
+
+    clickToStart.addEventListener('click', ()=>{
+      if(!hasStarted){
+        isRunning=true; isPaused=false; hasStarted=true;
+        clickToStart.style.display='none';
+        runGameLoop();
+      }
+    });
+
+    restartButton.addEventListener('click', ()=>{
+      document.getElementById('gameOverScreen').style.display='none';
+      clearInterval(gameInterval);
+      gameContainer.style.display='none'; mainMenu.style.display='flex';
+      nicknameInput.value=''; nicknameInput.focus();
+      isPaused=isRunning=hasStarted=false;
+      attachScoreListener();
+    });
+
+    function bindTouchControls(){
+      ['up','left','down','right'].forEach(dir=>{
+        document.getElementById(dir+'Btn').addEventListener('touchstart', e=>{
+          e.preventDefault();
+          if(isRunning&&hasStarted){
+            if(dir==='up'   && velocityY!==1)  { velocityX=0;   velocityY=-1; }
+            if(dir==='down' && velocityY!==-1) { velocityX=0;   velocityY=1;  }
+            if(dir==='left' && velocityX!==1)  { velocityX=-1;  velocityY=0; }
+            if(dir==='right'&& velocityX!==-1) { velocityX=1;   velocityY=0; }
+          }
+        });
+      });
+    }
   </script>
 </body>
 </html>
