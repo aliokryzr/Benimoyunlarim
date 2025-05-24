@@ -94,62 +94,46 @@
 }
 
 
-.game-list-container {
-  flex: 1;
-  display: flex;
-  justify-content: center; /* Listeyi yatayda ortalar */
-  align-items: center;     /* Listeyi dikeyde ortalar */
-  padding: 20px;
-  background: linear-gradient(145deg, #e2e6ff, #a8b4ff);
-  border-radius: 25px;
-  box-shadow:
-    0 8px 20px rgba(0, 0, 80, 0.25),
-    inset 0 0 20px rgba(255, 255, 255, 0.6);
+.game-list {
+  background: rgba(10, 10, 10, 0.85);
+  padding: 20px 25px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(0, 255, 255, 0.7);
+  box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), inset 0 0 10px 2px rgba(0, 128, 255, 0.4);
+  color: #d0f0ff;
+  max-width: 280px;
+  font-size: 0.9em;
+  line-height: 1.5;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
   transition: box-shadow 0.3s ease;
 }
 
-.game-list-container:hover {
-  box-shadow:
-    0 14px 40px rgba(0, 0, 110, 0.45),
-    inset 0 0 28px rgba(255, 255, 255, 0.85);
+.game-list:hover {
+  box-shadow: 0 0 25px 6px rgba(0, 255, 255, 0.9), inset 0 0 18px 4px rgba(0, 200, 255, 0.7);
 }
 
-.game-list {
+.game-list ul {
   list-style: none;
-  padding: 0;
+  padding-left: 0;
   margin: 0;
-  width: 100%;
-  max-width: 300px;
 }
-    .game-list a {
-  text-decoration: none;
-  color: #00ffff; /* isteğe bağlı renk */
-}
-
 
 .game-list li {
-  background: #c7d0ff;
-  color: #2e337a;
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 16px 25px;
-  margin-bottom: 18px;
-  border-radius: 18px;
-  box-shadow: 0 6px 14px rgba(56, 61, 161, 0.25);
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+  margin-bottom: 12px;
 }
 
-.game-list li:last-child {
-  margin-bottom: 0;
+.game-list a {
+  text-decoration: none; /* Alt çizgi kaldırıldı */
+  color: #a0eaff;
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+  display: inline-block;
 }
 
-.game-list li:hover {
-  background: #4751d6;
-  color: #f5f7ff;
-  box-shadow: 0 10px 30px rgba(66, 76, 202, 0.7);
+.game-list a:hover {
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
 }
+
 
  .footer-text {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
