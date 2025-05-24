@@ -19,6 +19,25 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+    <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
+    authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+    databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
+    projectId: "benimoyunlarim-9c38c",
+    storageBucket: "benimoyunlarim-9c38c.appspot.com",
+    messagingSenderId: "48251257364",
+    appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
+    measurementId: "G-23MZX1FJ5V"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
     }
     h1 {
       font-size: 3em;
@@ -176,6 +195,11 @@
 
 
     #gameOverScreen {
+      <div id="gameOverScreen">
+  <h2>Game Over</h2>
+  <div id="skorTablosu"></div>
+  <button onclick="restartGame()">Tamam</button>
+</div>
       position: absolute;
       top: 50%;
       left: 50%;
@@ -576,6 +600,54 @@
 
    
     updateScoreLists();
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
+    authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+    databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
+    projectId: "benimoyunlarim-9c38c",
+    storageBucket: "benimoyunlarim-9c38c.appspot.com",
+    messagingSenderId: "48251257364",
+    appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
+    measurementId: "G-23MZX1FJ5V"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function skorKaydet(kullaniciAdi, skor) {
+  const yeniSkor = {
+    ad: kullaniciAdi,
+    skor: skor,
+    zaman: Date.now()
+  };
+  firebase.database().ref("skorlar").push(yeniSkor);
+}
+  function skorTablosunuYukle() {
+  const tablo = document.getElementById("skorTablosu");
+  firebase.database().ref("skorlar").orderByChild("skor").limitToLast(10).once("value", (snapshot) => {
+    const veriler = [];
+    snapshot.forEach(child => {
+      veriler.unshift(child.val()); // yüksek skoru en üstte tutmak için tersle
+    });
+
+    let html = "<h3>🏆 En İyi Skorlar</h3><ul style='list-style:none;padding:0'>";
+    veriler.forEach(veri => {
+      html += `<li style="margin-bottom: 5px;"><strong>${veri.ad}</strong>: ${veri.skor}</li>`;
+    });
+    html += "</ul>";
+    tablo.innerHTML = html;
+  });
+}
+  document.getElementById("gameOverScreen").style.display = "block";
+
+// Nickname ve skor bilgisi varsa:
+skorKaydet(playerName, score);
+skorTablosunuYukle();
+   
 </script>
 
 </body>
