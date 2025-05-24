@@ -211,12 +211,36 @@
 /* === Mobil uyumluluk eklemeleri (yeni düzen) === */
 @media (max-width: 600px) {
  /* Score paneli en üste alıyoruz */
-  #scorePanel {
-    order: -1;               /* Flex içinde ilk sıraya al */
-    margin-bottom: 15px;     /* Çerçeveyle arada boşluk */
-    width: 90vw;             /* İstersen genişliği çerçeve kadar yap */
-    max-width: 360px;        /* Eski genişliği korumak için limit */
-  }
+#scorePanel {
+  position: absolute !important;
+  top: -40px;                     
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  width: auto !important;
+  max-width: none !important;
+  box-shadow: 0 0 8px #00ffff !important;
+  z-index: 100 !important;
+}
+
+/* Başlık, açıklama ve listeyi gizleyip sadece skor metnini bırakıyoruz */
+#scorePanel h3,
+#scorePanel #instructions,
+#scorePanel ol {
+  display: none !important;
+}
+
+/* Skor metnini minik ama okunur yapıyoruz */
+#currentScore {
+  display: block !important;
+  font-size: 1rem !important;
+  color: #0ff !important;
+  margin: 0 !important;
+  text-align: center !important;
+  user-select: none !important;
+}
 
    /* Oyun çerçevesinin sırası ayarlanabilir, gerekirse: */
   #gameFrame {
