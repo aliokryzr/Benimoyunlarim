@@ -217,7 +217,7 @@ clickToStart.addEventListener('touchstart', e => {
 /* === Mobil uyumluluk eklemeleri (yeni düzen) === */
 /* === Mobilde skor göstergesini oyunun üstüne overlay olarak yerleştirme === */
 @media (max-width: 600px) {
-  /* 1) Container’ı göreli ve dikey yığına al */
+  /* Container’ı relative ve dikey yığına al */
   #gameContainer {
     position: relative !important;
     display: flex !important;
@@ -225,7 +225,7 @@ clickToStart.addEventListener('touchstart', e => {
     align-items: center !important;
   }
 
-  /* 2) Oyun çerçevesini %90 kare yap */
+  /* Kare çerçeveyi %90 genişliğe getir */
   #gameFrame {
     width: 90vw !important;
     height: 90vw !important;
@@ -233,18 +233,19 @@ clickToStart.addEventListener('touchstart', e => {
     max-height: none !important;
   }
 
-  /* 3) Skor panelini overlay olarak canvas’ın üstüne yerleştir */
+  /* ① Skor panelini çerçeve altından dışarıya al (arka planı sil) */
   #scorePanel {
     position: absolute !important;
-    top: 12px !important;
+    bottom: calc(100% + 8px) !important; /* 8px boşlukla çerçevenin hemen üstünde */
     left: 50% !important;
     transform: translateX(-50%) !important;
-    background: rgba(0, 0, 0, 0.7) !important;
-    padding: 6px 12px !important;
-    border-radius: 8px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
     z-index: 100 !important;
   }
-  /* Skor panelinde sadece #currentScore görünsün */
+  /* İçindekileri gizle, sadece skor metni kalsın */
   #scorePanel > *:not(#currentScore) {
     display: none !important;
   }
@@ -256,11 +257,11 @@ clickToStart.addEventListener('touchstart', e => {
     user-select: none !important;
   }
 
-  /* 4) Ok tuşlarını eski alt konumuna geri taşı ve düzenle */
+  /* ② Dokunmatik ok tuşlarını en alta geri taşı ve düzenle */
   .touch-controls {
     display: grid !important;
     position: absolute !important;
-    bottom: 20px !important;            /* ALTTA KALSIN */
+    bottom: 20px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     grid-template-columns: 80px 80px 80px;
@@ -282,7 +283,6 @@ clickToStart.addEventListener('touchstart', e => {
     background: rgba(255, 255, 255, 0.2) !important;
     color: #fff !important;
   }
-  /* Grid‐area atamaları */
   #upBtn    { grid-area: up; }
   #leftBtn  { grid-area: left; }
   #downBtn  { grid-area: down; }
@@ -561,6 +561,17 @@ clickToStart.addEventListener('touchstart', e => {
     }
 
     window.addEventListener('keydown', e => {
+      clickToStart.addEventListener('touchstart', e => {
+  e.preventDefault();
+  clickToStart.click();
+});
+// canvas’a dokununca da başlasın (overlay açıkken):
+document.getElementById('gameFrame').addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (clickToStart.style.display === 'block') {
+    clickToStart.click();
+  }
+});
       const keys=['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '];
       if (keys.includes(e.key)) e.preventDefault();
       if (!isRunning && !hasStarted) return;
