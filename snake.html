@@ -633,6 +633,9 @@ document.getElementById('rightBtn').addEventListener('click', () => {
   }
 });
 
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+  document.getElementById('mobileControls').style.display = 'flex';
+}
     
 </script>
 
