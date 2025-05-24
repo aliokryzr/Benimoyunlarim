@@ -104,7 +104,9 @@
     /* —— Mobil Skor Gösterimi —— */
     #mobileScore {
       display:none;
-      position:absolute; top:-45px; left:50%;
+      position:absolute;
+      top:-30px;       /* çerçevenin hemen üstüne */
+      left:50%;
       transform:translateX(-50%);
       background:rgba(0,0,0,0.5);
       padding:6px 12px; border-radius:8px;
@@ -148,31 +150,25 @@
         margin-bottom:2vh;
       }
       /* mobil skor */
-      #mobileScore {
-    display: block;
-    /* artık çerçeve içinde, 10px aşağıda */
-    top: 10px !important;
-    left: 50%;
-    transform: translateX(-50%) !important;
-  }
-      #scorePanel #currentScore { display:none !important }
+      #mobileScore             { display:block !important; }
+      #scorePanel #currentScore { display: none !important; }
 
-      /* okları göster, büyüt, şeffaf, içeri al */
-      .touch-controls          { display:block }
+      /* oklar */
+      .touch-controls          { display:block !important; }
       #upBtn, #downBtn,
       #leftBtn, #rightBtn {
-        position:absolute!important;
-        width:80px!important; height:80px!important;
-        opacity:.2!important; font-size:2rem!important;
-        border:none!important; border-radius:50%!important;
-        background:rgba(255,255,255,0.2)!important;
-        color:#fff!important;
+        position:absolute !important;
+        width:80px !important; height:80px !important;
+        opacity:.2 !important; font-size:2rem !important;
+        border:none !important; border-radius:50% !important;
+        background:rgba(255,255,255,0.2) !important;
+        color:#fff !important;
       }
-      /* tam içte, kenarlardan 10px içeride */
-      #upBtn    { top:10px!important;    left:50%!important; transform:translateX(-50%)!important }
-      #downBtn  { bottom:10px!important; left:50%!important; transform:translateX(-50%)!important }
-      #leftBtn  { left:10px!important;   top:50%!important; transform:translateY(-50%)!important }
-      #rightBtn { right:10px!important;  top:50%!important; transform:translateY(-50%)!important }
+      /* içeri 10px girilecek */
+      #upBtn    { top:10px !important;    left:50% !important; transform:translateX(-50%) !important; }
+      #downBtn  { bottom:10px !important; left:50% !important; transform:translateX(-50%) !important; }
+      #leftBtn  { left:10px !important;   top:50% !important; transform:translateY(-50%) !important; }
+      #rightBtn { right:10px !important;  top:50% !important; transform:translateY(-50%) !important; }
     }
 
     @media (max-width:500px) {
@@ -188,7 +184,7 @@
     <input id="nicknameInput" type="text" placeholder="Kullanıcı adınızı girin" maxlength="12"/>
     <button id="startButton">Oyuna Başla</button>
     <div id="scoreTable">
-      <h2>🏆 En Yüksek Skor 🏆</h2>
+      <h2>🏆 En Yüksek Skor</h2>
       <ol id="topScores"></ol>
     </div>
   </div>
@@ -217,7 +213,7 @@
         Çarpınca biter.
       </p>
       <div id="currentScore">Skor: 0</div>
-      <h3 class="score-header">🏆 En Yüksek Skor 🏆</h3>
+      <h3 class="score-header">Skor Tablosu</h3>
       <ol id="liveScores"></ol>
     </div>
   </div>
@@ -225,6 +221,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
+    // Firebase ve oyun scriptleri (aynen eskisi gibi)
     const firebaseConfig = {
       apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
       authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
@@ -238,27 +235,27 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const nicknameInput   = document.getElementById('nicknameInput');
-    const startButton     = document.getElementById('startButton');
-    const mainMenu        = document.getElementById('mainMenu');
-    const gameContainer   = document.getElementById('gameContainer');
-    const clickToStart    = document.getElementById('clickToStart');
-    const restartButton   = document.getElementById('restartButton');
-    const mobileScoreEl   = document.getElementById('mobileScore');
-    const currentScoreEl  = document.getElementById('currentScore');
-    const topScoresList   = document.getElementById('topScores');
-    const liveScoresList  = document.getElementById('liveScores');
-    const canvas          = document.getElementById('gameCanvas');
-    const ctx             = canvas.getContext('2d');
+    const nicknameInput  = document.getElementById('nicknameInput');
+    const startButton    = document.getElementById('startButton');
+    const mainMenu       = document.getElementById('mainMenu');
+    const gameContainer  = document.getElementById('gameContainer');
+    const clickToStart   = document.getElementById('clickToStart');
+    const restartButton  = document.getElementById('restartButton');
+    const mobileScoreEl  = document.getElementById('mobileScore');
+    const currentScoreEl = document.getElementById('currentScore');
+    const topScoresList  = document.getElementById('topScores');
+    const liveScoresList = document.getElementById('liveScores');
+    const canvas         = document.getElementById('gameCanvas');
+    const ctx            = canvas.getContext('2d');
 
     const gridSize = 20, tileCount = canvas.width / gridSize;
-    let snake = [], velocityX=0, velocityY=0, apple={}, superApple=null;
+    let snake=[], velocityX=0, velocityY=0, apple={}, superApple=null;
     let score=0, normalAppleCount=0;
     let isRunning=false, isPaused=false, hasStarted=false, gameInterval, nickname='';
 
     function attachScoreListener(){
       db.ref('scores').orderByChild('score').limitToLast(1)
-        .on('value', snap => {
+        .on('value', snap=>{
           const arr=[]; snap.forEach(c=>arr.unshift(c.val()));
           topScoresList.innerHTML=''; liveScoresList.innerHTML='';
           if(arr.length){
@@ -272,8 +269,7 @@
               list.appendChild(li);
             });
           } else {
-            const li=document.createElement('li');
-            li.textContent='—: —';
+            const li=document.createElement('li'); li.textContent='—: —';
             topScoresList.appendChild(li);
             liveScoresList.appendChild(li.cloneNode(true));
           }
@@ -282,11 +278,13 @@
     function saveScore(n,s){ return db.ref('scores').push({name:n,score:s,timestamp:Date.now()}); }
     function placeApple(){
       apple={x:Math.floor(Math.random()*tileCount),y:Math.floor(Math.random()*tileCount)};
-      if(snake.some(s=>s.x===apple.x&&s.y===apple.y)||(superApple&&superApple.x===apple.x&&superApple.y===apple.y)) placeApple();
+      if(snake.some(s=>s.x===apple.x&&s.y===apple.y)||(superApple&&superApple.x===apple.x&&superApple.y===apple.y))
+        placeApple();
     }
     function placeSuperApple(){
       superApple={x:Math.floor(Math.random()*tileCount),y:Math.floor(Math.random()*tileCount)};
-      if(snake.some(s=>s.x===superApple.x&&s.y===superApple.y)||(apple.x===superApple.x&&apple.y===superApple.y)) placeSuperApple();
+      if(snake.some(s=>s.x===superApple.x&&s.y===superApple.y)||(apple.x===superApple.x&&apple.y===superApple.y))
+        placeSuperApple();
     }
     function drawGame(){
       ctx.fillStyle='#111';ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -315,14 +313,14 @@
       attachScoreListener();
       bindTouchControls();
       window.addEventListener('keydown',e=>{
-        if(!isRunning&&!hasStarted) return;
+        if(!isRunning&&!hasStarted)return;
         if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)){
           e.preventDefault();
           switch(e.key){
-            case 'ArrowUp': if(velocityY!==1)velocityX=0,velocityY=-1;break;
-            case 'ArrowDown': if(velocityY!==-1)velocityX=0,velocityY=1;break;
-            case 'ArrowLeft': if(velocityX!==1)velocityX=-1,velocityY=0;break;
-            case 'ArrowRight': if(velocityX!==-1)velocityX=1,velocityY=0;break;
+            case 'ArrowUp':if(velocityY!==1)velocityX=0,velocityY=-1;break;
+            case 'ArrowDown':if(velocityY!==-1)velocityX=0,velocityY=1;break;
+            case 'ArrowLeft':if(velocityX!==1)velocityX=-1,velocityY=0;break;
+            case 'ArrowRight':if(velocityX!==-1)velocityX=1,velocityY=0;break;
             case ' ':
               if(!hasStarted)return;
               isPaused=!isPaused;
@@ -362,10 +360,10 @@
         document.getElementById(dir+'Btn').addEventListener('touchstart',e=>{
           e.preventDefault();
           if(isRunning&&hasStarted){
-            if(dir==='up'&&velocityY!==1)velocityX=0,velocityY=-1;
-            if(dir==='down'&&velocityY!==-1)velocityX=0,velocityY=1;
-            if(dir==='left'&&velocityX!==1)velocityX=-1,velocityY=0;
-            if(dir==='right'&&velocityX!==-1)velocityX=1,velocityY=0;
+            if(dir==='up'   && velocityY!==1) velocityX=0,velocityY=-1;
+            if(dir==='down' && velocityY!==-1)velocityX=0,velocityY=1;
+            if(dir==='left' && velocityX!==1) velocityX=-1,velocityY=0;
+            if(dir==='right'&& velocityX!==-1)velocityX=1,velocityY=0;
           }
         });
       });
