@@ -13,13 +13,14 @@
     }
 
     body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin: 0;
-  background-color: #0f0f0f;
-  color: #e0e0e0;
-}
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #0f0f0f;
+      color: #e0e0e0;
+      position: relative; /* Sayaçların konumu için önemli */
+    }
 
     header {
       text-align: center;
@@ -56,103 +57,99 @@
         1px 1px 2px rgba(0,0,0,0.7);
     }
 
-  main {
-  flex: 1;
-  display: flex;
-  gap: 50px;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  z-index: 1;
-  position: relative;
+    main {
+      flex: 1;
+      display: flex;
+      gap: 50px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      z-index: 1;
+      position: relative;
 
-  /* Yeni eklenen: sol ve sağ bölümü tam ortalamak için */
-  align-items: center; /* dikey ortalama */
-}
+      /* Yeni eklenen: sol ve sağ bölümü tam ortalamak için */
+      align-items: center; /* dikey ortalama */
+    }
 
-.intro {
-  font-size: 0.9em; /* Yazı boyutu bir seviye küçük */
-  background: rgba(10, 10, 10, 0.85); /* Yarı saydam koyu zemin */
-  padding: 25px 30px;
-  border-radius: 14px;
-  box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), /* neon dış parlama */
-              inset 0 0 10px 2px rgba(0, 128, 255, 0.4); /* iç parlama */
-  border: 1.5px solid rgba(0, 255, 255, 0.7);
-  color: #d0f0ff; /* açık, okunabilir yazı rengi */
-  line-height: 1.65;
-  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3); /* yazıya hafif parıltı */
-  transition: box-shadow 0.3s ease;
-}
+    .intro {
+      font-size: 0.9em; /* Yazı boyutu bir seviye küçük */
+      background: rgba(10, 10, 10, 0.85); /* Yarı saydam koyu zemin */
+      padding: 25px 30px;
+      border-radius: 14px;
+      box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), /* neon dış parlama */
+                  inset 0 0 10px 2px rgba(0, 128, 255, 0.4); /* iç parlama */
+      border: 1.5px solid rgba(0, 255, 255, 0.7);
+      color: #d0f0ff; /* açık, okunabilir yazı rengi */
+      line-height: 1.65;
+      text-shadow: 0 0 5px rgba(0, 255, 255, 0.3); /* yazıya hafif parıltı */
+      transition: box-shadow 0.3s ease;
+    }
 
-.intro:hover {
-  box-shadow: 0 0 25px 6px rgba(0, 255, 255, 0.9),
-              inset 0 0 18px 4px rgba(0, 200, 255, 0.7);
-}
-  
-.intro p {
-  margin-bottom: 16px;
-}
+    .intro:hover {
+      box-shadow: 0 0 25px 6px rgba(0, 255, 255, 0.9),
+                  inset 0 0 18px 4px rgba(0, 200, 255, 0.7);
+    }
+      
+    .intro p {
+      margin-bottom: 16px;
+    }
 
+    .game-list {
+      background: rgba(10, 10, 10, 0.85);
+      padding: 25px 30px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(0, 255, 255, 0.7);
+      box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), inset 0 0 10px 2px rgba(0, 128, 255, 0.4);
+      color: #d0f0ff;
+      max-width: 340px; /* genişlik biraz artırıldı */
+      font-size: 0.95em;
+      line-height: 1.5;
+      text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+      transition: box-shadow 0.3s ease;
+    }
 
-.game-list {
-  background: rgba(10, 10, 10, 0.85);
-  padding: 25px 30px;
-  border-radius: 14px;
-  border: 1.5px solid rgba(0, 255, 255, 0.7);
-  box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), inset 0 0 10px 2px rgba(0, 128, 255, 0.4);
-  color: #d0f0ff;
-  max-width: 340px; /* genişlik biraz artırıldı */
-  font-size: 0.95em;
-  line-height: 1.5;
-  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-  transition: box-shadow 0.3s ease;
-}
+    .game-list:hover {
+      box-shadow: 0 0 30px 8px rgba(0, 255, 255, 0.9), inset 0 0 18px 4px rgba(0, 200, 255, 0.7);
+    }
 
-.game-list:hover {
-  box-shadow: 0 0 30px 8px rgba(0, 255, 255, 0.9), inset 0 0 18px 4px rgba(0, 200, 255, 0.7);
-}
+    .game-list ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
 
-.game-list ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
+    .game-list li {
+      margin-bottom: 14px;
+    }
 
-.game-list li {
-  margin-bottom: 14px;
-}
+    .game-list a {
+      text-decoration: none;
+      color: #a0eaff;
+      display: block; /* link tüm satırı kaplasın */
+      padding: 10px 15px;
+      border-radius: 8px;
+      background: rgba(0, 255, 255, 0.1);
+      transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
+    }
 
-.game-list a {
-  text-decoration: none;
-  color: #a0eaff;
-  display: block; /* link tüm satırı kaplasın */
-  padding: 10px 15px;
-  border-radius: 8px;
-  background: rgba(0, 255, 255, 0.1);
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
-}
+    .game-list a:hover {
+      color: #00ffff;
+      background: rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 12px 3px #00ffff;
+      cursor: pointer;
+    }
 
-.game-list a:hover {
-  color: #00ffff;
-  background: rgba(0, 255, 255, 0.3);
-  box-shadow: 0 0 12px 3px #00ffff;
-  cursor: pointer;
-}
-
-
-
- .footer-text {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 0.65rem;
-  color: #bbb;
-  text-align: center;
-  margin-top: 40px;
-  user-select: none;
-  padding: 10px;
-  font-size: 0.5em;
-}
-
+    .footer-text {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 0.65rem;
+      color: #bbb;
+      text-align: center;
+      margin-top: 40px;
+      user-select: none;
+      padding: 10px;
+      font-size: 0.5em;
+    }
 
     @media (max-width: 768px) {
       main {
@@ -174,7 +171,23 @@
       }
     }
 
-    
+    /* Sayaçlar için stil */
+    #counters {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.6);
+      color: #0ff;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.85rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #0ff;
+      z-index: 9999;
+      user-select: none;
+      line-height: 1.5;
+      min-width: 180px;
+    }
   </style>
 </head>
 <body>
@@ -200,7 +213,6 @@
   </section>
 
   <aside class="game-list">
- 
     <ul>
       <li><a href="yasburcyukselen.html">🌟 Yaş, burç ve Yükselen hesapla</a></li>
       <li><a href="snake.html">🐍 Yılan Oyunu</a></li>
@@ -211,6 +223,55 @@
 </main>
 
 <p class="footer-text">~ © 2025 Mylife ~</p>
+
+<!-- Sayaçlar burada -->
+<div id="counters">
+  <div>Ziyaretçi Sayısı: <span id="visitorCount">Yükleniyor...</span></div>
+  <div>Toplam Oyun Sayısı: <span id="gameCount">Yükleniyor...</span></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<script>
+  // Firebase konfigürasyonun (aynı şekilde ekle)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
+    authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+    databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
+    projectId: "benimoyunlarim-9c38c",
+    storageBucket: "benimoyunlarim-9c38c.firebasestorage.app",
+    messagingSenderId: "48251257364",
+    appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
+    measurementId: "G-23MZX1FJ5V"
+  };
+
+  // Firebase başlat
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Ziyaretçi sayısını artır ve göster
+  const visitorRef = db.ref('visitorCount');
+  visitorRef.transaction(current => {
+    return (current || 0) + 1;
+  }, (error, committed, snapshot) => {
+    if (error) {
+      console.error('Ziyaretçi sayısı artarken hata:', error);
+      document.getElementById('visitorCount').textContent = 'Hata';
+    } else if (!committed) {
+      document.getElementById('visitorCount').textContent = 'Yükleniyor...';
+    } else {
+      document.getElementById('visitorCount').textContent = snapshot.val();
+    }
+  });
+
+  // Toplam oyun sayısını oku ve göster (firebase'deki oyun sayısı)
+  const gameCountRef = db.ref('gameCount');
+  gameCountRef.on('value', (snapshot) => {
+    const val = snapshot.val() || 0;
+    document.getElementById('gameCount').textContent = val;
+  });
+</script>
 
 </body>
 </html>
