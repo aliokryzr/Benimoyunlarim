@@ -208,6 +208,7 @@
       display: none;
     }
 /* === Mobil uyumluluk eklemeleri (güncellendi) === */
+/* === Mobil uyumluluk eklemeleri (yeni düzen) === */
 @media (max-width: 600px) {
   /* Container dikey yığına dönsün */
   #gameContainer {
@@ -221,30 +222,39 @@
     max-width: none !important;
     max-height: none !important;
   }
-  /* Dokunmatik yön düğmeleri */
+  /* Dokunmatik yön düğmeleri: 2 satır × 3 sütun, grid-area ile yerleşim */
   .touch-controls {
     display: grid !important;
     position: absolute;
-    /* Bilgilendirme panelinin üstünde kalacak şekilde yukarı taşıdık */
     bottom: 120px;
     left: 50%;
     transform: translateX(-50%);
     grid-template-columns: 80px 80px 80px;
     grid-template-rows: 80px 80px;
+    grid-template-areas:
+      ".    up    ."
+      "left down right";
     gap: 15px;
     z-index: 200;
   }
   .touch-controls button {
-    font-size: 2rem;              /* Daha büyük oklar */
-    width: 80px; height: 80px;    /* Buton kutusunu da büyüttük */
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
     border: none;
     border-radius: 50%;
     opacity: 0.85;
     touch-action: none;
     background: rgba(255, 255, 255, 0.2);
-    color: #fff;                  /* Beyaz oklar; farklı bir renk isterseniz söyleyin */
+    color: #fff;
   }
+  /* Her butona grid-area ataması */
+  #upBtn    { grid-area: up; }
+  #leftBtn  { grid-area: left; }
+  #downBtn  { grid-area: down; }
+  #rightBtn { grid-area: right; }
 }
+
 
   </style>
 </head>
