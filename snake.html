@@ -27,6 +27,7 @@
       user-select: none;
     }
 
+ 
     #mainMenu {
       display: flex;
       flex-direction: column;
@@ -89,6 +90,7 @@
       margin: 0;
     }
 
+
     #gameContainer {
       display: flex;
       flex-direction: row;
@@ -101,10 +103,8 @@
     #gameFrame {
       position: relative;
       background-color: #111;
-      width: 90vmin;
-      height: 90vmin;
-      max-width: 400px;
-      max-height: 400px;
+      width: 400px;
+      height: 400px;
       border: 10px double #ddd;
       box-shadow: 0 0 15px 5px #00ffcc;
       overflow: hidden;
@@ -133,7 +133,7 @@
       pointer-events: auto;
       cursor: pointer;
     }
-    @keyframes blink {
+    @Keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
     }
@@ -174,6 +174,7 @@
       list-style: decimal;
     }
 
+
     #gameOverScreen {
       position: absolute;
       top: 50%;
@@ -207,36 +208,6 @@
     #restartButton:hover {
       background-color: #0056b3;
     }
-
-    .touch-controls {
-      position: absolute;
-      bottom: 5%;
-      left: 50%;
-      transform: translateX(-50%);
-      display: grid;
-      grid-template-areas:
-        ". up ."
-        "left . right"
-        ". down .";
-      grid-template-columns: 60px 60px 60px;
-      grid-template-rows: 60px 60px 60px;
-      gap: 10px;
-      pointer-events: none;
-    }
-    .touch-controls button {
-      font-size: 1.5rem;
-      border: none;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      touch-action: none;
-      user-select: none;
-      pointer-events: auto;
-    }
-    #upBtn { grid-area: up; }
-    #downBtn { grid-area: down; }
-    #leftBtn { grid-area: left; }
-    #rightBtn { grid-area: right; }
   </style>
 </head>
 <body>
@@ -261,14 +232,8 @@
 
   <div id="gameContainer" style="display:none;">
     <div id="gameFrame">
-      <canvas id="gameCanvas"></canvas>
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
       <div id="clickToStart">Başlamak için tıklayın</div>
-      <div class="touch-controls">
-        <button id="upBtn">▲</button>
-        <button id="leftBtn">◀</button>
-        <button id="rightBtn">▶</button>
-        <button id="downBtn">▼</button>
-      </div>
       <div id="gameOverScreen">
         <h2>Game Over</h2>
         <button id="restartButton">Tamam</button>
@@ -289,12 +254,24 @@
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  
   <script>
-    const firebaseConfig = { /* ... */ };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
+    const firebaseConfig = {
+  apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
+  authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+  databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
+  projectId: "benimoyunlarim-9c38c",
+  storageBucket: "benimoyunlarim-9c38c.appspot.com",
+  messagingSenderId: "48251257364",
+  appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
+  measurementId: "G-23MZX1FJ5V"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+  
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const clickToStart = document.getElementById('clickToStart');
@@ -308,91 +285,328 @@
     const topScoresList = document.getElementById('topScores');
     const liveScoresList = document.getElementById('liveScores');
 
-    let gridSize;
-    const tileCount = 20;
+    const gridSize = 20;
+    const tileCount = canvas.width / gridSize;
+
     let snake = [];
     let velocityX = 0;
     let velocityY = 0;
     let apple = {};
     let superApple = null;
     let score = 0;
-    let normalAppleCount = 0;
+    let normalAppleCount = 0; 
     let isRunning = false;
     let isPaused = false;
     let gameInterval;
     let nickname = '';
     let hasStarted = false;
 
-    function resizeGameArea() {
-      const frame = document.getElementById('gameFrame');
-      const size = Math.min(frame.clientWidth, frame.clientHeight);
-      canvas.width = size;
-      canvas.height = size;
-      gridSize = size / tileCount;
-    }
-    window.addEventListener('resize', resizeGameArea);
 
-    function loadScores() { /* ... */ }
-    function saveScores(scores) { /* ... */ }
-    function updateScoreLists() { /* ... */ }
-    function placeApple() { /* ... */ }
-    function placeSuperApple() { /* ... */ }
+    function loadScores() {
+      let storedScores = localStorage.getItem('snakeHighScores');
+      if (storedScores) {
+        return JSON.parse(storedScores);
+      }
+      return [];
+    }
+
+    function saveScores(scores) {
+      localStorage.setItem('snakeHighScores', JSON.stringify(scores));
+    }
+
+
+   function updateScoreLists() {
+  db.ref('scores').orderByChild('score').limitToLast(10).once('value')
+    .then(snapshot => {
+      const scores = [];
+      snapshot.forEach(child => {
+        scores.unshift(child.val());
+      });
+
+      topScoresList.innerHTML = '';
+      liveScoresList.innerHTML = '';
+
+      scores.forEach(({name, score}) => {
+        const li1 = document.createElement('li');
+        li1.textContent = `${name}: ${score}`;
+        topScoresList.appendChild(li1);
+
+        const li2 = document.createElement('li');
+        li2.textContent = `${name}: ${score}`;
+        liveScoresList.appendChild(li2);
+      });
+    })
+    .catch(error => {
+      console.error('Firebase skor listesi güncellenirken hata:', error);
+    });
+}
+
+
+
+    function placeApple() {
+      apple.x = Math.floor(Math.random() * tileCount);
+      apple.y = Math.floor(Math.random() * tileCount);
+
+      
+      if (snake.some(segment => segment.x === apple.x && segment.y === apple.y) ||
+          (superApple && superApple.x === apple.x && superApple.y === apple.y)) {
+        placeApple();
+      }
+    }
+
+
+    function placeSuperApple() {
+      superApple = {};
+      superApple.x = Math.floor(Math.random() * tileCount);
+      superApple.y = Math.floor(Math.random() * tileCount);
+
+     
+      if (snake.some(segment => segment.x === superApple.x && segment.y === superApple.y) ||
+          (apple.x === superApple.x && apple.y === superApple.y)) {
+        placeSuperApple();
+      }
+    }
+
 
     function startGame() {
-      if (!nickname.trim()) { alert('Lütfen kullanıcı adınızı girin.'); return; }
+      if (!nickname.trim()) {
+        alert('Lütfen kullanıcı adınızı girin.');
+        return;
+      }
+
+
       mainMenu.style.display = 'none';
       gameContainer.style.display = 'flex';
-      resizeGameArea();
-      snake = [ {x:8,y:10},{x:7,y:10},{x:6,y:10} ];
-      velocityX = 1; velocityY = 0;
-      score = normalAppleCount = 0;
+
+
+      snake = [
+        {x: 8, y: 10},
+        {x: 7, y: 10},
+        {x: 6, y: 10}
+      ];
+      velocityX = 1;
+      velocityY = 0;
+      score = 0;
+      normalAppleCount = 0;
       currentScoreDisplay.textContent = 'Skor: 0';
-      superApple = null;
+      superApple = null; 
       placeApple();
-      isPaused = false; isRunning = false; hasStarted = false;
+      isPaused = false;
+      isRunning = false;
+      hasStarted = false;
       clickToStart.style.display = 'block';
       gameOverScreen.style.display = 'none';
+
       updateScoreLists();
       drawGame();
     }
 
-    function drawGame() { /* ... uses gridSize ... */ }
-    function gameStep() { /* ... */ }
-    function endGame() { /* ... */ }
 
-    window.addEventListener('keydown', (e) => { /* ... */ });
+    function drawGame() {
+      // Arka plan
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+      if (!superApple) { 
+        ctx.fillStyle = '#ff4444';
+        ctx.beginPath();
+        const appleCenterX = apple.x * gridSize + gridSize / 2;
+        const appleCenterY = apple.y * gridSize + gridSize / 2;
+        ctx.arc(appleCenterX, appleCenterY, gridSize / 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+
+      if (superApple) {
+        ctx.fillStyle = '#ffd700'; 
+        ctx.beginPath();
+        const superCenterX = superApple.x * gridSize + gridSize / 2;
+        const superCenterY = superApple.y * gridSize + gridSize / 2;
+        ctx.arc(superCenterX, superCenterY, gridSize / 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+      
+      }
+
+  
+      snake.forEach((segment, index) => {
+        ctx.fillStyle = index === 0 ? '#00ffff' : '#00cccc';
+        ctx.strokeStyle = '#005555';
+        ctx.lineWidth = 2;
+
+        const centerX = segment.x * gridSize + gridSize / 2;
+        const centerY = segment.y * gridSize + gridSize / 2;
+        const radius = gridSize / 2.5;
+
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+    }
+
+
+    function gameStep() {
+      if (isPaused) return;
+
+
+      const headX = snake[0].x + velocityX;
+      const headY = snake[0].y + velocityY;
+
+   
+      if (headX < 0 || headX >= tileCount || headY < 0 || headY >= tileCount) {
+        endGame();
+        return;
+      }
+    
+      if (snake.some(segment => segment.x === headX && segment.y === headY)) {
+        endGame();
+        return;
+      }
+
+ 
+      snake.unshift({x: headX, y: headY});
+
+
+
+      if (superApple && headX === superApple.x && headY === superApple.y) {
+     
+        score += 50;
+        currentScoreDisplay.textContent = `Skor: ${score}`;
+        superApple = null;
+        normalAppleCount = 0; 
+        placeApple();
+      }
+      else if (!superApple && headX === apple.x && headY === apple.y) {
+        
+        score += 1;
+        currentScoreDisplay.textContent = `Skor: ${score}`;
+        normalAppleCount++;
+        if (normalAppleCount >= 10) {
+          
+          superApple = {};
+          placeSuperApple();
+        } else {
+          placeApple();
+        }
+      } else {
+      
+        snake.pop();
+      }
+
+      drawGame();
+    }
+
+ 
+
+  
+     function endGame() {
+  isPaused = true;
+  isRunning = false;
+  hasStarted = false;
+  clickToStart.style.display = 'none';
+
+  
+  const scoreRef = db.ref('scores').push();
+  scoreRef.set({
+    name: nickname,
+    score: score,
+    timestamp: Date.now()
+  });
+
+  gameOverScreen.style.display = 'block';
+}
+
+
+ 
+    window.addEventListener('keydown', (e) => {
+  const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+  if (keys.includes(e.key)) {
+    e.preventDefault(); 
+  }
+
+  if (!isRunning && !hasStarted) return; 
+
+  switch (e.key) {
+    case 'ArrowUp':
+      if (velocityY !== 1) { velocityX = 0; velocityY = -1; }
+      break;
+    case 'ArrowDown':
+      if (velocityY !== -1) { velocityX = 0; velocityY = 1; }
+      break;
+    case 'ArrowLeft':
+      if (velocityX !== 1) { velocityX = -1; velocityY = 0; }
+      break;
+    case 'ArrowRight':
+      if (velocityX !== -1) { velocityX = 1; velocityY = 0; }
+      break;
+    case ' ':
+      if (!hasStarted) return;
+      if (isPaused) {
+        isPaused = false;
+        currentScoreDisplay.textContent = `Skor: ${score}`;
+      } else {
+        isPaused = true;
+        currentScoreDisplay.textContent = `Oyun Duraklatıldı (Boşluk ile devam ettir)`;
+      }
+      break;
+  }
+});
+
+
 
     startButton.addEventListener('click', () => {
       nickname = nicknameInput.value.trim();
-      if (!nickname) { alert('Lütfen kullanıcı adınızı girin.'); nicknameInput.focus(); return; }
+      if (!nickname) {
+        alert('Lütfen kullanıcı adınızı girin.');
+        nicknameInput.focus();
+        return;
+      }
       startGame();
     });
 
-    function runGameLoop() { if (gameInterval) clearInterval(gameInterval); gameInterval = setInterval(gameStep, 120); }
+   
+    function runGameLoop() {
+      if (gameInterval) clearInterval(gameInterval);
+      gameInterval = setInterval(gameStep, 120);
+    }
+
+
     clickToStart.addEventListener('click', () => {
       if (!hasStarted) {
-        isRunning = true; isPaused = false; hasStarted = true;
+        isRunning = true;
+        isPaused = false;
+        hasStarted = true;
         clickToStart.style.display = 'none';
         runGameLoop();
       }
     });
-    restartButton.addEventListener('click', () => { /* ... */ });
+
+ 
+    restartButton.addEventListener('click', () => {
+     
+      gameContainer.style.display = 'none';
+      mainMenu.style.display = 'flex';
+
+    
+      nicknameInput.value = '';
+      nicknameInput.focus();
+
+      gameOverScreen.style.display = 'none';
+      if (gameInterval) clearInterval(gameInterval);
+      isRunning = false;
+      isPaused = false;
+      hasStarted = false;
+      updateScoreLists();
+    });
+
+   
     updateScoreLists();
 
-    // Touch controls
-    ['up','down','left','right'].forEach(dir => {
-      const btn = document.getElementById(dir + 'Btn');
-      btn.addEventListener('touchstart', e => {
-        e.preventDefault();
-        if (!hasStarted) return;
-        switch(dir) {
-          case 'up':    if (velocityY !== 1) { velocityX = 0; velocityY = -1; } break;
-          case 'down':  if (velocityY !== -1) { velocityX = 0; velocityY = 1; } break;
-          case 'left':  if (velocityX !== 1) { velocityX = -1; velocityY = 0; } break;
-          case 'right': if (velocityX !== -1) { velocityX = 1; velocityY = 0; } break;
-        }
-      });
-    });
-  </script>
+    
+</script>
+
 </body>
 </html>
