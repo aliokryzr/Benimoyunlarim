@@ -19,7 +19,6 @@
       margin: 0;
       background-color: #0f0f0f;
       color: #e0e0e0;
-      position: relative; /* Sayaçların konumu için önemli */
     }
 
     header {
@@ -89,10 +88,11 @@
       box-shadow: 0 0 25px 6px rgba(0, 255, 255, 0.9),
                   inset 0 0 18px 4px rgba(0, 200, 255, 0.7);
     }
-      
+    
     .intro p {
       margin-bottom: 16px;
     }
+
 
     .game-list {
       background: rgba(10, 10, 10, 0.85);
@@ -140,6 +140,23 @@
       cursor: pointer;
     }
 
+    .visitor-counter {
+      position: fixed;
+      bottom: 5px;
+      left: 5px;
+      background: rgba(0, 255, 255, 0.15);
+      color: #00ffff;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.85rem;
+      box-shadow: 0 0 10px #00ffffaa;
+      user-select: none;
+      z-index: 9999;
+      text-shadow: 0 0 5px #00ffffbb;
+    }
+
     .footer-text {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-size: 0.65rem;
@@ -169,24 +186,6 @@
       header p {
         font-size: 1.1rem;
       }
-    }
-
-    /* Sayaçlar için stil */
-    #counters {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      background: rgba(0,0,0,0.6);
-      color: #0ff;
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.85rem;
-      padding: 8px 14px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #0ff;
-      z-index: 9999;
-      user-select: none;
-      line-height: 1.5;
-      min-width: 180px;
     }
   </style>
 </head>
@@ -222,54 +221,41 @@
   </aside>
 </main>
 
-<p class="footer-text">~ © 2025 Mylife ~</p>
-
-<!-- Sayaçlar burada -->
-<div id="counters">
-  <div>Ziyaretçi Sayısı: <span id="visitorCount">Yükleniyor...</span></div>
-  <div>Toplam Oyun Sayısı: <span id="gameCount">Yükleniyor...</span></div>
+<div class="visitor-counter" id="visitor-counter">
+  Ziyaretçi Sayısı: <span id="visitor-count">...</span>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<p class="footer-text">~ © 2025 Mylife ~</p>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // Firebase konfigürasyonun (aynı şekilde ekle)
+  // Firebase config
   const firebaseConfig = {
-    apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
-    authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+    apiKey: "xxx",
+    authDomain: "xxx.firebaseapp.com",
     databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
     projectId: "benimoyunlarim-9c38c",
-    storageBucket: "benimoyunlarim-9c38c.firebasestorage.app",
-    messagingSenderId: "48251257364",
-    appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
-    measurementId: "G-23MZX1FJ5V"
+    storageBucket: "xxx.appspot.com",
+    messagingSenderId: "xxx",
+    appId: "xxx"
   };
 
-  // Firebase başlat
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Ziyaretçi sayısını artır ve göster
-  const visitorRef = db.ref('visitorCount');
+  // Ziyaretçi sayısını çek ve göster
+  const visitorCountSpan = document.getElementById('visitor-count');
+  const visitorRef = db.ref('ziyaretciSayisi');
+
   visitorRef.transaction(current => {
     return (current || 0) + 1;
-  }, (error, committed, snapshot) => {
-    if (error) {
-      console.error('Ziyaretçi sayısı artarken hata:', error);
-      document.getElementById('visitorCount').textContent = 'Hata';
-    } else if (!committed) {
-      document.getElementById('visitorCount').textContent = 'Yükleniyor...';
-    } else {
-      document.getElementById('visitorCount').textContent = snapshot.val();
-    }
   });
 
-  // Toplam oyun sayısını oku ve göster (firebase'deki oyun sayısı)
-  const gameCountRef = db.ref('gameCount');
-  gameCountRef.on('value', (snapshot) => {
-    const val = snapshot.val() || 0;
-    document.getElementById('gameCount').textContent = val;
+  visitorRef.on('value', snapshot => {
+    visitorCountSpan.textContent = snapshot.val();
   });
 </script>
 
