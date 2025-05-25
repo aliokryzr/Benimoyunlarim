@@ -4,67 +4,102 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>🐍 Yılan Oyunu</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet"/>
+
   <style>
-    /* —— Genel —— */
-    * { box-sizing:border-box; margin:0; padding:0; font-family:'Orbitron',sans-serif; }
+    /* —— Tema Değişkenleri —— */
+    :root {
+      /* Renk Paleti */
+      --clr-bg: #0a0f17;
+      --clr-panel-bg: rgba(10,15,23,0.7);
+      --clr-accent: #29d4ff;
+      --clr-accent-dark: #0b8fa2;
+      --clr-text: #ddeeff;
+      --clr-score: #ffec29;
+      --clr-score-header: #ff6a29;
+      /* Font Ayarları */
+      --font-heading: 'Audiowide', cursive;
+      --font-body: 'Roboto', sans-serif;
+    }
+
+    /* —— Global —— */
+    * { box-sizing:border-box; margin:0; padding:0; }
     body {
       background: linear-gradient(145deg,#0f2027,#203a43,#2c5364);
-      color:#fff; display:flex; flex-direction:column; align-items:center;
+      color: var(--clr-text);
+      display: flex; flex-direction: column; align-items:center;
       padding:20px; min-height:100vh;
+      font-family: var(--font-body);
     }
-    h1 {
-      font-size:2.5rem; margin-bottom:1.5rem;
-      color:#0ff; text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff;
-      user-select:none; text-align:center;
+    a, button, input { font-family: var(--font-body); }
+
+    /* —— Başlık —— */
+    h1#gameTitle {
+      font-family: var(--font-heading);
+      font-size: 3rem;
+      background: linear-gradient(90deg, var(--clr-accent-dark), var(--clr-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow:
+        0 0 8px var(--clr-accent),
+        0 0 16px var(--clr-accent-dark);
+      margin-bottom: 1.5rem;
+      user-select: none;
     }
 
     /* —— Ana Menü —— */
     #mainMenu {
-      display:flex; flex-direction:column; align-items:center;
-      gap:1rem; margin-bottom:2rem;
-      width:90vw; max-width:360px;
-      animation: menuGlow 3s ease-in-out infinite alternate;
-    }
-    @keyframes menuGlow {
-      from { box-shadow:0 0 8px rgba(0,255,255,0.2); }
-      to   { box-shadow:0 0 20px rgba(0,255,255,0.6); }
+      display: flex; flex-direction: column; align-items: center;
+      gap: 1rem; margin-bottom: 2rem;
+      width: 90vw; max-width: 360px;
     }
     #nicknameInput {
-      width:100%; padding:.75rem 1rem; border:none; border-radius:6px;
-      font-size:1rem; outline:none; transition:box-shadow .3s;
+      width: 100%; padding: .75rem 1rem;
+      border: 2px solid var(--clr-accent);
+      border-radius: 6px;
+      background: var(--clr-panel-bg);
+      color: var(--clr-text);
+      outline: none;
     }
-    #nicknameInput:focus { box-shadow:0 0 8px #0ff; }
     #startButton {
-      width:100%; padding:.75rem; font-size:1rem; border:none;
-      border-radius:6px; background:#28a745; color:#fff; cursor:pointer;
-      transition:background .3s;
+      width: 100%; padding: .75rem;
+      background: var(--clr-accent);
+      border: none; border-radius: 6px;
+      color: #000; font-weight: bold;
+      cursor: pointer;
+      transition: background .3s;
     }
-    #startButton:hover { background:#218838; }
+    #startButton:hover {
+      background: var(--clr-accent-dark);
+      color: #fff;
+    }
 
     /* —— En Yüksek Skor —— */
     #scoreTable {
-      width:100%; background:rgba(255,255,255,0.1);
+      width:100%; background: var(--clr-panel-bg);
       padding:1rem; border-radius:8px; text-align:center;
-      animation: pulseGlow 2.5s ease-in-out infinite alternate;
-    }
-    @keyframes pulseGlow {
-      from { box-shadow:0 0 5px rgba(0,255,255,0.2); }
-      to   { box-shadow:0 0 15px rgba(0,255,255,0.6); }
+      border: 2px solid var(--clr-accent);
+      box-shadow: 0 0 12px var(--clr-accent-dark);
     }
     #scoreTable h2 {
-      font-size:1.4rem; color:#0ff;
-      text-shadow:0 0 5px #0ff,0 0 10px #0ff;
-      margin-bottom:.75rem;
-    }
-    #topScores {
-      list-style:none; padding:0; margin:0;
+      font-family: var(--font-heading);
+      color: var(--clr-accent);
+      font-size: 1.4rem;
+      text-shadow: 0 0 6px var(--clr-accent);
+      margin-bottom: .75rem;
     }
     #topScores li {
-      display:inline-flex; align-items:center;
-      font-size:1rem; color:#d0f0f0;
+      display: inline-flex; align-items: center;
+      font-family: var(--font-body);
+      color: var(--clr-text);
+      margin: .3rem;
     }
-    #topScores .medal { margin-right:.5rem; font-size:1.2rem; }
+    .medal {
+      margin-right: .5rem;
+      filter: drop-shadow(0 0 4px gold);
+    }
 
     /* —— Oyun Ekranı —— */
     #gameContainer {
@@ -73,32 +108,53 @@
     }
     #gameFrame {
       position:relative; width:400px; height:400px;
-      background:#111; border:8px solid #ddd; border-radius:12px;
-      box-shadow:0 0 15px #0ff; overflow:hidden;
+      background: var(--clr-bg);
+      border:6px solid var(--clr-accent-dark);
+      box-shadow:
+        0 0 20px var(--clr-accent-dark),
+        inset 0 0 10px var(--clr-accent);
+      border-radius:16px;
+      overflow:hidden;
     }
-    canvas { width:100%; height:100%; display:block; background:#111; }
+    canvas {
+      width:100%; height:100%; display:block;
+      background:#111;
+      border-radius:12px;
+    }
     #clickToStart {
       position:absolute; top:45%; left:50%;
       transform:translate(-50%,-50%);
-      background:rgba(0,0,0,0.7); color:#0ff;
+      background: var(--clr-panel-bg);
+      color: var(--clr-accent);
       padding:.75rem 1.25rem; border-radius:8px;
-      font-size:1.2rem; cursor:pointer; animation:blink 1s infinite;
+      font-family: var(--font-heading);
+      font-size:1.2rem; cursor:pointer;
+      animation: blink 1s infinite;
       user-select:none;
     }
     @keyframes blink {0%,100%{opacity:1}50%{opacity:.5}}
     #gameOverScreen {
       position:absolute; top:50%; left:50%;
       transform:translate(-50%,-50%);
-      background:rgba(0,0,0,0.85); padding:2rem;
-      border-radius:12px; text-align:center; display:none; color:#f44;
+      background:rgba(0,0,0,0.85);
+      padding:2rem 1.5rem; border-radius:12px;
+      text-align:center; display:none;
+      color:#f44; font-family: var(--font-heading);
     }
-    #gameOverScreen h2 { margin-bottom:1rem; font-size:1.4rem; }
+    #gameOverScreen h2 {
+      margin-bottom:1rem; font-size:1.6rem;
+    }
     #restartButton {
       padding:.75rem 1.5rem; font-size:1rem;
-      background:#007bff; color:#fff; border:none; border-radius:8px;
-      cursor:pointer; transition:background .3s;
+      background: var(--clr-accent);
+      border:none; border-radius:8px;
+      cursor:pointer;
+      color: #000; font-weight:bold;
     }
-    #restartButton:hover { background:#0056b3; }
+    #restartButton:hover {
+      background: var(--clr-accent-dark);
+      color: #fff;
+    }
 
     /* —— Mobil Skor —— */
     #mobileScore {
@@ -106,57 +162,70 @@
       position:absolute; top:-30px; left:10px;
       background:rgba(0,0,0,0.6);
       padding:6px 12px; border-radius:8px;
-      font-family:'Orbitron',sans-serif!important;
-      font-size:1.4rem!important; font-weight:bold!important;
-      color:#0ff!important;
-      text-shadow:0 0 4px rgba(0,0,0,0.7)!important;
-      box-shadow:0 0 10px #0ff!important;
+      font-family: var(--font-heading);
+      font-size:1.4rem; font-weight:bold;
+      color: var(--clr-score);
+      text-shadow:0 0 4px rgba(0,0,0,0.7);
+      box-shadow:0 0 10px var(--clr-accent);
       z-index:50;
     }
 
-    /* —— Bilgi Paneli —— */
+    /* —— Bilgilendirme Paneli —— */
     #scorePanel {
-      width:280px; background:rgba(0,0,0,0.5);
-      padding:1rem; border-radius:12px; box-shadow:0 0 15px #0ff;
-      font-size:.95rem; user-select:none;
-      position:static; margin-top:1.5rem;
+      background: var(--clr-panel-bg);
+      border: 2px solid var(--clr-accent);
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-family: var(--font-body);
+      color: var(--clr-text);
+      box-shadow: 0 0 12px var(--clr-accent-dark);
+      max-width: 280px;
     }
-    #scorePanel h3 { font-size:1.1rem; margin-bottom:.75rem; }
-    #scorePanel p#instructions {
-      font-size:.9rem; line-height:1.3; margin-bottom:1rem;
+    #scorePanel h3 {
+      font-family: var(--font-heading);
+      color: var(--clr-accent);
+      font-size: 1.25rem;
+      margin-bottom: .75rem;
+      text-shadow: 0 0 6px var(--clr-accent);
     }
-    #currentScore { display:block; }
-    #scorePanel h3.score-header {
-      font-size:1rem; color:#0ff; margin-bottom:.5rem;
+    #scorePanel p {
+      margin-bottom: 1rem;
+      line-height: 1.4;
     }
-    #liveScores {
-      list-style:decimal inside; font-size:.9rem; color:#fff;
-      padding-left:0; margin:0;
+    #currentScore {
+      font-family: var(--font-heading);
+      color: var(--clr-score);
+      font-size: 1.5rem;
+      margin: .5rem 0 1rem;
+    }
+    .score-header {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: var(--clr-score-header);
+      margin-bottom: .5rem;
     }
     #liveScores li {
-      display:flex; align-items:center; margin-bottom:.5rem;
+      font-family: var(--font-body);
+      color: var(--clr-text);
+      margin-bottom: .3rem;
     }
-    #liveScores .medal { margin-right:.5rem; }
 
     /* —— Dokunmatik Oklar —— */
-    .touch-controls { display:none; }
+    .touch-controls { display: none; }
     .touch-controls button {
       border:none; background:rgba(255,255,255,0.2);
-      color:#fff; opacity:.2; font-size:2rem;
-      border-radius:50%; width:80px; height:80px;
-      display:flex; align-items:center; justify-content:center;
-      touch-action: none;      /* kaydırmayı engelle */
-      pointer-events: auto;    /* dokunmayı al */
+      opacity:.8; font-size:2rem; border-radius:50%;
+      width:60px; height:60px; display:flex;
+      align-items:center; justify-content:center;
+      touch-action: none; pointer-events: auto;
       user-select: none;
+      color: var(--clr-accent);
+      box-shadow: 0 0 8px var(--clr-accent);
     }
 
-    /* —— Mobil Responsive —— */
+    /* —— Responsive —— */
     @media (max-width:700px) {
-      #gameFrame {
-        width:90vw; height:90vw; max-width:360px; max-height:360px;
-        margin-bottom:2vh;
-        overflow: visible !important;
-      }
+      #gameFrame { width:90vw; height:90vw; max-width:360px; max-height:360px; overflow: visible !important; }
       #mobileScore { display:block!important; }
       #scorePanel #currentScore { display:none!important; }
       .touch-controls { display:block!important; }
@@ -167,14 +236,17 @@
       #gameContainer { flex-direction:column; align-items:center; }
     }
     @media (max-width:500px) {
-      h1 { font-size:2rem; }
+      h1#gameTitle { font-size:2.5rem; }
       #startButton { font-size:.9rem; padding:.6rem; }
     }
   </style>
 </head>
-<body>
-  <h1>🐍 Yılan Oyunu</h1>
 
+<body>
+  <!-- Başlık -->
+  <h1 id="gameTitle">🐍 Yılan Oyunu</h1>
+
+  <!-- Ana Menü -->
   <div id="mainMenu">
     <input id="nicknameInput" type="text" placeholder="Kullanıcı adınızı girin" maxlength="12"/>
     <button id="startButton">Oyuna Başla</button>
@@ -184,6 +256,7 @@
     </div>
   </div>
 
+  <!-- Oyun & Bilgilendirme -->
   <div id="gameContainer">
     <div id="gameFrame">
       <div id="mobileScore">Skor: 0</div>
@@ -200,9 +273,10 @@
         <button id="rightBtn">▶</button>
       </div>
     </div>
+
     <div id="scorePanel">
       <h3>Bilgilendirme</h3>
-      <p id="instructions">
+      <p>
         Yön tuşlarıyla oynanır.<br/>
         Boşluk tuşu: Başlat/Duraklat<br/>
         Çarpınca biter.
