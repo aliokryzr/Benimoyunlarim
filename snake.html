@@ -74,7 +74,7 @@
 
     /* —— Oyun + Bilgi Konteyneri —— */
     #gameContainer {
-      display:none;
+      display:none; /* BAŞLANGIÇTA GİZLİ */
       width:100%; max-width:760px;
       display:flex; gap:1.5rem; align-items:flex-start;
     }
@@ -191,7 +191,7 @@
     </div>
   </div>
 
-  <!-- Oyun & Bilgilendirme -->
+  <!-- Oyun & Bilgilendirme (Başlangıçta GİZLİ) -->
   <div id="gameContainer">
     <div id="gameFrame">
       <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -271,12 +271,11 @@
             topHolder.querySelector('.top-score').textContent = arr[0].score;
           } else {
             mainTop.textContent = '—: —';
-            topHolder.	querySelector('.top-name').textContent = '—';
+            topHolder.querySelector('.top-name').textContent = '—';
             topHolder.querySelector('.top-score').textContent = '—';
           }
         });
     }
-
     function saveScore(n,s){ db.ref('scores').push({name:n,score:s}); }
 
     function placeApple(){
@@ -369,10 +368,12 @@
       bindTouchControls();
     });
 
+    // ANA MENÜDEN OYUNA GEÇİŞ
     startBtn.addEventListener('click', ()=>{
       nickname = nickIn.value.trim();
       if(!nickname){ alert('Kullanıcı adı gerekli'); nickIn.focus(); return; }
-      mainM.style.display='none'; gc.style.display='flex';
+      mainM.style.display='none';     // Menü GİZLE
+      gc.style.display='flex';        // Oyun+Panel GÖSTER
       snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];
       vx=1; vy=0; score=0; naCount=0; superApple=null;
       currentScoreEl.textContent='Skor: 0';
@@ -389,10 +390,12 @@
       }
     });
 
+    // OYUNU TEKRAR BAŞLATTIĞINDA ANA MENÜYE DÖN
     restartBtn.addEventListener('click', ()=>{
       document.getElementById('gameOverScreen').style.display='none';
       clearInterval(gameInt);
-      gc.style.display='none'; mainM.style.display='flex';
+      gc.style.display='none';        // Oyun+Panel GİZLE
+      mainM.style.display='flex';     // Menü GÖSTER
       nickIn.value=''; nickIn.focus();
       isRunning=isPaused=hasStarted=false;
       attachScoreListener();
