@@ -33,7 +33,6 @@
       text-shadow:0 0 8px var(--clr-accent);
       text-align:center;
     }
-    /* —— Ana Menü —— */
     #mainMenu {
       display:flex; flex-direction:column; align-items:center; gap:1rem;
       width:90vw; max-width:360px; margin-bottom:2rem;
@@ -68,7 +67,6 @@
       color: var(--clr-score);
       font-size:1rem; font-weight:bold;
     }
-    /* —— Oyun + Bilgi Konteyneri —— */
     #gameContainer {
       display:none;
       width:100%; max-width:760px;
@@ -76,7 +74,6 @@
       justify-content: center;
       position: relative;
     }
-    /* —— Oyun Çerçevesi —— */
     #gameFrame {
       flex:1; position:relative;
       background: var(--clr-frame-bg);
@@ -125,7 +122,6 @@
       transition:background .3s;
     }
     #restartButton:hover { background: var(--clr-accent-dark); color:#fff; }
-    /* —— Bilgi Paneli —— */
     #scorePanel {
       background: var(--clr-panel-bg);
       border:3px solid var(--clr-accent);
@@ -179,7 +175,6 @@
       color:#ff9f1a; font-family: var(--font-heading);
       font-size:1.1rem;
     }
-    /* --- Mobil için --- */
     @media (max-width: 900px) {
       #gameContainer { flex-direction: column; align-items:center; gap:1rem;}
       #gameFrame, #scorePanel { max-width: 98vw; }
@@ -212,7 +207,6 @@
       display: none;
     }
     @media (max-width: 700px) {
-      /* Mobilde touch-controls görününce paneli gizle (JS ile de destekliyoruz) */
       #scorePanel.hide-mobile {
         opacity: 0 !important;
         pointer-events: none;
@@ -222,7 +216,7 @@
       .touch-controls {
         position: fixed;
         left: 50%;
-        bottom: 35px;
+        bottom: 95px;
         transform: translateX(-50%);
         display: flex !important;
         flex-direction: column;
@@ -261,33 +255,30 @@
         transform: scale(0.96);
       }
     }
-    /* Dışarıda, canvas'ın üstü değil: Skor kutusu */
+    /* Mobil skor kutusu (fixedScoreBox) SADECE mobilde ve oyun sırasında görünür */
     #fixedScoreBox {
-      position: fixed;
-      top: 32px;
-      left: 15px;
-      z-index: 1050;
-      background: rgba(0,0,0,0.85);
-      color: #ffe066;
-      font-family: var(--font-heading);
-      font-size: 1.85rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px #0004;
-      border: 2px solid #ffe06622;
-      padding: 8px 28px 8px 20px;
-      letter-spacing: 1px;
-      user-select: none;
-      pointer-events: none;
-      min-width: 135px;
-      text-align: left;
+      display: none;
     }
     @media (max-width: 700px) {
-      #fixedScoreBox {
-        top: 16vw;
+      #fixedScoreBox.active {
+        display: block;
+        position: fixed;
+        top: 12vw;
         left: 4vw;
+        z-index: 1050;
+        background: rgba(0,0,0,0.85);
+        color: #ffe066;
+        font-family: var(--font-heading);
         font-size: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px #0004;
+        border: 2px solid #ffe06622;
         padding: 8px 20px 8px 16px;
+        letter-spacing: 1px;
+        user-select: none;
+        pointer-events: none;
         min-width: 95px;
+        text-align: left;
       }
     }
   </style>
@@ -326,7 +317,7 @@
       </div>
     </div>
   </div>
-  <!-- CANVAS DIŞI HER ZAMAN GÖRÜNÜR SKOR -->
+  <!-- CANVAS DIŞI SADECE MOBİLDE VE OYUNDA GÖRÜNÜR SKOR -->
   <div id="fixedScoreBox">Skor: 0</div>
   <!-- Mobil (Touch) Kontroller, EN ALTA ve CANVAS'ın DIŞINDA -->
   <div class="touch-controls">
@@ -346,8 +337,7 @@
       document.getElementById('gameContainer').style.display = 'none';
       document.getElementById('mainMenu').style.display = 'flex';
       document.getElementById('mainScore').style.display = 'block';
-      // Paneli açarken skor kutusunu sıfırla
-      document.getElementById('fixedScoreBox').textContent = 'Skor: 0';
+      document.getElementById('fixedScoreBox').classList.remove('active');
     });
     // Firebase config
     const firebaseConfig = {
@@ -383,17 +373,24 @@
     let snake, vx, vy, apple, superApple, score, naCount;
     let isRunning, isPaused, hasStarted, gameInt, nickname;
 
-    // Mobilde touch-controls varsa paneli gizle/göster
-    function toggleMobilePanel() {
+    // Mobilde touch-controls varsa paneli gizle/göster, skor kutusu da!
+    function toggleMobilePanel(showGameScore) {
       const isMobile = window.innerWidth <= 700;
       const touchControls = document.querySelector('.touch-controls');
-      if (isMobile && touchControls && getComputedStyle(touchControls).display !== 'none') {
+      // Bilgilendirme paneli:
+      if (isMobile && touchControls && getComputedStyle(touchControls).display !== 'none' && showGameScore) {
         scorePanel.classList.add('hide-mobile');
       } else {
         scorePanel.classList.remove('hide-mobile');
       }
+      // Skor kutusu:
+      if (isMobile && showGameScore) {
+        fixedScoreBox.classList.add('active');
+      } else {
+        fixedScoreBox.classList.remove('active');
+      }
     }
-    window.addEventListener('resize', toggleMobilePanel);
+    window.addEventListener('resize', ()=>toggleMobilePanel(isRunning));
 
     // Skor dinleme
     function attachScoreListener(){
@@ -443,7 +440,7 @@
         ctx.arc(seg.x*gridSize+gridSize/2,seg.y*gridSize+gridSize/2,gridSize/2.5,0,Math.PI*2);
         ctx.fill(); ctx.stroke();
       });
-      // CANVAS üstü skor kutusu değil, DIŞINDAKİ kutu güncelleniyor:
+      // Skor kutusunu güncelle (yalnızca mobilde ve oyunda aktif)
       fixedScoreBox.textContent = `Skor: ${score}`;
     }
     function gameStep(){
@@ -467,6 +464,7 @@
       clickToStart.style.display='none';
       saveScore(nickname,score);
       document.getElementById('gameOverScreen').style.display='block';
+      toggleMobilePanel(false);
     }
     function runGame(){
       clearInterval(gameInt);
@@ -501,7 +499,7 @@
     window.addEventListener('load', ()=>{
       attachScoreListener();
       bindTouchControls();
-      toggleMobilePanel();
+      toggleMobilePanel(false);
     });
     // ANA MENÜDEN OYUNA GEÇİŞ
     startBtn.addEventListener('click', ()=>{
@@ -518,7 +516,7 @@
       isRunning=false; isPaused=false; hasStarted=false;
       clickToStart.style.display='block';
       attachScoreListener();
-      setTimeout(toggleMobilePanel, 100); // paneli güncelle
+      setTimeout(()=>toggleMobilePanel(true), 150);
     });
     clickToStart.addEventListener('click', ()=>{
       if(!hasStarted){
@@ -536,7 +534,7 @@
       isRunning=isPaused=hasStarted=false;
       document.getElementById('mainScore').style.display = 'block';
       attachScoreListener();
-      toggleMobilePanel();
+      toggleMobilePanel(false);
     });
   </script>
 </body>
