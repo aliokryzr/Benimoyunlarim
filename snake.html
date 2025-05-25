@@ -119,46 +119,52 @@
     #restartButton:hover { background: var(--clr-accent-dark); color:#fff; }
 
     /* ——— TOUCH (MOBİL) KONTROLLER ——— */
-    .touch-controls {
-      display: none;
-    }
-    @media (max-width: 700px) {
-      .touch-controls {
-        display: flex !important;
-        flex-direction: column;
-        align-items: center;
-        position: absolute;
-        left: 50%;
-        bottom: 24px;
-        transform: translateX(-50%);
-        width: 220px;
-        z-index: 99;
-        gap: 0;
-      }
-      .touch-row {
-        display: flex;
-        justify-content: center;
-        gap: 18px;
-      }
-      .touch-controls button {
-        width: 60px;
-        height: 60px;
-        font-size: 2.1rem;
-        border: none;
-        background: linear-gradient(145deg, #11c1f7, #0072ad 85%);
-        color: #fff;
-        border-radius: 16px;
-        box-shadow: 0 2px 8px #0004;
-        margin: 0;
-        padding: 0;
-        transition: background .2s, transform .1s;
-      }
-      .touch-controls button:active {
-        background: linear-gradient(145deg, #0072ad, #11c1f7 85%);
-        transform: scale(0.97);
-      }
-    }
+ .touch-controls {
+  display: none;
+}
 
+@media (max-width: 700px) {
+  .touch-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    z-index: 999;
+    width: 90vw;
+    max-width: 340px;
+    pointer-events: none; /* Sadece butonlar tıklanabilir */
+  }
+  .touch-row {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    pointer-events: none; /* Sadece butonlar tıklanabilir */
+  }
+  .touch-controls button {
+    width: 62px;
+    height: 62px;
+    font-size: 2rem;
+    border: none;
+    background: rgba(12, 34, 62, 0.6);
+    color: #fff;
+    border-radius: 15px;
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 2px 8px #0005;
+    transition: background .2s, transform .1s;
+    backdrop-filter: blur(4px);
+    opacity: 0.68;  /* şeffaflık */
+    pointer-events: auto; /* Sadece buton tıklanabilir olsun */
+  }
+  .touch-controls button:active {
+    background: rgba(60, 180, 255, 0.7);
+    opacity: 0.95;
+    transform: scale(0.97);
+  }
+}
     /* —— Bilgi Paneli —— */
     #scorePanel {
       background: var(--clr-panel-bg);
@@ -223,7 +229,7 @@
     <input id="nicknameInput" type="text" placeholder="Kullanıcı adınızı girin" maxlength="12"/>
     <button id="startButton">Oyuna Başla</button>
     <div id="mainScore">
-      <h2>En Yüksek Skor Sahibi</h2>
+      <h2>🏆 En Yüksek Skor Sahibi 🏆</h2>
       <div id="mainTopHolder">—: —</div>
     </div>
   </div>
@@ -238,17 +244,17 @@
         <button id="restartButton">Tamam</button>
       </div>
       <!-- Mobil (Touch) Kontroller -->
-      <div class="touch-controls">
-        <div class="touch-row" style="margin-bottom:10px;">
-          <button id="upBtn">▲</button>
-        </div>
-        <div class="touch-row">
-          <button id="leftBtn">◀</button>
-          <button id="downBtn">▼</button>
-          <button id="rightBtn">▶</button>
-        </div>
-      </div>
-    </div>
+    <div class="touch-controls">
+  <div class="touch-row" style="margin-bottom:10px;">
+    <button id="upBtn">▲</button>
+  </div>
+  <div class="touch-row">
+    <button id="leftBtn">◀</button>
+    <button id="downBtn">▼</button>
+    <button id="rightBtn">▶</button>
+  </div>
+</div>
+
     <div id="scorePanel">
       <h3>Bilgilendirme</h3>
       <p id="instructions">
