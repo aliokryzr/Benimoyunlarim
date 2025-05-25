@@ -62,10 +62,22 @@
       color: var(--clr-accent); font-size:1.4rem;
       margin-bottom:.5rem;
     }
-    #mainScore #mainTopHolder {
-      font-family: var(--font-body);
-      color: var(--clr-score);
-      font-size:1rem; font-weight:bold;
+    #mainTopList {
+      list-style:none; padding:0; margin:0;
+    }
+    #mainTopList li {
+      font-size:1.12rem; margin:6px 0; display:flex; align-items:center;
+      justify-content: flex-start;
+    }
+    #mainTopList li span:first-child {
+      font-size:1.5em; margin-right:8px;
+    }
+    #mainTopList .name {
+      font-weight:bold; color:#ffe066;
+      margin-right:8px;
+    }
+    #mainTopList .score {
+      font-family:'Audiowide',cursive; color:#ffb700; margin-left:auto;
     }
     #gameContainer {
       display:none;
@@ -216,7 +228,7 @@
       .touch-controls {
         position: fixed;
         left: 50%;
-        bottom: 10px; /* en aşağıya */
+        bottom: 10px;
         transform: translateX(-50%);
         display: flex !important;
         flex-direction: column;
@@ -254,12 +266,11 @@
         opacity: 1;
         transform: scale(0.96);
       }
-      /* Mobil skor kutusu canvasın hemen altında ve sola yaslı, küçük */
       #fixedScoreBox.active {
         display: block;
         position: fixed;
         left: 6vw;
-        bottom: 120px;  /* okların biraz üstünde */
+        bottom: 120px;
         z-index: 1050;
         background: rgba(0,0,0,0.85);
         color: #ffe066;
@@ -276,7 +287,6 @@
         text-align: left;
       }
     }
-    /* Masaüstünde skor kutusu görünmez */
     #fixedScoreBox { display: none; }
   </style>
 </head>
@@ -287,7 +297,7 @@
     <button id="startButton">Oyuna Başla</button>
     <div id="mainScore">
       <h2>🏆 En Yüksek Skor 🏆</h2>
-      <div id="mainTopHolder">—: —</div>
+      <ol id="mainTopList"></ol>
     </div>
   </div>
   <div id="gameContainer">
@@ -307,16 +317,14 @@
         Çarpınca biter.
       </p>
       <div id="currentScore">Skor: 0</div>
-      <h3 class="score-header">🏆 En Yüksek Skor 🏆</h3>
+      <h3 class="score-header">En Yüksek Skor</h3>
       <div id="topHolder">
         <span class="top-name">—</span>
         <span class="top-score">—</span>
       </div>
     </div>
   </div>
-  <!-- CANVAS DIŞI SADECE MOBİLDE VE OYUNDA GÖRÜNÜR SKOR -->
   <div id="fixedScoreBox">Skor: 0</div>
-  <!-- Mobil (Touch) Kontroller -->
   <div class="touch-controls">
     <div class="touch-row" style="margin-bottom:16px;">
       <button id="upBtn">▲</button>
@@ -336,7 +344,6 @@
       document.getElementById('mainScore').style.display = 'block';
       document.getElementById('fixedScoreBox').classList.remove('active');
     });
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
       authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
@@ -350,7 +357,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // DOM
     const nickIn = document.getElementById('nicknameInput'),
           startBtn = document.getElementById('startButton'),
           mainM = document.getElementById('mainMenu'),
@@ -358,52 +364,47 @@
           clickToStart = document.getElementById('clickToStart'),
           restartBtn = document.getElementById('restartButton'),
           currentScoreEl = document.getElementById('currentScore'),
-          mainTop = document.getElementById('mainTopHolder'),
+          mainTopList = document.getElementById('mainTopList'),
           topHolder = document.getElementById('topHolder'),
           canvas = document.getElementById('gameCanvas'),
           ctx = canvas.getContext('2d'),
           fixedScoreBox = document.getElementById('fixedScoreBox'),
           scorePanel = document.getElementById('scorePanel');
 
-    // Oyun değişkenleri
+    const medals = ['🥇', '🥈', '🥉'];
     const gridSize = 20, tileCount = canvas.width / gridSize;
     let snake, vx, vy, apple, superApple, score, naCount;
     let isRunning, isPaused, hasStarted, gameInt, nickname;
 
-    function toggleMobilePanel(showGameScore) {
-      const isMobile = window.innerWidth <= 700;
-      const touchControls = document.querySelector('.touch-controls');
-      // Bilgilendirme paneli:
-      if (isMobile && touchControls && getComputedStyle(touchControls).display !== 'none' && showGameScore) {
-        scorePanel.classList.add('hide-mobile');
-      } else {
-        scorePanel.classList.remove('hide-mobile');
-      }
-      // Skor kutusu:
-      if (isMobile && showGameScore) {
-        fixedScoreBox.classList.add('active');
-      } else {
-        fixedScoreBox.classList.remove('active');
-      }
-    }
-    window.addEventListener('resize', ()=>toggleMobilePanel(isRunning));
-    // Skor dinleme
     function attachScoreListener(){
-      db.ref('scores').orderByChild('score').limitToLast(1)
+      db.ref('scores').orderByChild('score').limitToLast(20)
         .on('value', snap=>{
-          const arr = [];
-          snap.forEach(c=>arr.unshift(c.val()));
-          if(arr.length){
-            mainTop.textContent = `${arr[0].name}: ${arr[0].score}`;
+          let arr = [];
+          snap.forEach(c=>arr.push(c.val()));
+          arr.sort((a, b) => b.score - a.score);
+          let html = '';
+          for(let i=0; i<3; i++){
+            if(arr[i]) {
+              html += `<li>
+                <span>${medals[i]}</span>
+                <span class="name">${arr[i].name}</span>
+                <span class="score">${arr[i].score}</span>
+              </li>`;
+            }
+          }
+          if(!html) html = '<li style="color:#ccc;">Henüz skor kaydı yok.</li>';
+          mainTopList.innerHTML = html;
+          // Panelde en yüksek skoru yine göster
+          if(arr[0]) {
             topHolder.querySelector('.top-name').textContent = arr[0].name;
             topHolder.querySelector('.top-score').textContent = arr[0].score;
           } else {
-            mainTop.textContent = '—: —';
             topHolder.querySelector('.top-name').textContent = '—';
             topHolder.querySelector('.top-score').textContent = '—';
           }
         });
     }
+
     function saveScore(n,s){ db.ref('scores').push({name:n,score:s}); }
 
     function placeApple(){
@@ -435,7 +436,6 @@
         ctx.arc(seg.x*gridSize+gridSize/2,seg.y*gridSize+gridSize/2,gridSize/2.5,0,Math.PI*2);
         ctx.fill(); ctx.stroke();
       });
-      // Skor kutusunu güncelle (yalnızca mobilde ve oyunda aktif)
       fixedScoreBox.textContent = `Skor: ${score}`;
     }
     function gameStep(){
@@ -465,6 +465,21 @@
       clearInterval(gameInt);
       gameInt = setInterval(gameStep,120);
     }
+    function toggleMobilePanel(showGameScore) {
+      const isMobile = window.innerWidth <= 700;
+      const touchControls = document.querySelector('.touch-controls');
+      if (isMobile && touchControls && getComputedStyle(touchControls).display !== 'none' && showGameScore) {
+        scorePanel.classList.add('hide-mobile');
+      } else {
+        scorePanel.classList.remove('hide-mobile');
+      }
+      if (isMobile && showGameScore) {
+        fixedScoreBox.classList.add('active');
+      } else {
+        fixedScoreBox.classList.remove('active');
+      }
+    }
+    window.addEventListener('resize', ()=>toggleMobilePanel(isRunning));
     window.addEventListener('keydown', e=>{
       if(e.key===' '){
         if(!hasStarted) return;
@@ -496,7 +511,6 @@
       bindTouchControls();
       toggleMobilePanel(false);
     });
-    // ANA MENÜDEN OYUNA GEÇİŞ
     startBtn.addEventListener('click', ()=>{
       nickname = nickIn.value.trim();
       if(!nickname){ alert('Kullanıcı adı gerekli'); nickIn.focus(); return; }
@@ -519,7 +533,6 @@
         clickToStart.style.display='none';
       }
     });
-    // OYUNU TEKRAR BAŞLATTIĞINDA ANA MENÜYE DÖN
     restartBtn.addEventListener('click', ()=>{
       document.getElementById('gameOverScreen').style.display='none';
       clearInterval(gameInt);
