@@ -407,17 +407,32 @@
 
  function bindTouchControls(){
   ['up','left','down','right'].forEach(dir=>{
-    document.getElementById(dir+'Btn').addEventListener('touchstart', e=>{
+    const btn = document.getElementById(dir + 'Btn');
+    const handler = e => {
       e.preventDefault();
-      if(isRunning && hasStarted && !isPaused){ // <-- buradaki kontroller çok önemli
-        if(dir==='up'   && velocityY!==1)  { velocityX=0;   velocityY=-1; }
-        if(dir==='down' && velocityY!==-1) { velocityX=0;   velocityY=1;  }
-        if(dir==='left' && velocityX!==1)  { velocityX=-1;  velocityY=0; }
-        if(dir==='right'&& velocityX!==-1) { velocityX=1;   velocityY=0; }
+      if (isRunning && hasStarted && !isPaused) {
+        switch (dir) {
+          case 'up':
+            if (velocityY !== 1) { velocityX = 0; velocityY = -1; }
+            break;
+          case 'down':
+            if (velocityY !== -1) { velocityX = 0; velocityY = 1; }
+            break;
+          case 'left':
+            if (velocityX !== 1) { velocityX = -1; velocityY = 0; }
+            break;
+          case 'right':
+            if (velocityX !== -1) { velocityX = 1; velocityY = 0; }
+            break;
+        }
       }
-    });
+    };
+    // hem dokunma hem de tıklamayı dinle
+    btn.addEventListener('touchstart', handler, { passive: false });
+    btn.addEventListener('click', handler);
   });
 }
+
   </script>
 </body>
 </html>
