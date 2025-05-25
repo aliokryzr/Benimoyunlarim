@@ -73,23 +73,33 @@
 
     /* —— Oyun + Bilgi Konteyneri —— */
     #gameContainer {
-      display:none; /* BAŞLANGIÇTA GİZLİ */
+      display:none;
       width:100%; max-width:760px;
       display:flex; gap:1.5rem; align-items:flex-start;
+      justify-content: center;
     }
-
     /* —— Oyun Çerçevesi —— */
     #gameFrame {
       flex:1; position:relative;
       background: var(--clr-frame-bg);
       border:6px solid var(--clr-accent-dark);
-      box-shadow:0 0 20px var(--clr-accent-dark),
-                 inset 0 0 10px var(--clr-accent);
+      box-shadow:0 0 20px var(--clr-accent-dark),inset 0 0 10px var(--clr-accent);
       border-radius:16px; overflow:hidden;
+      max-width:410px;
+      max-height:410px;
+      min-width:320px;
+      min-height:320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     canvas {
-      width:100%; height:100%; display:block;
+      width: 400px;
+      height: 400px;
+      max-width: 100vw;
+      max-height: 65vw;
       background:#111; border-radius:12px;
+      display:block;
     }
     #clickToStart {
       position:absolute; top:45%; left:50%;
@@ -118,53 +128,6 @@
     }
     #restartButton:hover { background: var(--clr-accent-dark); color:#fff; }
 
-    /* ——— TOUCH (MOBİL) KONTROLLER ——— */
- .touch-controls {
-  display: none;
-}
-
-@media (max-width: 700px) {
-  .touch-controls {
-    position: fixed;
-    left: 50%;
-    bottom: 20px;
-    transform: translateX(-50%);
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    z-index: 999;
-    width: 90vw;
-    max-width: 340px;
-    pointer-events: none; /* Sadece butonlar tıklanabilir */
-  }
-  .touch-row {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    pointer-events: none; /* Sadece butonlar tıklanabilir */
-  }
-  .touch-controls button {
-    width: 62px;
-    height: 62px;
-    font-size: 2rem;
-    border: none;
-    background: rgba(12, 34, 62, 0.6);
-    color: #fff;
-    border-radius: 15px;
-    margin: 0;
-    padding: 0;
-    box-shadow: 0 2px 8px #0005;
-    transition: background .2s, transform .1s;
-    backdrop-filter: blur(4px);
-    opacity: 0.68;  /* şeffaflık */
-    pointer-events: auto; /* Sadece buton tıklanabilir olsun */
-  }
-  .touch-controls button:active {
-    background: rgba(60, 180, 255, 0.7);
-    opacity: 0.95;
-    transform: scale(0.97);
-  }
-}
     /* —— Bilgi Paneli —— */
     #scorePanel {
       background: var(--clr-panel-bg);
@@ -172,13 +135,14 @@
       border-radius:12px;
       box-shadow:0 0 20px rgba(0,255,255,0.5);
       padding:1.5rem;
-      width:300px;
+      width:290px;
       color: var(--clr-text);
       font-family: var(--font-body);
+      max-width:95vw;
     }
     #scorePanel h3 {
       font-family: var(--font-heading);
-      font-size:1.4rem; color: var(--clr-accent);
+      font-size:1.3rem; color: var(--clr-accent);
       text-align:center; margin-bottom:1rem;
     }
     #scorePanel #instructions {
@@ -188,12 +152,12 @@
     }
     #scorePanel #currentScore {
       font-family: var(--font-heading);
-      font-size:1.6rem; color: var(--clr-score);
+      font-size:1.5rem; color: var(--clr-score);
       text-align:center; margin-bottom:2rem;
     }
     #scorePanel .score-header {
       font-family: var(--font-heading);
-      font-size:1.3rem; color: var(--clr-accent);
+      font-size:1.1rem; color: var(--clr-accent);
       text-align:center; margin-bottom:1rem;
     }
     #scorePanel .score-header::before,
@@ -216,8 +180,79 @@
       color:#ff9f1a; font-family: var(--font-heading);
       font-size:1.1rem;
     }
-    @media(max-width:700px){
-      #gameContainer { flex-direction:column;}
+    /* --- Mobil için --- */
+    @media (max-width: 900px) {
+      #gameContainer { flex-direction: column; align-items:center; gap:1rem;}
+      #gameFrame, #scorePanel { max-width: 98vw; }
+      #gameFrame { margin-bottom: 10px; }
+      canvas { max-width: 98vw; height: auto; }
+    }
+    @media (max-width: 700px) {
+      #gameFrame {
+        max-width: 98vw;
+        min-width: 0;
+        min-height: 0;
+      }
+      canvas {
+        width: 98vw;
+        height: 98vw;
+        max-width: 98vw;
+        max-height: 75vw;
+        min-width: 240px;
+        min-height: 240px;
+      }
+      #scorePanel {
+        max-width: 98vw;
+        width: 98vw;
+        font-size: 0.97rem;
+        padding: 1rem 3vw;
+      }
+    }
+    /* ---- Mobil Touch Kontroller (Sabit ve Şeffaf, panelin ÜSTÜNE DEĞİL, EN ALTA) ---- */
+    .touch-controls {
+      display: none;
+    }
+    @media (max-width: 700px) {
+      .touch-controls {
+        position: fixed;
+        left: 50%;
+        bottom: 10px;
+        transform: translateX(-50%);
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        z-index: 999;
+        width: 97vw;
+        max-width: 340px;
+        pointer-events: none;
+      }
+      .touch-row {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        pointer-events: none;
+      }
+      .touch-controls button {
+        width: 58px;
+        height: 58px;
+        font-size: 2rem;
+        border: none;
+        background: rgba(10, 60, 90, 0.62);
+        color: #fff;
+        border-radius: 15px;
+        margin: 0;
+        padding: 0;
+        box-shadow: 0 2px 8px #0005;
+        transition: background .2s, transform .1s;
+        backdrop-filter: blur(4px);
+        opacity: 0.70;
+        pointer-events: auto;
+      }
+      .touch-controls button:active {
+        background: rgba(60, 180, 255, 0.7);
+        opacity: 0.96;
+        transform: scale(0.97);
+      }
     }
   </style>
 </head>
@@ -229,7 +264,7 @@
     <input id="nicknameInput" type="text" placeholder="Kullanıcı adınızı girin" maxlength="12"/>
     <button id="startButton">Oyuna Başla</button>
     <div id="mainScore">
-      <h2>🏆 En Yüksek Skor Sahibi 🏆</h2>
+      <h2>🏆'En Yüksek Skor 🏆'</h2>
       <div id="mainTopHolder">—: —</div>
     </div>
   </div>
@@ -243,18 +278,7 @@
         <h2>Game Over</h2>
         <button id="restartButton">Tamam</button>
       </div>
-      <!-- Mobil (Touch) Kontroller -->
-    <div class="touch-controls">
-  <div class="touch-row" style="margin-bottom:10px;">
-    <button id="upBtn">▲</button>
-  </div>
-  <div class="touch-row">
-    <button id="leftBtn">◀</button>
-    <button id="downBtn">▼</button>
-    <button id="rightBtn">▶</button>
-  </div>
-</div>
-
+    </div>
     <div id="scorePanel">
       <h3>Bilgilendirme</h3>
       <p id="instructions">
@@ -263,11 +287,22 @@
         Çarpınca biter.
       </p>
       <div id="currentScore">Skor: 0</div>
-      <h3 class="score-header">En Yüksek Skor Sahibi</h3>
+      <h3 class="score-header">En Yüksek Skor</h3>
       <div id="topHolder">
         <span class="top-name">—</span>
         <span class="top-score">—</span>
       </div>
+    </div>
+  </div>
+  <!-- Mobil (Touch) Kontroller, EN ALTA ve CANVAS'ın DIŞINDA -->
+  <div class="touch-controls">
+    <div class="touch-row" style="margin-bottom:10px;">
+      <button id="upBtn">▲</button>
+    </div>
+    <div class="touch-row">
+      <button id="leftBtn">◀</button>
+      <button id="downBtn">▼</button>
+      <button id="rightBtn">▶</button>
     </div>
   </div>
 
@@ -280,7 +315,6 @@
       document.getElementById('mainMenu').style.display = 'flex';
       document.getElementById('mainScore').style.display = 'block';
     });
-
     // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
@@ -388,7 +422,6 @@
       clearInterval(gameInt);
       gameInt = setInterval(gameStep,120);
     }
-
     window.addEventListener('keydown', e=>{
       if(e.key===' '){
         if(!hasStarted) return;
@@ -401,7 +434,6 @@
       if(e.key==='ArrowLeft'&&vx!==1){ vx=-1;vy=0; }
       if(e.key==='ArrowRight'&&vx!==-1){ vx=1;vy=0; }
     });
-
     function bindTouchControls(){
       ['up','down','left','right'].forEach(dir=>{
         const btn=document.getElementById(dir+'Btn'), handler=e=>{
@@ -416,18 +448,16 @@
         btn.addEventListener('click',handler);
       });
     }
-
     window.addEventListener('load', ()=>{
       attachScoreListener();
       bindTouchControls();
     });
-
     // ANA MENÜDEN OYUNA GEÇİŞ
     startBtn.addEventListener('click', ()=>{
       nickname = nickIn.value.trim();
       if(!nickname){ alert('Kullanıcı adı gerekli'); nickIn.focus(); return; }
-      mainM.style.display='none';     // Menü GİZLE
-      gc.style.display='flex';        // Oyun+Panel GÖSTER
+      mainM.style.display='none';
+      gc.style.display='flex';
       document.getElementById('mainScore').style.display = 'none';
       snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];
       vx=1; vy=0; score=0; naCount=0; superApple=null;
@@ -437,20 +467,18 @@
       clickToStart.style.display='block';
       attachScoreListener();
     });
-
     clickToStart.addEventListener('click', ()=>{
       if(!hasStarted){
         isRunning=true; hasStarted=true; isPaused=false;
         clickToStart.style.display='none';
       }
     });
-
     // OYUNU TEKRAR BAŞLATTIĞINDA ANA MENÜYE DÖN
     restartBtn.addEventListener('click', ()=>{
       document.getElementById('gameOverScreen').style.display='none';
       clearInterval(gameInt);
-      gc.style.display='none';        // Oyun+Panel GİZLE
-      mainM.style.display='flex';     // Menü GÖSTER
+      gc.style.display='none';
+      mainM.style.display='flex';
       nickIn.value=''; nickIn.focus();
       isRunning=isPaused=hasStarted=false;
       document.getElementById('mainScore').style.display = 'block';
