@@ -51,7 +51,6 @@
       transition:background .3s;
     }
     #startButton:hover { background: var(--clr-accent-dark); color:#fff; }
-
     #mainScore {
       display: none;
       width:100%; background: var(--clr-panel-bg);
@@ -69,13 +68,13 @@
       color: var(--clr-score);
       font-size:1rem; font-weight:bold;
     }
-
     /* —— Oyun + Bilgi Konteyneri —— */
     #gameContainer {
       display:none;
       width:100%; max-width:760px;
       display:flex; gap:1.5rem; align-items:flex-start;
       justify-content: center;
+      position: relative;
     }
     /* —— Oyun Çerçevesi —— */
     #gameFrame {
@@ -99,24 +98,6 @@
       max-height: 65vw;
       background:#111; border-radius:12px;
       display:block;
-    }
-    /* CANVAS ÜSTÜ ANLIK SKOR */
-    #canvasScore {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 20;
-      padding: 7px 18px 6px 12px;
-      background: rgba(0,0,0,0.62);
-      color: #ffe066;
-      font-family: var(--font-heading);
-      font-size: 1.4rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px #0004;
-      pointer-events: none;
-      letter-spacing: 1px;
-      user-select: none;
-      border: 2px solid #ffe06622;
     }
     #clickToStart {
       position:absolute; top:45%; left:50%;
@@ -144,7 +125,6 @@
       transition:background .3s;
     }
     #restartButton:hover { background: var(--clr-accent-dark); color:#fff; }
-
     /* —— Bilgi Paneli —— */
     #scorePanel {
       background: var(--clr-panel-bg);
@@ -156,6 +136,7 @@
       color: var(--clr-text);
       font-family: var(--font-body);
       max-width:95vw;
+      transition: opacity .25s;
     }
     #scorePanel h3 {
       font-family: var(--font-heading);
@@ -166,7 +147,7 @@
       font-size:.95rem; line-height:1.4;
       color:#cceeff; margin-bottom:1.5rem;
       text-align:center;
-      transition: opacity .2s;
+      transition: opacity .25s;
     }
     #scorePanel #currentScore {
       font-family: var(--font-heading);
@@ -225,66 +206,94 @@
         font-size: 0.97rem;
         padding: 1rem 3vw;
       }
-      /* Mobilde touch-controls görünüyorsa bilgilendirme görünmesin */
-      .touch-controls:has(button) ~ #gameContainer #instructions {
+    }
+    /* ---- Mobil Touch Kontroller ---- */
+    .touch-controls {
+      display: none;
+    }
+    @media (max-width: 700px) {
+      /* Mobilde touch-controls görününce paneli gizle (JS ile de destekliyoruz) */
+      #scorePanel.hide-mobile {
         opacity: 0 !important;
         pointer-events: none;
         height:0; margin:0; padding:0;
         visibility: hidden;
       }
-    }
-    /* ---- Mobil Touch Kontroller (Sabit ve Şeffaf, panelin ÜSTÜNE DEĞİL, EN ALTA) ---- */
-    .touch-controls {
-      display: none;
-    }
-    @media (max-width: 700px) {
       .touch-controls {
         position: fixed;
         left: 50%;
-        bottom: 85px; /* daha yukarıda */
+        bottom: 35px;
         transform: translateX(-50%);
         display: flex !important;
         flex-direction: column;
         align-items: center;
         z-index: 999;
         width: 97vw;
-        max-width: 340px;
+        max-width: 360px;
         pointer-events: none;
+        user-select: none;
       }
       .touch-row {
         display: flex;
         justify-content: center;
-        gap: 18px;
+        gap: 28px;
         pointer-events: none;
       }
       .touch-controls button {
-        width: 58px;
-        height: 58px;
-        font-size: 2rem;
-        border: none;
-        background: rgba(10, 60, 90, 0.62);
+        width: 75px;
+        height: 75px;
+        font-size: 2.7rem;
+        border: 2px solid #fff;
+        background: rgba(20, 70, 140, 0.83);
         color: #fff;
-        border-radius: 15px;
+        border-radius: 22px;
         margin: 0;
         padding: 0;
-        box-shadow: 0 2px 8px #0005;
+        box-shadow: 0 2px 12px #0006;
         transition: background .2s, transform .1s;
         backdrop-filter: blur(4px);
-        opacity: 0.70;
+        opacity: 0.90;
         pointer-events: auto;
       }
       .touch-controls button:active {
-        background: rgba(60, 180, 255, 0.7);
-        opacity: 0.96;
-        transform: scale(0.97);
+        background: rgba(60, 180, 255, 0.95);
+        opacity: 1;
+        transform: scale(0.96);
+      }
+    }
+    /* Dışarıda, canvas'ın üstü değil: Skor kutusu */
+    #fixedScoreBox {
+      position: fixed;
+      top: 32px;
+      left: 15px;
+      z-index: 1050;
+      background: rgba(0,0,0,0.85);
+      color: #ffe066;
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #0004;
+      border: 2px solid #ffe06622;
+      padding: 8px 28px 8px 20px;
+      letter-spacing: 1px;
+      user-select: none;
+      pointer-events: none;
+      min-width: 135px;
+      text-align: left;
+    }
+    @media (max-width: 700px) {
+      #fixedScoreBox {
+        top: 16vw;
+        left: 4vw;
+        font-size: 1.5rem;
+        padding: 8px 20px 8px 16px;
+        min-width: 95px;
       }
     }
   </style>
 </head>
 <body>
   <h1 id="gameTitle">🐍 Yılan Oyunu</h1>
-
-  <!-- Ana Menü -->
   <div id="mainMenu">
     <input id="nicknameInput" type="text" placeholder="Kullanıcı adınızı girin" maxlength="12"/>
     <button id="startButton">Oyuna Başla</button>
@@ -293,11 +302,8 @@
       <div id="mainTopHolder">—: —</div>
     </div>
   </div>
-
-  <!-- Oyun & Bilgilendirme (Başlangıçta GİZLİ) -->
   <div id="gameContainer">
     <div id="gameFrame">
-      <div id="canvasScore">Skor: 0</div>
       <canvas id="gameCanvas" width="400" height="400"></canvas>
       <div id="clickToStart">Başlamak için tıklayın</div>
       <div id="gameOverScreen">
@@ -320,9 +326,11 @@
       </div>
     </div>
   </div>
+  <!-- CANVAS DIŞI HER ZAMAN GÖRÜNÜR SKOR -->
+  <div id="fixedScoreBox">Skor: 0</div>
   <!-- Mobil (Touch) Kontroller, EN ALTA ve CANVAS'ın DIŞINDA -->
   <div class="touch-controls">
-    <div class="touch-row" style="margin-bottom:10px;">
+    <div class="touch-row" style="margin-bottom:16px;">
       <button id="upBtn">▲</button>
     </div>
     <div class="touch-row">
@@ -331,8 +339,6 @@
       <button id="rightBtn">▶</button>
     </div>
   </div>
-
-  <!-- Firebase & Oyun Scriptleri -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
@@ -340,6 +346,8 @@
       document.getElementById('gameContainer').style.display = 'none';
       document.getElementById('mainMenu').style.display = 'flex';
       document.getElementById('mainScore').style.display = 'block';
+      // Paneli açarken skor kutusunu sıfırla
+      document.getElementById('fixedScoreBox').textContent = 'Skor: 0';
     });
     // Firebase config
     const firebaseConfig = {
@@ -367,12 +375,25 @@
           topHolder = document.getElementById('topHolder'),
           canvas = document.getElementById('gameCanvas'),
           ctx = canvas.getContext('2d'),
-          canvasScore = document.getElementById('canvasScore');
+          fixedScoreBox = document.getElementById('fixedScoreBox'),
+          scorePanel = document.getElementById('scorePanel');
 
     // Oyun değişkenleri
     const gridSize = 20, tileCount = canvas.width / gridSize;
     let snake, vx, vy, apple, superApple, score, naCount;
     let isRunning, isPaused, hasStarted, gameInt, nickname;
+
+    // Mobilde touch-controls varsa paneli gizle/göster
+    function toggleMobilePanel() {
+      const isMobile = window.innerWidth <= 700;
+      const touchControls = document.querySelector('.touch-controls');
+      if (isMobile && touchControls && getComputedStyle(touchControls).display !== 'none') {
+        scorePanel.classList.add('hide-mobile');
+      } else {
+        scorePanel.classList.remove('hide-mobile');
+      }
+    }
+    window.addEventListener('resize', toggleMobilePanel);
 
     // Skor dinleme
     function attachScoreListener(){
@@ -422,8 +443,8 @@
         ctx.arc(seg.x*gridSize+gridSize/2,seg.y*gridSize+gridSize/2,gridSize/2.5,0,Math.PI*2);
         ctx.fill(); ctx.stroke();
       });
-      // CANVAS üstü skor güncelle
-      canvasScore.textContent = `Skor: ${score}`;
+      // CANVAS üstü skor kutusu değil, DIŞINDAKİ kutu güncelleniyor:
+      fixedScoreBox.textContent = `Skor: ${score}`;
     }
     function gameStep(){
       if(!isRunning||isPaused) return;
@@ -480,6 +501,7 @@
     window.addEventListener('load', ()=>{
       attachScoreListener();
       bindTouchControls();
+      toggleMobilePanel();
     });
     // ANA MENÜDEN OYUNA GEÇİŞ
     startBtn.addEventListener('click', ()=>{
@@ -491,11 +513,12 @@
       snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];
       vx=1; vy=0; score=0; naCount=0; superApple=null;
       currentScoreEl.textContent='Skor: 0';
-      canvasScore.textContent='Skor: 0';
+      fixedScoreBox.textContent='Skor: 0';
       placeApple(); drawGame(); runGame();
       isRunning=false; isPaused=false; hasStarted=false;
       clickToStart.style.display='block';
       attachScoreListener();
+      setTimeout(toggleMobilePanel, 100); // paneli güncelle
     });
     clickToStart.addEventListener('click', ()=>{
       if(!hasStarted){
@@ -513,6 +536,7 @@
       isRunning=isPaused=hasStarted=false;
       document.getElementById('mainScore').style.display = 'block';
       attachScoreListener();
+      toggleMobilePanel();
     });
   </script>
 </body>
