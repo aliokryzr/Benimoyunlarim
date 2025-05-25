@@ -55,6 +55,7 @@
     #startButton:hover { background: var(--clr-accent-dark); color:#fff; }
 
     #mainScore {
+      display: none;
       width:100%; background: var(--clr-panel-bg);
       padding:1rem; border-radius:8px; text-align:center;
       border:2px solid var(--clr-accent);
@@ -240,7 +241,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // DOM refs
+    // DOM
     const nickIn = document.getElementById('nicknameInput'),
           startBtn = document.getElementById('startButton'),
           mainM = document.getElementById('mainMenu'),
@@ -253,12 +254,12 @@
           canvas = document.getElementById('gameCanvas'),
           ctx = canvas.getContext('2d');
 
-    // Game vars
+    // Oyun değişkenleri
     const gridSize = 20, tileCount = canvas.width / gridSize;
     let snake, vx, vy, apple, superApple, score, naCount;
     let isRunning, isPaused, hasStarted, gameInt, nickname;
 
-    // Score listener
+    // Skor dinleme
     function attachScoreListener(){
       db.ref('scores').orderByChild('score').limitToLast(1)
         .on('value', snap=>{
@@ -270,21 +271,22 @@
             topHolder.querySelector('.top-score').textContent = arr[0].score;
           } else {
             mainTop.textContent = '—: —';
-            topHolder.querySelector('.top-name').textContent = '—';
+            topHolder.	querySelector('.top-name').textContent = '—';
             topHolder.querySelector('.top-score').textContent = '—';
           }
         });
     }
+
     function saveScore(n,s){ db.ref('scores').push({name:n,score:s}); }
 
     function placeApple(){
       apple = { x: Math.floor(Math.random()*tileCount), y: Math.floor(Math.random()*tileCount) };
-      if(snake.some(s=>s.x===apple.x&&s.y===apple.y)||(superApple&&superApple.x===apple.x&&superApple.y===apple.y))
+      if(snake.some(s=>s.x===apple.x&&s.y===apple.y) || (superApple&&superApple.x===apple.x&&superApple.y===apple.y))
         placeApple();
     }
     function placeSuperApple(){
       superApple = { x: Math.floor(Math.random()*tileCount), y: Math.floor(Math.random()*tileCount) };
-      if(snake.some(s=>s.x===superApple.x&&s.y===superApple.y)||(apple.x===superApple.x&&apple.y===superApple.y))
+      if(snake.some(s=>s.x===superApple.x&&s.y===superApple.y) || (apple.x===superApple.x&&apple.y===superApple.y))
         placeSuperApple();
     }
     function drawGame(){
@@ -324,7 +326,7 @@
       drawGame();
     }
     function endGame(){
-      isPaused = true; isRunning = false; clearInterval(gameInt);
+      isPaused=true; isRunning=false; clearInterval(gameInt);
       clickToStart.style.display='none';
       saveScore(nickname,score);
       document.getElementById('gameOverScreen').style.display='block';
@@ -333,6 +335,7 @@
       clearInterval(gameInt);
       gameInt = setInterval(gameStep,120);
     }
+
     window.addEventListener('keydown', e=>{
       if(e.key===' '){
         if(!hasStarted) return;
@@ -345,6 +348,7 @@
       if(e.key==='ArrowLeft'&&vx!==1){ vx=-1;vy=0; }
       if(e.key==='ArrowRight'&&vx!==-1){ vx=1;vy=0; }
     });
+
     function bindTouchControls(){
       ['up','down','left','right'].forEach(dir=>{
         const btn=document.getElementById(dir+'Btn'), handler=e=>{
@@ -372,9 +376,9 @@
       snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];
       vx=1; vy=0; score=0; naCount=0; superApple=null;
       currentScoreEl.textContent='Skor: 0';
-      placeApple();
+      placeApple(); drawGame(); runGame();
       isRunning=false; isPaused=false; hasStarted=false;
-      clickToStart.style.display='block'; drawGame(); runGame();
+      clickToStart.style.display='block';
       attachScoreListener();
     });
 
