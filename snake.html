@@ -376,35 +376,39 @@
     let snake, vx, vy, apple, superApple, score, naCount;
     let isRunning, isPaused, hasStarted, gameInt, nickname;
 
-    function attachScoreListener(){
-      db.ref('scores').orderByChild('score').limitToLast(20)
-        .on('value', snap=>{
-          let arr = [];
-          snap.forEach(c=>arr.push(c.val()));
-          arr.sort((a, b) => b.score - a.score);
-          let html = '';
-          for(let i=0; i<3; i++){
-            if(arr[i]) {
-              html += `<li>
-                <span>${medals[i]}</span>
-                <span class="name">${arr[i].name}</span>
-                <span class="score">${arr[i].score}</span>
-              </li>`;
-            }
-          }
-          if(!html) html = '<li style="color:#ccc;">Henüz skor kaydı yok.</li>';
-          mainTopList.innerHTML = html;
-          // Panelde en yüksek skoru yine göster
-          if(arr[0]) {
-            topHolder.querySelector('.top-name').textContent = arr[0].name;
-            topHolder.querySelector('.top-score').textContent = arr[0].score;
-          } else {
-            topHolder.querySelector('.top-name').textContent = '—';
-            topHolder.querySelector('.top-score').textContent = '—';
-          }
-        });
+function attachScoreListener(){
+  db.ref('scores').once('value', snap => {
+    let arr = [];
+    snap.forEach(c => {
+      let v = c.val();
+      // Skorları güvenli şekilde sayıya çevir
+      v.score = Number(v.score) || 0;
+      arr.push(v);
+    });
+    arr.sort((a, b) => b.score - a.score);
+    let html = '';
+    const medals = ['🥇', '🥈', '🥉'];
+    for(let i=0; i<3; i++){
+      if(arr[i]) {
+        html += `<li>
+          <span style="font-size:2em;margin-right:6px;">${medals[i]}</span>
+          <span class="name">${arr[i].name}</span>
+          <span class="score">${arr[i].score}</span>
+        </li>`;
+      }
     }
-
+    if(!html) html = '<li style="color:#ccc;">Henüz skor kaydı yok.</li>';
+    mainTopList.innerHTML = html;
+    // Panelde en yüksek skoru yine göster
+    if(arr[0]) {
+      topHolder.querySelector('.top-name').textContent = arr[0].name;
+      topHolder.querySelector('.top-score').textContent = arr[0].score;
+    } else {
+      topHolder.querySelector('.top-name').textContent = '—';
+      topHolder.querySelector('.top-score').textContent = '—';
+    }
+  });
+}
     function saveScore(n,s){ db.ref('scores').push({name:n,score:s}); }
 
     function placeApple(){
