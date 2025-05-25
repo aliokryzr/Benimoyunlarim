@@ -328,11 +328,13 @@
       drawGame();
     }
     function endGame(){
-      isPaused=isRunning=false;
-      clickToStart.style.display='none';
-      saveScore(nickname,score);
-      document.getElementById('gameOverScreen').style.display='block';
-    }
+  isPaused = true;     // Oyunu durdur
+  isRunning = false;   // Hareketi tamamen kapat
+  clickToStart.style.display = 'none';
+  saveScore(nickname, score);
+  document.getElementById('gameOverScreen').style.display = 'block';
+  clearInterval(gameInterval); // oyun döngüsünü kesin olarak durdur
+}
     function runGameLoop(){
       clearInterval(gameInterval);
       gameInterval=setInterval(gameStep,120);
@@ -342,24 +344,23 @@
       attachScoreListener();
       bindTouchControls();
       window.addEventListener('keydown', e=>{
-        if(!isRunning&&!hasStarted) return;
-        if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)){
-          e.preventDefault();
-          switch(e.key){
-            case 'ArrowUp':    if(velocityY!==1)  { velocityX=0; velocityY=-1; } break;
-            case 'ArrowDown':  if(velocityY!==-1) { velocityX=0; velocityY=1;  } break;
-            case 'ArrowLeft':  if(velocityX!==1)  { velocityX=-1; velocityY=0; } break;
-            case 'ArrowRight': if(velocityX!==-1) { velocityX=1; velocityY=0;  } break;
-            case ' ':
-              if(!hasStarted) return;
-              isPaused = !isPaused;
-              currentScoreEl.textContent = isPaused
-                ? 'Oyun Duraklatıldı (Boşluk ile devam ettir)'
-                : `Skor: ${score}`;
-          }
-        }
-      });
-    });
+         if (!isRunning || !hasStarted || isPaused) return; // Eklenen kontrol
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)){
+    e.preventDefault();
+    switch(e.key){
+      case 'ArrowUp':    if(velocityY!==1)  { velocityX=0; velocityY=-1; } break;
+      case 'ArrowDown':  if(velocityY!==-1) { velocityX=0; velocityY=1;  } break;
+      case 'ArrowLeft':  if(velocityX!==1)  { velocityX=-1; velocityY=0; } break;
+      case 'ArrowRight': if(velocityX!==-1) { velocityX=1; velocityY=0;  } break;
+      case ' ':
+        if(!hasStarted) return;
+        isPaused = !isPaused;
+        currentScoreEl.textContent = isPaused
+          ? 'Oyun Duraklatıldı (Boşluk ile devam ettir)'
+          : `Skor: ${score}`;
+    }
+  }
+});
 
     startButton.addEventListener('click', ()=>{
       nickname = nicknameInput.value.trim();
@@ -390,19 +391,19 @@
       attachScoreListener();
     });
 
-    function bindTouchControls(){
-      ['up','left','down','right'].forEach(dir=>{
-        document.getElementById(dir+'Btn').addEventListener('touchstart', e=>{
-          e.preventDefault();
-          if(isRunning&&hasStarted){
-            if(dir==='up'   && velocityY!==1)  { velocityX=0;   velocityY=-1; }
-            if(dir==='down' && velocityY!==-1) { velocityX=0;   velocityY=1;  }
-            if(dir==='left' && velocityX!==1)  { velocityX=-1;  velocityY=0; }
-            if(dir==='right'&& velocityX!==-1) { velocityX=1;   velocityY=0; }
-          }
-        });
-      });
-    }
+   function bindTouchControls(){
+  ['up','left','down','right'].forEach(dir=>{
+    document.getElementById(dir+'Btn').addEventListener('touchstart', e=>{
+      e.preventDefault();
+      if(isRunning && hasStarted && !isPaused){ // Eklenen kontrol
+        if(dir==='up'   && velocityY!==1)  { velocityX=0;   velocityY=-1; }
+        if(dir==='down' && velocityY!==-1) { velocityX=0;   velocityY=1;  }
+        if(dir==='left' && velocityX!==1)  { velocityX=-1;  velocityY=0; }
+        if(dir==='right'&& velocityX!==-1) { velocityX=1;   velocityY=0; }
+      }
+    });
+  });
+}
   </script>
 </body>
 </html>
