@@ -118,31 +118,46 @@
     }
 
     /* —— Bilgi Paneli —— */
-   #scorePanel {
-
-  width: 280px;          
-
-}
-    #scorePanel #instructions {
+ #scorePanel {
+  display: block;                /* panel artık gizli ise tekrar göster */
+  background: rgba(0, 0, 0, 0.6); /* yarı transparan koyu zemin */
+  border: 3px solid #0ff;        /* neon mavi border */
+  border-radius: 12px;           
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  padding: 1.5rem;               
+  width: 300px;                  /* sabit genişlik */
+  margin-left: 2rem;             /* oyun çerçevesinden hafifçe ayır */
+  color: #eee;                   
   font-family: 'Roboto', sans-serif;
-  color: #a0d8ef;              /* hafif turkuaz */
-  font-size: 0.9rem;
+  position: relative;
+}
+    #scorePanel h3 {
+  font-family: 'Audiowide', cursive;
+  font-size: 1.4rem;
+  color: #0ff;                   /* neon vurgu rengi */
+  margin-bottom: 1rem;
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.8);
+  text-align: center;
+}
+   #scorePanel #instructions {
+  font-size: 0.95rem;
   line-height: 1.4;
+  color: #cceeff;
   margin-bottom: 1.5rem;
 }
-    #scorePanel #currentScore {
+   #scorePanel #currentScore {
   font-family: 'Audiowide', cursive;
-  color: #ffe066;              /* parlak sarı */
   font-size: 1.6rem;
+  color: #ffe066;                /* dikkat çekici sarı */
   text-align: center;
-  margin-bottom: 2rem;         /* başlıkla arasında boşluk */
+  margin-bottom: 2rem;           /* başlık ile yüksek skor arasında boşluk */
 }
-    scorePanel .score-header {
+   #scorePanel .score-header {
   font-family: 'Audiowide', cursive;
-  color: #ff9f1a;              /* altın turuncu */
   font-size: 1.3rem;
-  text-align: center;
+  color: #ff9f1a;                /* koyu altın */
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 /* 4. Liste (oyuncu + puan) */
@@ -152,19 +167,23 @@
   margin: 0;
 }
 #scorePanel #liveScores li {
-  font-family: 'Roboto', sans-serif;
-  color: #ffffff;              /* beyaz */
-  font-size: 1.1rem;
-  text-align: center;
-  margin-bottom: .5rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+    #scorePanel #liveScores li:last-child {
+  border-bottom: none;
 }
 /* Eğer içindeki span’ları ayrı renklendirmek istersen */
-#scorePanel #liveScores li .name {
-  color: #a0d8ef;              /* turkuaz ad */
+#scorePanel #liveScores .name {
+  color: #0ff;
   font-weight: bold;
 }
-#scorePanel #liveScores li .score {
-  color: #ffe066;              /* sarı puan */
+#scorePanel #liveScores .score {
+  color: #ffe066;
+  font-weight: bold;
 }
     #scorePanel h3 { font-size:1.1rem; margin-bottom:.75rem; }
     #scorePanel p#instructions {
@@ -196,6 +215,13 @@
     }
 
     /* —— Mobil Responsive —— */
+    @media (max-width: 800px) {
+  #scorePanel {
+    width: 90vw;
+    margin-left: 0;
+    margin-top: 1.5rem;
+  }
+}
     @media (max-width:700px) {
       #gameFrame {
         width:90vw; height:90vw; max-width:360px; max-height:360px;
