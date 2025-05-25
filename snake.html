@@ -227,6 +227,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
+    window.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('gameContainer').style.display = 'none';
+  document.getElementById('mainMenu').style.display = 'flex';
+});
+
     // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
