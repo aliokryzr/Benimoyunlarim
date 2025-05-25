@@ -309,24 +309,40 @@
         ctx.fill(); ctx.stroke();
       });
     }
-    function gameStep(){
-      if(isPaused) return;
-      const nx = snake[0].x + velocityX, ny = snake[0].y + velocityY;
-      if(nx<0||nx>=tileCount||ny<0||ny>=tileCount||snake.some(s=>s.x===nx&&s.y===ny)){
-        endGame(); return;
-      }
-      snake.unshift({x:nx,y:ny});
-      if(!superApple && nx===apple.x && ny===apple.y){
-        score++; currentScoreEl.textContent=`Skor: ${score}`; mobileScoreEl.textContent=`Skor: ${score}`;
-        normalAppleCount++; normalAppleCount>=10?placeSuperApple():placeApple();
-      } else if(superApple && nx===superApple.x && ny===superApple.y){
-        score+=50; currentScoreEl.textContent=`Skor: ${score}`; mobileScoreEl.textContent=`Skor: ${score}`;
-        superApple=null; normalAppleCount=0; placeApple();
-      } else {
-        snake.pop();
-      }
-      drawGame();
-    }
+   function gameStep() {
+  if (!isRunning || isPaused) return; // <-- bu satırı özellikle ekle
+
+  const nx = snake[0].x + velocityX;
+  const ny = snake[0].y + velocityY;
+
+  if (nx < 0 || nx >= tileCount || ny < 0 || ny >= tileCount || snake.some(s => s.x === nx && s.y === ny)) {
+    endGame();
+    return;
+  }
+
+  snake.unshift({ x: nx, y: ny });
+
+  if (!superApple && nx === apple.x && ny === apple.y) {
+    score++;
+    currentScoreEl.textContent = `Skor: ${score}`;
+    mobileScoreEl.textContent = `Skor: ${score}`;
+    normalAppleCount++;
+    normalAppleCount >= 10 ? placeSuperApple() : placeApple();
+  } else if (superApple && nx === superApple.x && ny === superApple.y) {
+    score += 50;
+    currentScoreEl.textContent = `Skor: ${score}`;
+    mobileScoreEl.textContent = `Skor: ${score}`;
+    superApple = null;
+    normalAppleCount = 0;
+    placeApple();
+  } else {
+    snake.pop();
+  }
+
+  drawGame();
+}
+
+
     function endGame(){
   isPaused = true;     // Oyunu durdur
   isRunning = false;   // Hareketi tamamen kapat
@@ -340,11 +356,9 @@
       gameInterval=setInterval(gameStep,120);
     }
 
-    window.addEventListener('load',()=>{
-      attachScoreListener();
-      bindTouchControls();
-      window.addEventListener('keydown', e=>{
-         if (!isRunning || !hasStarted || isPaused) return; // Eklenen kontrol
+   window.addEventListener('keydown', e => {
+  if (!isRunning || !hasStarted || isPaused) return; // <-- bu satır mutlaka olmalı
+
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)){
     e.preventDefault();
     switch(e.key){
@@ -391,11 +405,11 @@
       attachScoreListener();
     });
 
-   function bindTouchControls(){
+ function bindTouchControls(){
   ['up','left','down','right'].forEach(dir=>{
     document.getElementById(dir+'Btn').addEventListener('touchstart', e=>{
       e.preventDefault();
-      if(isRunning && hasStarted && !isPaused){ // Eklenen kontrol
+      if(isRunning && hasStarted && !isPaused){ // <-- buradaki kontroller çok önemli
         if(dir==='up'   && velocityY!==1)  { velocityX=0;   velocityY=-1; }
         if(dir==='down' && velocityY!==-1) { velocityX=0;   velocityY=1;  }
         if(dir==='left' && velocityX!==1)  { velocityX=-1;  velocityY=0; }
