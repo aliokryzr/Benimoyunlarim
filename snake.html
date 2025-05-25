@@ -67,15 +67,18 @@
     #topScores .medal { margin-right:.5rem; font-size:1.2rem; }
 
     /* —— Oyun Ekranı —— */
-    #gameContainer {
-      display:none; flex-direction:row; gap:1.5rem;
-      align-items:flex-start; width:100%; max-width:760px;
-    }
+   #gameContainer {
+  display: flex;
+  gap: 1.5rem;
+  align-items: stretch;   /* esnek öğeleri boy olarak eşitle */
+}
     #gameFrame {
+      flex: 1;
       position:relative; width:400px; height:400px;
       background:#111; border:8px solid #ddd; border-radius:12px;
       box-shadow:0 0 15px #0ff; overflow:hidden;
     }
+    
     canvas { width:100%; height:100%; display:block; background:#111; }
     #clickToStart {
       position:absolute; top:45%; left:50%;
@@ -116,6 +119,10 @@
 
     /* —— Bilgi Paneli —— */
     #scorePanel {
+      flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
       width:280px; background:rgba(0,0,0,0.5);
       padding:1rem; border-radius:12px; box-shadow:0 0 15px #0ff;
       font-size:.95rem; user-select:none;
