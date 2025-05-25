@@ -216,7 +216,7 @@
       .touch-controls {
         position: fixed;
         left: 50%;
-        bottom: 95px;
+        bottom: 10px; /* en aşağıya */
         transform: translateX(-50%);
         display: flex !important;
         flex-direction: column;
@@ -254,33 +254,30 @@
         opacity: 1;
         transform: scale(0.96);
       }
-    }
-    /* Mobil skor kutusu (fixedScoreBox) SADECE mobilde ve oyun sırasında görünür */
-    #fixedScoreBox {
-      display: none;
-    }
-    @media (max-width: 700px) {
+      /* Mobil skor kutusu canvasın hemen altında ve sola yaslı, küçük */
       #fixedScoreBox.active {
         display: block;
         position: fixed;
-        top: 12vw;
-        left: 4vw;
+        left: 6vw;
+        bottom: 120px;  /* okların biraz üstünde */
         z-index: 1050;
         background: rgba(0,0,0,0.85);
         color: #ffe066;
         font-family: var(--font-heading);
-        font-size: 1.5rem;
-        border-radius: 10px;
+        font-size: 1.1rem;
+        border-radius: 9px;
         box-shadow: 0 2px 8px #0004;
         border: 2px solid #ffe06622;
-        padding: 8px 20px 8px 16px;
+        padding: 4px 15px 4px 12px;
         letter-spacing: 1px;
         user-select: none;
         pointer-events: none;
-        min-width: 95px;
+        min-width: 65px;
         text-align: left;
       }
     }
+    /* Masaüstünde skor kutusu görünmez */
+    #fixedScoreBox { display: none; }
   </style>
 </head>
 <body>
@@ -310,7 +307,7 @@
         Çarpınca biter.
       </p>
       <div id="currentScore">Skor: 0</div>
-      <h3 class="score-header">En Yüksek Skor</h3>
+      <h3 class="score-header">🏆 En Yüksek Skor 🏆</h3>
       <div id="topHolder">
         <span class="top-name">—</span>
         <span class="top-score">—</span>
@@ -319,7 +316,7 @@
   </div>
   <!-- CANVAS DIŞI SADECE MOBİLDE VE OYUNDA GÖRÜNÜR SKOR -->
   <div id="fixedScoreBox">Skor: 0</div>
-  <!-- Mobil (Touch) Kontroller, EN ALTA ve CANVAS'ın DIŞINDA -->
+  <!-- Mobil (Touch) Kontroller -->
   <div class="touch-controls">
     <div class="touch-row" style="margin-bottom:16px;">
       <button id="upBtn">▲</button>
@@ -373,7 +370,6 @@
     let snake, vx, vy, apple, superApple, score, naCount;
     let isRunning, isPaused, hasStarted, gameInt, nickname;
 
-    // Mobilde touch-controls varsa paneli gizle/göster, skor kutusu da!
     function toggleMobilePanel(showGameScore) {
       const isMobile = window.innerWidth <= 700;
       const touchControls = document.querySelector('.touch-controls');
@@ -391,7 +387,6 @@
       }
     }
     window.addEventListener('resize', ()=>toggleMobilePanel(isRunning));
-
     // Skor dinleme
     function attachScoreListener(){
       db.ref('scores').orderByChild('score').limitToLast(1)
