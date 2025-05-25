@@ -152,12 +152,45 @@
   text-align: center;
   margin-bottom: 2rem;           /* başlık ile yüksek skor arasında boşluk */
 }
-   #scorePanel .score-header {
+ .score-header {
   font-family: 'Audiowide', cursive;
+  color: #0ff;
   font-size: 1.3rem;
-  color: #ff9f1a;                /* koyu altın */
-  margin-bottom: 1rem;
   text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+    score-header::before,
+.score-header::after {
+  content: '🏆';
+  margin: 0 0.5rem;
+  font-size: 1.2rem;
+}
+    #topHolder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #0ff;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+  margin: 0 auto;            /* ortalamak için */
+  max-width: 240px;          /* istersen genişlik sabitle */
+}
+
+/* İsim ve puan stil ayarları */
+#topHolder .top-name {
+  font-family: 'Roboto', sans-serif;
+  color: #ffe066;
+  font-weight: bold;
+  font-size: 1rem;
+}
+#topHolder .top-score {
+  font-family: 'Audiowide', cursive;
+  color: #ff9f1a;
+  font-size: 1.1rem;
 }
 
 /* 4. Liste (oyuncu + puan) */
@@ -278,11 +311,12 @@
         Boşluk tuşu: Başlat/Duraklat<br/>
         Çarpınca biter.
       </p>
-      <div id="currentScore">Skor: 0</div>
-      <h3 class="score-header">En Yüksek Skor Sahibi</h3>
-      <ol id="liveScores"></ol>
-    </div>
-  </div>
+     <div id="topHolder">
+  <span class="trophy">🏆</span>
+  <span class="top-name">Equel</span>
+  <span class="top-score">429</span>
+  <span class="trophy">🏆</span>
+</div>
 
   <!-- Firebase ve Oyun Scriptleri -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
