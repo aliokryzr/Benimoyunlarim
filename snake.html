@@ -341,23 +341,22 @@
   body { position: relative; /* (opsiyonel) absolute bazını body yapmak için */ }
 <style>
 <style>
-  /* Footer’ı sayfanın sağ-alt köşesine sabitliyoruz */
+  /* viewport’a göre sabit konum */
   .contact-cta {
-    position: absolute;
-    bottom: 20px;      /* sayfanın altından 20px yukarı */
-    right: 160px;      /* sayfanın sağından 160px içeri */
+    position: fixed;      /* fixed: hep görünür, ekran bazlı */
+    bottom: 20px;         /* ekranın altından 20px yukarı */
+    right: 160px;         /* ekranın sağından 160px içeri */
+    z-index: 999;         /* tablonun üstünde kalsın */
     font-family: Georgia, serif;
     font-size: 0.9rem;
-    margin: 0;
     padding: 0.3em 0.6em;
+    margin: 0;
   }
-  /* “İletişim:” neon cam göbeği */
   .contact-cta span {
     color: #00ffff;
     text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
     margin-right: 0.4em;
   }
-  /* E-posta turuncu-altın, glow efektiyle */
   .contact-cta a {
     color: #ffac2b;
     text-shadow: 0 0 4px #ffac2b, 0 0 8px #ffac2b;
