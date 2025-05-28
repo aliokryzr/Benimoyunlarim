@@ -285,6 +285,42 @@
         opacity: 1;
         transform: scale(0.96);
       }
+      /* Start ekranı dikey ve yatay ortala */
+#startScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;  /* isteğe göre yukarıdan boşluk */
+}
+
+/* mainScore zaten kendi içinde var, contact bloğunu şekillendir: */
+.contact-email.start {
+  margin-top: 20px;    /* biraz aşağı kaydır */
+  width: 100%;         /* tam genişlik, text-align işe yarar */
+  text-align: center;  /* yatayda ortala */
+  font-family: 'Georgia', serif;
+}
+
+/* “İletişim:” neon-mavi */
+.contact-email.start span {
+  color: #00ffff;
+  text-shadow:
+    0 0 5px #00ffff,
+    0 0 10px #00ffff,
+    0 0 20px #00ffff;
+}
+
+/* link neon-turuncu */
+.contact-email.start a {
+  color: #ffa500;
+  text-shadow:
+    0 0 5px #ffa500,
+    0 0 10px #ffa500,
+    0 0 20px #ffa500;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
       #fixedScoreBox.active {
         display: block;
         position: fixed;
@@ -320,6 +356,9 @@
       <h2>🏆 En Yüksek Skor 🏆</h2>
       <ol id="mainTopList"></ol>
     </div>
+    <div id="contactEmailStart" class="contact-email start">
+    <span>İletişim:</span>
+    <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
   </div>
   <div id="gameContainer">
     <div id="gameFrame">
