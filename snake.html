@@ -25,6 +25,25 @@
       display: flex; flex-direction: column; align-items:center;
       padding:20px; min-height:100vh;
     }
+    /* “İletişim:” yazısını orijinal neon-mavi ile parlat */
+#contactEmail span {
+  color: #00ffff;               /* Eski neon-mavi */
+  text-shadow: 
+    0 0 5px #00ffff, 
+    0 0 10px #00ffff, 
+    0 0 20px #00ffff;
+}
+
+/* “Ali@Siber.NET” linkini orijinal neon-turuncu ile parlat */
+#contactEmail a {
+  color: #ffa500;               /* Eski neon-turuncu */
+  text-shadow: 
+    0 0 5px #ffa500, 
+    0 0 10px #ffa500, 
+    0 0 20px #ffa500;
+  text-decoration: none;
+}
+
     h1#gameTitle {
       font-family: var(--font-heading);
       font-size:2.8rem; margin-bottom:1.5rem;
