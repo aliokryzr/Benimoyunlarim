@@ -17,7 +17,8 @@
       --font-heading: 'Audiowide', cursive;
       --font-body: 'Roboto', sans-serif;
     }
-    * { box-sizing:border-box; margin:0; padding:0 }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
     body {
       background: linear-gradient(145deg,#0f2027,#203a43,#2c5364);
       color: var(--clr-text);
@@ -25,55 +26,78 @@
       display:flex; flex-direction:column; align-items:center;
       padding:20px; min-height:100vh;
     }
+
     h1#gameTitle {
       font-family: var(--font-heading);
       font-size:2.8rem; margin-bottom:1.5rem;
-      background:linear-gradient(90deg,var(--clr-accent-dark),var(--clr-accent));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background: linear-gradient(90deg,var(--clr-accent-dark),var(--clr-accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       text-shadow:0 0 8px var(--clr-accent); text-align:center;
     }
-    /* — Ana Menü — */
+
+    /* -------- Ana Menü -------- */
     #mainMenu {
       display:flex; flex-direction:column; align-items:center; gap:1rem;
       width:90vw; max-width:360px; margin-bottom:2rem;
     }
-    #nicknameInput, #startButton {
-      width:100%; padding:.75rem 1rem; border:none; border-radius:6px;
+    #nicknameInput {
+      width:100%; padding:.75rem 1rem;
+      border:none; border-radius:6px;
+      background:var(--clr-panel-bg); color:var(--clr-text);
       font-size:1rem; outline:none;
     }
-    #nicknameInput {
-      background:var(--clr-panel-bg); color:var(--clr-text);
-    }
     #startButton {
-      background:var(--clr-accent); color:#000; font-weight:bold; cursor:pointer;
+      width:100%; padding:.75rem;
+      background:var(--clr-accent); border:none; border-radius:6px;
+      color:#000; font-weight:bold; cursor:pointer;
       transition:background .3s;
     }
-    #startButton:hover { background:var(--clr-accent-dark); color:#fff }
+    #startButton:hover {
+      background:var(--clr-accent-dark); color:#fff;
+    }
     #mainScore {
-      display:none; width:100%; background:var(--clr-panel-bg);
-      padding:1rem; border-radius:8px; text-align:center;
-      border:2px solid var(--clr-accent);
+      display:none; width:100%;
+      background:var(--clr-panel-bg); padding:1rem; border-radius:8px;
+      text-align:center; border:2px solid var(--clr-accent);
       box-shadow:0 0 12px rgba(0,255,255,0.5);
     }
-    #mainScore h2 { font-family: var(--font-heading); color:var(--clr-accent); }
-    #mainTopList { list-style:none; padding:0; margin:0 }
-    #mainTopList li { display:flex; align-items:center; margin:6px 0; }
-    #mainTopList li span:first-child { font-size:1.5em; margin-right:8px }
-    #mainTopList .name { font-weight:bold; color:#ffe066; margin-right:8px }
-    #mainTopList .score { margin-left:auto; font-family:var(--font-heading); color:#ffb700 }
+    #mainScore h2 {
+      font-family:var(--font-heading);
+      color:var(--clr-accent); font-size:1.4rem; margin-bottom:.5rem;
+    }
+    #mainTopList {
+      list-style:none; padding:0; margin:0;
+    }
+    #mainTopList li {
+      display:flex; align-items:center;
+      font-size:1.12rem; margin:6px 0;
+    }
+    #mainTopList li span:first-child {
+      font-size:1.5em; margin-right:8px;
+    }
+    #mainTopList .name {
+      font-weight:bold; color:#ffe066; margin-right:8px;
+    }
+    #mainTopList .score {
+      font-family:var(--font-heading); color:#ffb700; margin-left:auto;
+    }
+
+    /* İletişim – Ana Menü */
     .contact-email.start {
       margin-top:20px; width:100%; text-align:center;
       font-family:'Georgia', serif;
     }
     .contact-email.start span {
-      color:#00ffff; text-shadow:0 0 5px #00ffff,0 0 10px #00ffff,0 0 20px #00ffff;
+      color:#00ffff;
+      text-shadow:0 0 5px #00ffff,0 0 10px #00ffff,0 0 20px #00ffff;
     }
     .contact-email.start a {
-      color:#ffa500; text-shadow:0 0 5px #ffa500,0 0 10px #ffa500,0 0 20px #ffa500;
+      color:#ffa500;
+      text-shadow:0 0 5px #ffa500,0 0 10px #ffa500,0 0 20px #ffa500;
       text-decoration:none; margin-left:4px;
     }
 
-    /* — Oyun & Canvas — */
+    /* -------- Oyun & Canvas -------- */
     #gameContainer {
       display:none; width:100%; max-width:760px;
       display:flex; gap:1.5rem; align-items:flex-start;
@@ -94,17 +118,6 @@
       max-width:100vw; max-height:65vw;
       background:#111; border-radius:12px; display:block;
     }
-    /* Mobilde de ekstra override yok, orijinal çerçeve korunuyor */
-
-    /* Mobilde sol üstte kayan skor */
-    .mobile-score {
-      position:absolute; top:8px; left:8px;
-      font-family:var(--font-heading); font-size:1.2rem;
-      color:var(--clr-score);
-      text-shadow:0 0 5px var(--clr-score),0 0 10px var(--clr-score);
-      pointer-events:none; user-select:none;
-    }
-
     #clickToStart {
       position:absolute; top:45%; left:50%;
       transform:translate(-50%,-50%);
@@ -120,51 +133,137 @@
       transform:translate(-50%,-50%);
       background:rgba(0,0,0,0.85); padding:2rem;
       border-radius:12px; color:#f44; text-align:center;
-      font-family:var(--font-heading);
-      box-shadow:0 0 12px #f44; display:none;
+      display:none; font-family:var(--font-heading);
+      box-shadow:0 0 12px #f44;
     }
     #restartButton {
       margin-top:1rem; padding:.75rem 1.5rem;
       background:var(--clr-accent); border:none; border-radius:8px;
-      font-weight:bold; cursor:pointer; transition:background .3s;
+      color:#000; font-weight:bold; cursor:pointer;
+      transition:background .3s;
     }
-    #restartButton:hover { background:var(--clr-accent-dark) }
+    #restartButton:hover { background:var(--clr-accent-dark); color:#fff; }
 
-    /* — Skor Paneli — */
+    /* -------- Skor Paneli -------- */
     #scorePanel {
-      background:var(--clr-panel-bg); border:3px solid var(--clr-accent);
-      border-radius:12px; box-shadow:0 0 20px rgba(0,255,255,0.5);
+      background:var(--clr-panel-bg);
+      border:3px solid var(--clr-accent);
+      border-radius:12px;
+      box-shadow:0 0 20px rgba(0,255,255,0.5);
       padding:1.5rem; width:290px; max-width:95vw;
-      display:flex; flex-direction:column; font-family:var(--font-body);
+      display:flex; flex-direction:column;
+      font-family:var(--font-body); color:var(--clr-text);
     }
-    #scorePanel h3, .score-header {
-      font-family:var(--font-heading); color:var(--clr-accent);
+    #scorePanel h3 {
+      font-family:var(--font-heading);
+      font-size:1.3rem; color:var(--clr-accent);
+      text-align:center; margin-bottom:1rem;
     }
-    #scorePanel #currentScore { margin-bottom:2rem; }
+    #scorePanel #instructions {
+      font-size:.95rem; line-height:1.4; color:#cceeff;
+      text-align:center; margin-bottom:1.5rem;
+    }
+    #scorePanel #currentScore {
+      font-family:var(--font-heading);
+      font-size:1.5rem; color:var(--clr-score);
+      text-align:center; margin-bottom:2rem;
+    }
+    #scorePanel .score-header {
+      font-family:var(--font-heading);
+      font-size:1.1rem; color:var(--clr-accent);
+      text-align:center; margin-bottom:1rem;
+    }
+    #scorePanel .score-header::before,
+    #scorePanel .score-header::after {
+      content:'🏆'; margin:0 .5rem;
+    }
+    #topHolder {
+      display:flex; justify-content:center; align-items:center;
+      gap:.75rem; padding:.75rem 1rem;
+      background:rgba(0,0,0,0.5);
+      border:2px solid var(--clr-accent);
+      border-radius:8px; margin:0 auto;
+    }
+    #topHolder .top-name {
+      color:#ffe066; font-weight:bold; font-size:1rem;
+    }
+    #topHolder .top-score {
+      color:#ff9f1a; font-family:var(--font-heading); font-size:1.1rem;
+    }
 
-    /* Mobil oklar ve fixedScoreBox yalnızca 700px altı */
-    .touch-controls, #fixedScoreBox { display:none }
-    @media (max-width:700px){
+    /* İletişim – Oyun Ekranı */
+    #contactEmail {
+      margin-top:20px; width:100%; text-align:center;
+      font-family:'Georgia', serif;
+    }
+    #contactEmail span {
+      color:#00ffff;
+      text-shadow:0 0 5px #00ffff,0 0 10px #00ffff,0 0 20px #00ffff;
+    }
+    #contactEmail a {
+      color:#ffa500;
+      text-shadow:0 0 5px #ffa500,0 0 10px #ffa500,0 0 20px #ffa500;
+      text-decoration:none; margin-left:4px;
+    }
+
+    /* -------- Mobil Touch Kontroller -------- */
+    .touch-controls {
+      display:none; /* masaüstünde gizle */
+    }
+    #fixedScoreBox {
+      display:none;
+    }
+
+    @media (max-width:900px) {
+      #gameContainer { flex-direction:column; align-items:center; gap:1rem; }
+      #gameFrame, #scorePanel { max-width:98vw; }
+      #gameFrame { margin-bottom:10px; }
+      canvas { max-width:98vw; height:auto; }
+    }
+    @media (max-width:700px) {
+      /* Touch kontrolleri ve sabit skor sadece mobilde göster */
       .touch-controls {
         display:flex; position:fixed; left:50%; bottom:10px;
         transform:translateX(-50%); flex-direction:column;
         align-items:center; z-index:999; width:97vw; max-width:360px;
+        pointer-events:none; user-select:none;
       }
-      .touch-row { display:flex; justify-content:center; gap:28px }
+      .touch-row {
+        display:flex; justify-content:center; gap:28px;
+        pointer-events:none;
+      }
       .touch-controls button {
         width:75px; height:75px; font-size:2.7rem;
         border:2px solid #fff; background:rgba(20,70,140,0.83);
-        border-radius:22px; box-shadow:0 2px 12px #0006;
-        transition:background .2s,transform .1s; opacity:.9;
+        color:#fff; border-radius:22px; box-shadow:0 2px 12px #0006;
+        transition:background .2s, transform .1s;
+        backdrop-filter:blur(4px); opacity:.9; pointer-events:auto;
       }
       .touch-controls button:active {
-        background:rgba(60,180,255,0.95); transform:scale(0.96); opacity:1;
+        background:rgba(60,180,255,0.95);
+        opacity:1; transform:scale(0.96);
       }
+
       #fixedScoreBox.active {
         display:block; position:fixed; left:6vw; bottom:120px;
         background:rgba(0,0,0,0.85); color:#ffe066;
         font-family:var(--font-heading); font-size:1.1rem;
-        padding:4px 15px; border-radius:9px;
+        border-radius:9px; box-shadow:0 2px 8px #0004;
+        border:2px solid #ffe06622; padding:4px 15px 4px 12px;
+        letter-spacing:1px; user-select:none;
+      }
+
+      /* Eskisi gibi her zaman skor paneli görünür */
+      #scorePanel {
+        display:flex !important;
+      }
+      #scorePanel.hide-mobile {
+        opacity:1!important;
+        pointer-events:auto!important;
+        visibility:visible!important;
+        height:auto!important;
+        margin:unset!important;
+        padding:1.5rem!important;
       }
     }
   </style>
@@ -175,11 +274,13 @@
   <div id="mainMenu">
     <input id="nicknameInput" type="text" placeholder="Kullanıcı adınızı girin" maxlength="12"/>
     <button id="startButton">Oyuna Başla</button>
+
     <div id="mainScore">
       <h2>🏆 En Yüksek Skor 🏆</h2>
       <ol id="mainTopList"></ol>
     </div>
-    <div class="contact-email start">
+
+    <div id="contactEmailStart" class="contact-email start">
       <span>İletişim:</span>
       <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
     </div>
@@ -188,7 +289,6 @@
   <div id="gameContainer">
     <div id="gameFrame">
       <canvas id="gameCanvas" width="400" height="400"></canvas>
-      <div class="mobile-score">Skor: 0</div>
       <div id="clickToStart">Başlamak için tıklayın</div>
       <div id="gameOverScreen">
         <h2>Game Over</h2>
@@ -210,13 +310,16 @@
         <span class="top-score">—</span>
       </div>
       <div id="contactEmail">
-        <span>İletişim:</span><a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
+        <span>İletişim:</span>
+        <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
       </div>
     </div>
 
     <div id="fixedScoreBox">Skor: 0</div>
     <div class="touch-controls">
-      <div class="touch-row"><button id="upBtn">▲</button></div>
+      <div class="touch-row" style="margin-bottom:16px;">
+        <button id="upBtn">▲</button>
+      </div>
       <div class="touch-row">
         <button id="leftBtn">◀</button>
         <button id="downBtn">▼</button>
@@ -228,133 +331,195 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
-    // DOM hazır olunca oyun kontrollerini ayarla
     window.addEventListener('DOMContentLoaded', ()=>{
-      attachScoreListener(); bindTouchControls();
       document.getElementById('gameContainer').style.display='none';
+      document.getElementById('mainMenu').style.display='flex';
       document.getElementById('mainScore').style.display='block';
+      document.getElementById('fixedScoreBox').classList.remove('active');
     });
 
-    // Firebase başlangıcı
     const firebaseConfig = {
-      apiKey: "...", authDomain: "...",
-      databaseURL: "...", projectId: "...",
-      storageBucket: "...", messagingSenderId: "...",
-      appId: "...", measurementId: "..."
+      apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
+      authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
+      databaseURL: "https://benimoyunlarim-9c38c-default-rtdb.firebaseio.com",
+      projectId: "benimoyunlarim-9c38c",
+      storageBucket: "benimoyunlarim-9c38c.appspot.com",
+      messagingSenderId: "48251257364",
+      appId: "1:48251257364:web:14c665dc8609a5d5e7dd01",
+      measurementId: "G-23MZX1FJ5V"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Elementler
-    const nickIn = document.getElementById('nicknameInput'),
-          startBtn = document.getElementById('startButton'),
-          mainM = document.getElementById('mainMenu'),
-          gameC = document.getElementById('gameContainer'),
+    const nickIn       = document.getElementById('nicknameInput'),
+          startBtn     = document.getElementById('startButton'),
+          mainM        = document.getElementById('mainMenu'),
+          gameC        = document.getElementById('gameContainer'),
           clickToStart = document.getElementById('clickToStart'),
-          gameO = document.getElementById('gameOverScreen'),
-          restartBtn = document.getElementById('restartButton'),
+          gameO        = document.getElementById('gameOverScreen'),
+          restartBtn   = document.getElementById('restartButton'),
           currentScoreEl = document.getElementById('currentScore'),
-          mobileScoreEl = document.querySelector('.mobile-score'),
-          mainTopList = document.getElementById('mainTopList'),
-          topHolder = document.getElementById('topHolder'),
-          canvas = document.getElementById('gameCanvas'),
-          ctx = canvas.getContext('2d'),
-          fixedScoreBox = document.getElementById('fixedScoreBox'),
-          scorePanel = document.getElementById('scorePanel');
+          mainTopList    = document.getElementById('mainTopList'),
+          topHolder      = document.getElementById('topHolder'),
+          canvas         = document.getElementById('gameCanvas'),
+          ctx            = canvas.getContext('2d'),
+          fixedScoreBox  = document.getElementById('fixedScoreBox'),
+          scorePanel     = document.getElementById('scorePanel');
 
-    const gridSize = 20, tileCount = canvas.width/gridSize;
     const medals = ['🥇','🥈','🥉'];
+    const gridSize = 20, tileCount = canvas.width / gridSize;
     let snake, vx, vy, apple, superApple, score, naCount;
-    let isRunning=false, isPaused=false, hasStarted=false, gameInt, nickname;
+    let isRunning, isPaused, hasStarted, gameInt, nickname;
 
     function attachScoreListener(){
       db.ref('scores').once('value', snap=>{
-        const arr = [];
+        let arr=[];
         snap.forEach(c=>{
-          const v = c.val(); v.score=Number(v.score)||0; arr.push(v);
+          let v=c.val(); v.score=Number(v.score)||0; arr.push(v);
         });
         arr.sort((a,b)=>b.score-a.score);
-        let html = '';
+        let html='';
         for(let i=0;i<3;i++){
           if(arr[i]){
-            html += `<li>
+            html+=`<li>
               <span style="font-size:2em;margin-right:6px;">${medals[i]}</span>
               <span class="name">${arr[i].name}</span>
               <span class="score">${arr[i].score}</span>
             </li>`;
           }
         }
-        mainTopList.innerHTML = html || '<li style="color:#ccc">Henüz skor yok.</li>';
+        if(!html) html='<li style="color:#ccc;">Henüz skor kaydı yok.</li>';
+        mainTopList.innerHTML=html;
         if(arr[0]){
-          topHolder.querySelector('.top-name').textContent = arr[0].name;
-          topHolder.querySelector('.top-score').textContent = arr[0].score;
+          topHolder.querySelector('.top-name').textContent=arr[0].name;
+          topHolder.querySelector('.top-score').textContent=arr[0].score;
+        } else {
+          topHolder.querySelector('.top-name').textContent='—';
+          topHolder.querySelector('.top-score').textContent='—';
         }
       });
-    } :contentReference[oaicite:0]{index=0}
-
+    }
     function saveScore(n,s){ db.ref('scores').push({name:n,score:s}); }
+
     function placeApple(){
-      apple={x:Math.floor(Math.random()*tileCount),y:Math.floor(Math.random()*tileCount)};
+      apple={x:Math.floor(Math.random()*tileCount), y:Math.floor(Math.random()*tileCount)};
       if(snake.some(s=>s.x===apple.x&&s.y===apple.y)||
-         (superApple&&superApple.x===apple.x&&superApple.y===apple.y)) placeApple();
+         (superApple&&superApple.x===apple.x&&superApple.y===apple.y)){
+        placeApple();
+      }
     }
     function placeSuperApple(){
-      superApple={x:Math.floor(Math.random()*tileCount),y:Math.floor(Math.random()*tileCount)};
+      superApple={x:Math.floor(Math.random()*tileCount), y:Math.floor(Math.random()*tileCount)};
       if(snake.some(s=>s.x===superApple.x&&s.y===superApple.y)||
-         (apple.x===superApple.x&&apple.y===superApple.y)) placeSuperApple();
+         (apple.x===superApple.x&&apple.y===superApple.y)){
+        placeSuperApple();
+      }
     }
 
     function drawGame(){
       ctx.fillStyle='#111'; ctx.fillRect(0,0,canvas.width,canvas.height);
-      // Elma
-      ctx.fillStyle='#ff4444'; ctx.beginPath();
-      ctx.arc(apple.x*gridSize+gridSize/2,apple.y*gridSize+gridSize/2,gridSize/2.5,0,2*Math.PI);
+
+      // her zaman elma
+      ctx.fillStyle='#ff4444';
+      ctx.beginPath();
+      ctx.arc(
+        apple.x*gridSize+gridSize/2,
+        apple.y*gridSize+gridSize/2,
+        gridSize/2.5,0,Math.PI*2
+      );
       ctx.fill();
+
       if(superApple){
-        ctx.fillStyle='#ffd700'; ctx.beginPath();
-        ctx.arc(superApple.x*gridSize+gridSize/2,superApple.y*gridSize+gridSize/2,gridSize/2.5,0,2*Math.PI);
+        ctx.fillStyle='#ffd700';
+        ctx.beginPath();
+        ctx.arc(
+          superApple.x*gridSize+gridSize/2,
+          superApple.y*gridSize+gridSize/2,
+          gridSize/2.5,0,Math.PI*2
+        );
         ctx.fill();
       }
-      // Yılan
+
       snake.forEach((seg,i)=>{
-        ctx.fillStyle = i===0?'#00ffff':'#00cccc';
+        ctx.fillStyle=i===0?'#00ffff':'#00cccc';
         ctx.strokeStyle='#005555'; ctx.lineWidth=2;
         ctx.beginPath();
-        ctx.arc(seg.x*gridSize+gridSize/2,seg.y*gridSize+gridSize/2,gridSize/2.5,0,2*Math.PI);
+        ctx.arc(
+          seg.x*gridSize+gridSize/2,
+          seg.y*gridSize+gridSize/2,
+          gridSize/2.5,0,Math.PI*2
+        );
         ctx.fill(); ctx.stroke();
       });
-      // Skor güncelle
-      currentScoreEl.textContent = `Skor: ${score}`;
-      mobileScoreEl.textContent  = `Skor: ${score}`;
-      fixedScoreBox.textContent  = `Skor: ${score}`;
+
+      fixedScoreBox.textContent=`Skor: ${score}`;
     }
 
     function gameStep(){
       if(!isRunning||isPaused) return;
       const nx=snake[0].x+vx, ny=snake[0].y+vy;
-      if(nx<0||nx>=tileCount||ny<0||ny>=tileCount||snake.some(s=>s.x===nx&&s.y===ny)){
+      if(nx<0||nx>=tileCount||ny<0||ny>=tileCount||
+         snake.some(s=>s.x===nx&&s.y===ny)){
         endGame(); return;
       }
       snake.unshift({x:nx,y:ny});
       if(!superApple && nx===apple.x&&ny===apple.y){
-        score++; naCount++; naCount>=10?placeSuperApple():placeApple();
-      } else if(superApple&&nx===superApple.x&&ny===superApple.y){
-        score+=50; superApple=null; naCount=0; placeApple();
-      } else snake.pop();
+        score++; currentScoreEl.textContent=`Skor: ${score}`;
+        naCount++; (naCount>=10?placeSuperApple():placeApple());
+      }
+      else if(superApple&&nx===superApple.x&&ny===superApple.y){
+        score+=50; currentScoreEl.textContent=`Skor: ${score}`;
+        superApple=null; naCount=0; placeApple();
+      }
+      else snake.pop();
       drawGame();
     }
 
-    function runGame(){ clearInterval(gameInt); gameInt=setInterval(gameStep,120) }
+    function runGame(){
+      clearInterval(gameInt);
+      gameInt=setInterval(gameStep,120);
+    }
 
     function endGame(){
       isPaused=true; isRunning=false; clearInterval(gameInt);
       clickToStart.style.display='none';
       saveScore(nickname,score);
       gameO.style.display='block';
+      toggleMobilePanel(false);
     }
 
-    document.addEventListener('keydown', e=>{
-      if(e.key===' '&&hasStarted) isPaused=!isPaused;
+    function bindTouchControls(){
+      ['up','down','left','right'].forEach(dir=>{
+        const btn=document.getElementById(dir+'Btn'),
+              handler=e=>{
+          e.preventDefault();
+          if(!isRunning||isPaused) return;
+          if(dir==='up'   && vy!==1) { vx=0;vy=-1; }
+          if(dir==='down' && vy!==-1){ vx=0;vy=1;  }
+          if(dir==='left' && vx!==1) { vx=-1;vy=0; }
+          if(dir==='right'&& vx!==-1){ vx=1; vy=0; }
+        };
+        btn.addEventListener('touchstart',handler,{passive:false});
+        btn.addEventListener('click',handler);
+      });
+    }
+
+    function toggleMobilePanel(show){
+      const isMobile=window.innerWidth<=700;
+      if(isMobile && show){
+        scorePanel.classList.add('hide-mobile');
+        fixedScoreBox.classList.add('active');
+      } else {
+        scorePanel.classList.remove('hide-mobile');
+        fixedScoreBox.classList.remove('active');
+      }
+    }
+
+    document.addEventListener('keydown',e=>{
+      if(e.key===' '&&hasStarted){
+        isPaused=!isPaused;
+        currentScoreEl.textContent=isPaused?'Oyun Duraklatıldı':`Skor: ${score}`;
+      }
       if(!isRunning||isPaused) return;
       if(e.key==='ArrowUp'   && vy!==1) { vx=0;vy=-1; }
       if(e.key==='ArrowDown' && vy!==-1){ vx=0;vy=1;  }
@@ -362,46 +527,52 @@
       if(e.key==='ArrowRight'&& vx!==-1){ vx=1; vy=0; }
     });
 
-    function bindTouchControls(){
-      ['up','down','left','right'].forEach(dir=>{
-        const btn=document.getElementById(dir+'Btn'),
-              h=e=>{ e.preventDefault(); if(!isRunning||isPaused) return;
-                if(dir==='up'&&vy!==1){vx=0;vy=-1;}
-                if(dir==='down'&&vy!==-1){vx=0;vy=1;}
-                if(dir==='left'&&vx!==1){vx=-1;vy=0;}
-                if(dir==='right'&&vx!==-1){vx=1;vy=0;}
-              };
-        btn.addEventListener('touchstart',h,{passive:false});
-        btn.addEventListener('click',h);
-      });
-    }
+    window.addEventListener('resize',()=>toggleMobilePanel(isRunning));
+    window.addEventListener('load',()=>{
+      attachScoreListener();
+      bindTouchControls();
+      toggleMobilePanel(false);
+    });
 
-    startBtn.addEventListener('click', ()=>{
-      nickname = nickIn.value.trim();
-      if(!nickname){ nickIn.focus(); return; }
-      mainM.style.display   = 'none';
-      gameC.style.display   = 'flex';
+    startBtn.addEventListener('click',()=>{
+      nickname=nickIn.value.trim();
+      if(!nickname){nickIn.focus();return;}
+      mainM.style.display='none';
+      gameC.style.display='flex';
       document.getElementById('mainScore').style.display='none';
-      snake  = [{x:8,y:10},{x:7,y:10},{x:6,y:10}];
+      snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];
       vx=1; vy=0; score=0; naCount=0; superApple=null;
-      clickToStart.style.display='block';
-      gameO.style.display='none';
+      currentScoreEl.textContent='Skor: 0';
+      fixedScoreBox.textContent='Skor: 0';
       placeApple(); drawGame(); runGame();
       isRunning=false; isPaused=false; hasStarted=false;
-      attachScoreListener();  // hem başta hem de her oyun öncesi güncel liste
-    }); :contentReference[oaicite:1]{index=1}
-
-    clickToStart.addEventListener('click', ()=>{
-      if(!hasStarted){ isRunning=true; hasStarted=true; clickToStart.style.display='none'; }
+      clickToStart.style.display='block';
+      attachScoreListener();
     });
-    restartBtn.addEventListener('click', ()=>{
+
+    clickToStart.addEventListener('click',()=>{
+      if(!hasStarted){
+        isRunning=true; hasStarted=true; isPaused=false;
+        clickToStart.style.display='none';
+      }
+    });
+    clickToStart.addEventListener('touchstart',e=>{
+      e.preventDefault();
+      if(!hasStarted){
+        isRunning=true; hasStarted=true; isPaused=false;
+        clickToStart.style.display='none';
+      }
+    });
+
+    restartBtn.addEventListener('click',()=>{
       gameO.style.display='none';
       clearInterval(gameInt);
       gameC.style.display='none';
       mainM.style.display='flex';
       nickIn.value=''; nickIn.focus();
-      attachScoreListener();
       isRunning=isPaused=hasStarted=false;
+      document.getElementById('mainScore').style.display='block';
+      attachScoreListener();
     });
   </script>
 </body>
