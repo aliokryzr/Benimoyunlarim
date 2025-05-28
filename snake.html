@@ -337,16 +337,26 @@
       <button id="rightBtn">▶</button>
     </div>
   </div>
-<footer style="
-  font-family: Georgia, serif;
-  padding: 1em;
-  text-align: center;
-  margin-top: 70px;  
-">
-  <p>
-    <span style="color: red;">İletişim:</span>
-    <a href="mailto:Ali@Siber.NET" style="color: white; text-decoration: none;">Ali@Siber.NET</a>
-  </p>
+<style>
+  body { position: relative; /* (opsiyonel) absolute bazını body yapmak için */ }
+  footer {
+    position: absolute;  /* veya fixed */
+    bottom: 20px;        /* sayfanın altından 20px yukarı */
+    right: 20px;         /* sayfanın sağından 20px içeride */
+    font-family: Georgia, serif;
+    margin: 0;           /* default boşlukları kaldır */
+    padding: 0.5em;      /* isteğe göre iç boşluk */
+  }
+  footer span { color: red; }
+  footer a {
+    color: white;
+    text-decoration: none;
+  }
+</style>
+
+<footer>
+  <span>İletişim:</span>
+  <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
 </footer>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
