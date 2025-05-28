@@ -17,7 +17,6 @@
       --font-heading: 'Audiowide', cursive;
       --font-body: 'Roboto', sans-serif;
     }
-
     * { box-sizing:border-box; margin:0; padding:0; }
     body {
       background: linear-gradient(145deg,#0f2027,#203a43,#2c5364);
@@ -30,8 +29,8 @@
     h1#gameTitle {
       font-family: var(--font-heading);
       font-size:2.8rem; margin-bottom:1.5rem;
-      background: linear-gradient(90deg,var(--clr-accent-dark),var(--clr-accent));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background:linear-gradient(90deg,var(--clr-accent-dark),var(--clr-accent));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
       text-shadow:0 0 8px var(--clr-accent); text-align:center;
     }
 
@@ -52,9 +51,7 @@
       color:#000; font-weight:bold; cursor:pointer;
       transition:background .3s;
     }
-    #startButton:hover {
-      background:var(--clr-accent-dark); color:#fff;
-    }
+    #startButton:hover { background:var(--clr-accent-dark); color:#fff; }
     #mainScore {
       display:none; width:100%;
       background:var(--clr-panel-bg); padding:1rem; border-radius:8px;
@@ -69,8 +66,7 @@
       list-style:none; padding:0; margin:0;
     }
     #mainTopList li {
-      display:flex; align-items:center;
-      font-size:1.12rem; margin:6px 0;
+      display:flex; align-items:center; font-size:1.12rem; margin:6px 0;
     }
     #mainTopList li span:first-child {
       font-size:1.5em; margin-right:8px;
@@ -164,9 +160,8 @@
       text-align:center; margin-bottom:1.5rem;
     }
     #scorePanel #currentScore {
-      font-family:var(--font-heading);
-      font-size:1.5rem; color:var(--clr-score);
-      text-align:center; margin-bottom:2rem;
+      font-family:var(--font-heading); font-size:1.5rem;
+      color:var(--clr-score); text-align:center; margin-bottom:2rem;
     }
     #scorePanel .score-header {
       font-family:var(--font-heading);
@@ -207,13 +202,10 @@
     }
 
     /* -------- Mobil Touch Kontroller -------- */
-    .touch-controls {
-      display:none; /* masaüstünde gizle */
-    }
-    #fixedScoreBox {
-      display:none;
-    }
+    .touch-controls { display:none; }
+    #fixedScoreBox { display:none; }
 
+    /* -------- Responsive -------- */
     @media (max-width:900px) {
       #gameContainer { flex-direction:column; align-items:center; gap:1rem; }
       #gameFrame, #scorePanel { max-width:98vw; }
@@ -221,7 +213,31 @@
       canvas { max-width:98vw; height:auto; }
     }
     @media (max-width:700px) {
-      /* Touch kontrolleri ve sabit skor sadece mobilde göster */
+
+      /* Canvas ve çerçeveyi birebir doldur */
+      #gameFrame {
+        display:block !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        width: 98vw !important;
+        height: auto !important;
+        max-width: 98vw !important;
+        max-height: none !important;
+      }
+      canvas {
+        width: 100% !important;
+        height: auto !important;
+      }
+
+      /* Eskisi gibi skor paneli hep görünür */
+      #scorePanel { display:flex !important; }
+      #scorePanel.hide-mobile {
+        opacity:1!important; pointer-events:auto!important;
+        visibility:visible!important; height:auto!important;
+        margin:unset!important; padding:1.5rem!important;
+      }
+
+      /* Mobil tuşlar ve sabit skor kutusu */
       .touch-controls {
         display:flex; position:fixed; left:50%; bottom:10px;
         transform:translateX(-50%); flex-direction:column;
@@ -243,7 +259,6 @@
         background:rgba(60,180,255,0.95);
         opacity:1; transform:scale(0.96);
       }
-
       #fixedScoreBox.active {
         display:block; position:fixed; left:6vw; bottom:120px;
         background:rgba(0,0,0,0.85); color:#ffe066;
@@ -252,40 +267,23 @@
         border:2px solid #ffe06622; padding:4px 15px 4px 12px;
         letter-spacing:1px; user-select:none;
       }
-
-      /* Eskisi gibi her zaman skor paneli görünür */
-      #scorePanel {
-        display:flex !important;
-      }
-      #scorePanel.hide-mobile {
-        opacity:1!important;
-        pointer-events:auto!important;
-        visibility:visible!important;
-        height:auto!important;
-        margin:unset!important;
-        padding:1.5rem!important;
-      }
     }
   </style>
 </head>
 <body>
   <h1 id="gameTitle">🐍 Snake Game</h1>
-
   <div id="mainMenu">
     <input id="nicknameInput" type="text" placeholder="Kullanıcı adınızı girin" maxlength="12"/>
     <button id="startButton">Oyuna Başla</button>
-
     <div id="mainScore">
       <h2>🏆 En Yüksek Skor 🏆</h2>
       <ol id="mainTopList"></ol>
     </div>
-
     <div id="contactEmailStart" class="contact-email start">
       <span>İletişim:</span>
       <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
     </div>
   </div>
-
   <div id="gameContainer">
     <div id="gameFrame">
       <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -295,7 +293,6 @@
         <button id="restartButton">Tamam</button>
       </div>
     </div>
-
     <div id="scorePanel">
       <h3>Bilgilendirme</h3>
       <p id="instructions">
@@ -314,7 +311,6 @@
         <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
       </div>
     </div>
-
     <div id="fixedScoreBox">Skor: 0</div>
     <div class="touch-controls">
       <div class="touch-row" style="margin-bottom:16px;">
@@ -327,9 +323,10 @@
       </div>
     </div>
   </div>
-
+  <!-- JS kısmı tamamen aynı kalmalı -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <script>
   <script>
     window.addEventListener('DOMContentLoaded', ()=>{
       document.getElementById('gameContainer').style.display='none';
