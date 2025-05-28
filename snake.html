@@ -339,25 +339,39 @@
   </div>
 <style>
   body { position: relative; /* (opsiyonel) absolute bazını body yapmak için */ }
-  footer {
-    position: absolute;  /* veya fixed */
-    bottom: 20px;        /* sayfanın altından 20px yukarı */
-    right: 150px;         /* sayfanın sağından 20px içeride */
-    font-family: Georgia, serif;
-    margin: 0;           /* default boşlukları kaldır */
-    padding: 0.5em;      /* isteğe göre iç boşluk */
+<style>
+  /* Footer’ı sayfanın sağ-alt köşesine sabitliyoruz */
+  .contact-cta {
+    position: absolute;
+    bottom: 20px;
+    right: 170px;
+    font-family: Georgia, serif;      /* Oyun fontunu kullanıyorsan buraya değiştir */
+    font-size: 0.9rem;
+    margin: 0;
+    padding: 0.3em 0.6em;
   }
-  footer span { color: red; }
-  footer a {
-    color: white;
+  /* “İletişim:” neon cam göbeği */
+  .contact-cta span {
+    color: #00ffff;
+    text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
+    margin-right: 0.4em;
+  }
+  /* E-posta turuncu-altın, glow efektiyle */
+  .contact-cta a {
+    color: #ffac2b;
+    text-shadow: 0 0 4px #ffac2b, 0 0 8px #ffac2b;
     text-decoration: none;
+  }
+  .contact-cta a:hover {
+    text-shadow: 0 0 6px #ffac2b, 0 0 12px #ffac2b;
   }
 </style>
 
-<footer>
+<footer class="contact-cta">
   <span>İletişim:</span>
   <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
 </footer>
+
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
