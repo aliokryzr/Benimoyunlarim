@@ -17,6 +17,7 @@
       --font-heading: 'Audiowide', cursive;
       --font-body: 'Roboto', sans-serif;
     }
+
     * { box-sizing:border-box; margin:0; padding:0; }
     body {
       background: linear-gradient(145deg,#0f2027,#203a43,#2c5364);
@@ -24,18 +25,17 @@
       font-family: var(--font-body);
       display:flex; flex-direction:column; align-items:center;
       padding:20px; min-height:100vh;
-      position: relative;
     }
+
     h1#gameTitle {
       font-family: var(--font-heading);
       font-size:2.8rem; margin-bottom:1.5rem;
       background: linear-gradient(90deg,var(--clr-accent-dark),var(--clr-accent));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      text-shadow:0 0 8px var(--clr-accent);
-      text-align:center;
+      text-shadow:0 0 8px var(--clr-accent); text-align:center;
     }
 
-    /* — Ana Menü — */
+    /* -------- Ana Menü -------- */
     #mainMenu {
       display:flex; flex-direction:column; align-items:center; gap:1rem;
       width:90vw; max-width:360px; margin-bottom:2rem;
@@ -43,9 +43,8 @@
     #nicknameInput {
       width:100%; padding:.75rem 1rem;
       border:none; border-radius:6px;
-      background:var(--clr-panel-bg);
-      color:var(--clr-text); font-size:1rem;
-      outline:none;
+      background:var(--clr-panel-bg); color:var(--clr-text);
+      font-size:1rem; outline:none;
     }
     #startButton {
       width:100%; padding:.75rem;
@@ -82,6 +81,7 @@
     #mainTopList .score {
       font-family:var(--font-heading); color:#ffb700; margin-left:auto;
     }
+
     /* İletişim – Ana Menü */
     .contact-email.start {
       margin-top:20px; width:100%; text-align:center;
@@ -97,7 +97,7 @@
       text-decoration:none; margin-left:4px;
     }
 
-    /* — Oyun & Canvas — */
+    /* -------- Oyun & Canvas -------- */
     #gameContainer {
       display:none; width:100%; max-width:760px;
       display:flex; gap:1.5rem; align-items:flex-start;
@@ -144,7 +144,7 @@
     }
     #restartButton:hover { background:var(--clr-accent-dark); color:#fff; }
 
-    /* — Skor Paneli — */
+    /* -------- Skor Paneli -------- */
     #scorePanel {
       background:var(--clr-panel-bg);
       border:3px solid var(--clr-accent);
@@ -191,7 +191,7 @@
       color:#ff9f1a; font-family:var(--font-heading); font-size:1.1rem;
     }
 
-    /* — İletişim – Oyun Ekranı — */
+    /* İletişim – Oyun Ekranı */
     #contactEmail {
       margin-top:20px; width:100%; text-align:center;
       font-family:'Georgia', serif;
@@ -206,20 +206,26 @@
       text-decoration:none; margin-left:4px;
     }
 
-    /* — Varsayılan olarak gizle — */
-    .touch-controls,
+    /* -------- Mobil Touch Kontroller -------- */
+    .touch-controls {
+      display:none; /* masaüstünde gizle */
+    }
     #fixedScoreBox {
-      display: none !important;
+      display:none;
     }
 
-    /* — Yalnızca mobilde göster — */
-    @media (max-width: 700px) {
+    @media (max-width:900px) {
+      #gameContainer { flex-direction:column; align-items:center; gap:1rem; }
+      #gameFrame, #scorePanel { max-width:98vw; }
+      #gameFrame { margin-bottom:10px; }
+      canvas { max-width:98vw; height:auto; }
+    }
+    @media (max-width:700px) {
+      /* Touch kontrolleri ve sabit skor sadece mobilde göster */
       .touch-controls {
-        display:flex !important;
-        position: fixed; left:50%; bottom:10px;
-        transform:translateX(-50%);
-        flex-direction:column; align-items:center;
-        z-index:999; width:97vw; max-width:360px;
+        display:flex; position:fixed; left:50%; bottom:10px;
+        transform:translateX(-50%); flex-direction:column;
+        align-items:center; z-index:999; width:97vw; max-width:360px;
         pointer-events:none; user-select:none;
       }
       .touch-row {
@@ -229,11 +235,9 @@
       .touch-controls button {
         width:75px; height:75px; font-size:2.7rem;
         border:2px solid #fff; background:rgba(20,70,140,0.83);
-        color:#fff; border-radius:22px;
-        box-shadow:0 2px 12px #0006;
+        color:#fff; border-radius:22px; box-shadow:0 2px 12px #0006;
         transition:background .2s, transform .1s;
-        backdrop-filter:blur(4px); opacity:.9;
-        pointer-events:auto;
+        backdrop-filter:blur(4px); opacity:.9; pointer-events:auto;
       }
       .touch-controls button:active {
         background:rgba(60,180,255,0.95);
@@ -241,18 +245,25 @@
       }
 
       #fixedScoreBox.active {
-        display:block !important;
-        position:fixed; left:6vw; bottom:120px;
-        background:rgba(0,0,0,0.85);
-        color:#ffe066;
-        font-family:var(--font-heading);
-        font-size:1.1rem;
-        border-radius:9px;
-        box-shadow:0 2px 8px #0004;
-        border:2px solid #ffe06622;
-        padding:4px 15px 4px 12px;
-        letter-spacing:1px;
-        user-select:none;
+        display:block; position:fixed; left:6vw; bottom:120px;
+        background:rgba(0,0,0,0.85); color:#ffe066;
+        font-family:var(--font-heading); font-size:1.1rem;
+        border-radius:9px; box-shadow:0 2px 8px #0004;
+        border:2px solid #ffe06622; padding:4px 15px 4px 12px;
+        letter-spacing:1px; user-select:none;
+      }
+
+      /* Eskisi gibi her zaman skor paneli görünür */
+      #scorePanel {
+        display:flex !important;
+      }
+      #scorePanel.hide-mobile {
+        opacity:1!important;
+        pointer-events:auto!important;
+        visibility:visible!important;
+        height:auto!important;
+        margin:unset!important;
+        padding:1.5rem!important;
       }
     }
   </style>
@@ -269,7 +280,6 @@
       <ol id="mainTopList"></ol>
     </div>
 
-    <!-- İletişim – Başlangıç -->
     <div id="contactEmailStart" class="contact-email start">
       <span>İletişim:</span>
       <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
@@ -299,8 +309,6 @@
         <span class="top-name">—</span>
         <span class="top-score">—</span>
       </div>
-
-      <!-- İletişim – Oyun -->
       <div id="contactEmail">
         <span>İletişim:</span>
         <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a>
@@ -308,7 +316,6 @@
     </div>
 
     <div id="fixedScoreBox">Skor: 0</div>
-
     <div class="touch-controls">
       <div class="touch-row" style="margin-bottom:16px;">
         <button id="upBtn">▲</button>
@@ -324,7 +331,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
-    // Başlangıç
     window.addEventListener('DOMContentLoaded', ()=>{
       document.getElementById('gameContainer').style.display='none';
       document.getElementById('mainMenu').style.display='flex';
@@ -332,7 +338,6 @@
       document.getElementById('fixedScoreBox').classList.remove('active');
     });
 
-    // Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDuPoIPBXKNFrqQpRBuABog8t9YdSt8n7c",
       authDomain: "benimoyunlarim-9c38c.firebaseapp.com",
@@ -346,7 +351,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Elementler
     const nickIn       = document.getElementById('nicknameInput'),
           startBtn     = document.getElementById('startButton'),
           mainM        = document.getElementById('mainMenu'),
@@ -367,7 +371,6 @@
     let snake, vx, vy, apple, superApple, score, naCount;
     let isRunning, isPaused, hasStarted, gameInt, nickname;
 
-    // En yüksek 3’lüyü getir
     function attachScoreListener(){
       db.ref('scores').once('value', snap=>{
         let arr=[];
@@ -396,37 +399,27 @@
         }
       });
     }
-
-    function saveScore(n,s){
-      db.ref('scores').push({name:n,score:s});
-    }
+    function saveScore(n,s){ db.ref('scores').push({name:n,score:s}); }
 
     function placeApple(){
-      apple={
-        x:Math.floor(Math.random()*tileCount),
-        y:Math.floor(Math.random()*tileCount)
-      };
+      apple={x:Math.floor(Math.random()*tileCount), y:Math.floor(Math.random()*tileCount)};
       if(snake.some(s=>s.x===apple.x&&s.y===apple.y)||
          (superApple&&superApple.x===apple.x&&superApple.y===apple.y)){
         placeApple();
       }
     }
     function placeSuperApple(){
-      superApple={
-        x:Math.floor(Math.random()*tileCount),
-        y:Math.floor(Math.random()*tileCount)
-      };
+      superApple={x:Math.floor(Math.random()*tileCount), y:Math.floor(Math.random()*tileCount)};
       if(snake.some(s=>s.x===superApple.x&&s.y===superApple.y)||
          (apple.x===superApple.x&&apple.y===superApple.y)){
         placeSuperApple();
       }
     }
 
-    // HER ZAMAN elmayı çiz
     function drawGame(){
       ctx.fillStyle='#111'; ctx.fillRect(0,0,canvas.width,canvas.height);
 
-      // Normal elma (kırmızı)
+      // her zaman elma
       ctx.fillStyle='#ff4444';
       ctx.beginPath();
       ctx.arc(
@@ -436,7 +429,6 @@
       );
       ctx.fill();
 
-      // Süper elma varsa
       if(superApple){
         ctx.fillStyle='#ffd700';
         ctx.beginPath();
@@ -448,7 +440,6 @@
         ctx.fill();
       }
 
-      // Yılan
       snake.forEach((seg,i)=>{
         ctx.fillStyle=i===0?'#00ffff':'#00cccc';
         ctx.strokeStyle='#005555'; ctx.lineWidth=2;
@@ -476,7 +467,7 @@
         score++; currentScoreEl.textContent=`Skor: ${score}`;
         naCount++; (naCount>=10?placeSuperApple():placeApple());
       }
-      else if(superApple && nx===superApple.x&&ny===superApple.y){
+      else if(superApple&&nx===superApple.x&&ny===superApple.y){
         score+=50; currentScoreEl.textContent=`Skor: ${score}`;
         superApple=null; naCount=0; placeApple();
       }
@@ -497,7 +488,6 @@
       toggleMobilePanel(false);
     }
 
-    // Mobil tuşlar
     function bindTouchControls(){
       ['up','down','left','right'].forEach(dir=>{
         const btn=document.getElementById(dir+'Btn'),
@@ -525,7 +515,6 @@
       }
     }
 
-    // Klavye kontrolleri
     document.addEventListener('keydown',e=>{
       if(e.key===' '&&hasStarted){
         isPaused=!isPaused;
@@ -545,7 +534,6 @@
       toggleMobilePanel(false);
     });
 
-    // Oyunu başlat
     startBtn.addEventListener('click',()=>{
       nickname=nickIn.value.trim();
       if(!nickname){nickIn.focus();return;}
@@ -562,7 +550,6 @@
       attachScoreListener();
     });
 
-    // Başlat butonu (tıklama & dokunma)
     clickToStart.addEventListener('click',()=>{
       if(!hasStarted){
         isRunning=true; hasStarted=true; isPaused=false;
@@ -577,7 +564,6 @@
       }
     });
 
-    // Tekrar oyna
     restartBtn.addEventListener('click',()=>{
       gameO.style.display='none';
       clearInterval(gameInt);
