@@ -3,64 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Tarif Öneri Uygulaması</title>
+  <title>🍳 Yemek Tarifi Önerileri 🍳</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Georgia, serif; }
-    body { background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:Georgia,serif; }
+    body { background:#0d1117; color:#c9d1d9; display:flex; flex-direction:column; align-items:center; padding:2rem; }
     .container, .results-frame {
-      background: #161b22;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 1.5rem;
+      background:#161b22; border-radius:8px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.6);
+      width:100%; max-width:600px; margin-bottom:1.5rem;
     }
-    .container { padding: 2rem; }
-    .container h1 { margin-bottom: 1rem; font-size: 1.8rem; text-align: center; color: #58a6ff; }
-    .container p { margin-bottom: 0.5rem; }
+    .container { padding:2rem; }
+    .container h1 { margin-bottom:1rem; font-size:1.8rem; text-align:center; color:#58a6ff; }
+    .container p { margin-bottom:0.5rem; }
     .container input {
-      width: 100%; padding: 0.6rem; margin-bottom: 0.8rem;
-      border: 1px solid #30363d; border-radius: 4px; font-size: 1rem;
-      background: #0d1117; color: #c9d1d9;
+      width:100%; padding:0.6rem; margin-bottom:0.8rem;
+      border:1px solid #30363d; border-radius:4px; font-size:1rem;
+      background:#0d1117; color:#c9d1d9;
     }
     .container button {
-      width: 100%; padding: 0.7rem;
-      background: #238636; color: #f0f6fc; border: none; border-radius: 4px;
-      cursor: pointer; font-size: 1rem;
+      width:100%; padding:0.7rem;
+      background:#238636; color:#f0f6fc; border:none; border-radius:4px;
+      cursor:pointer; font-size:1rem;
     }
-    .container button:hover { background: #2ea043; }
-    .contact { margin-top: 0.5rem; text-align: center; color: #8b949e; font-size: 0.9rem; }
-    .contact a { color: #58a6ff; text-decoration: none; }
+    .container button:hover { background:#2ea043; }
+    .contact { margin-top:0.5rem; text-align:center; color:#8b949e; font-size:0.9rem; }
+    .contact a { color:#58a6ff; text-decoration:none; }
     #warning {
-      margin-top: 0.5rem; text-align: center;
-      color: #f0ad4e; font-size: 0.9rem; min-height: 1.2em;
+      margin-top:0.5rem; text-align:center;
+      color:#f0ad4e; font-size:0.9rem; min-height:1.2em;
     }
 
-    .results-frame { display: none; padding: 2rem; }
-    .results-frame h2 { font-size: 1.6rem; margin-bottom: 0.5rem; color: #58a6ff; }
-    .hint { font-size: 0.9rem; margin-bottom: 1rem; color: #8b949e; }
-    #message { margin-bottom: 1rem; font-style: italic; }
-    #results { list-style: none; padding: 0; }
+    .results-frame { display:none; padding:2rem; }
+    .results-frame h2 { font-size:1.6rem; margin-bottom:0.5rem; color:#58a6ff; }
+    .hint { font-size:0.9rem; margin-bottom:1rem; color:#8b949e; }
+    #message { margin-bottom:1rem; font-style:italic; }
+    #results { list-style:none; padding:0; }
     #results li {
-      background: #0d1117; margin-bottom: 1rem; padding: 1rem;
-      border: 1px solid #30363d; border-radius: 6px;
+      background:#0d1117; margin-bottom:1rem; padding:1rem;
+      border:1px solid #30363d; border-radius:6px;
     }
     .recipe-title {
-      font-size: 1.3rem; margin-bottom: 0.6rem; color: #58a6ff;
-      cursor: pointer;
+      font-size:1.3rem; margin-bottom:0.6rem; color:#58a6ff;
+      cursor:pointer;
     }
-    .ings { display: flex; justify-content: space-between; }
-    .ings div { width: 48%; }
-    .ings strong { display: block; margin-bottom: 0.4rem; color: #ffea7f; }
-    .ings ul { list-style: disc; margin-left: 1.2rem; }
-    hr { border: none; border-top: 1px solid #30363d; margin: 1rem 0; }
+    .ings { display:flex; justify-content:space-between; }
+    .ings div { width:48%; }
+    .ings strong { display:block; margin-bottom:0.4rem; color:#ffea7f; }
+    .ings ul { list-style:disc; margin-left:1.2rem; }
+    hr { border:none; border-top:1px solid #30363d; margin:1rem 0; }
 
     .instructions {
-      background: #161b22; padding: 0.8rem; border-radius: 4px;
-      margin-top: 0.5rem; color: #c9d1d9;
+      background:#161b22; padding:0.8rem; border-radius:4px;
+      margin-top:0.5rem; color:#c9d1d9;
     }
-    .instructions ol { margin-left: 1.2rem; }
-    .instructions li { margin-bottom: 0.4rem; }
+    .instructions ol { margin-left:1.2rem; }
+    .instructions li { margin-bottom:0.4rem; }
   </style>
 </head>
 <body>
@@ -82,7 +79,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Google Translate (TR→EN & EN→TR) için hızlı client-side çağrı
+      // Google Translate üzerinden basit çeviri
       async function toEnglish(text) {
         try {
           const res = await fetch(
@@ -126,14 +123,14 @@
         const enList  = await Promise.all(ingList.map(toEnglish));
         const query   = enList.join(',');
 
-        // 2) Uyarı mesaji ve kısa bekleme
-        warningP.textContent = 'Veri tabanı belirtilen malzemeler aranıyor... Biraz zaman alabilir.';
-        await sleep(5000);
+        // 2) Uyarı mesajı ve kısa bekleme
+        warningP.textContent = 'Veritabanında malzemelere göre tarifler aranıyor… Lütfen bekleyiniz.';
+        await sleep(3000);
         warningP.textContent = '';
 
         // 3) TheMealDB filter endpoint
         resultsContainer.style.display = 'none';
-        msgDiv.textContent = 'Tarif aranıyor… ⏳';
+        msgDiv.textContent = 'Tarifler getiriliyor… ⏳';
         ulResults.innerHTML = '';
 
         try {
@@ -163,10 +160,12 @@
               titleEl.textContent = `${i+1}. ${tr}`;
             });
             li.appendChild(titleEl);
+
+            // Burada malzemeleri detay çağrısından sonra göstereceğiz
             li.appendChild(document.createElement('hr'));
             ulResults.appendChild(li);
 
-            // Tıklayınca detayları (malzeme + adım) getir
+            // Tıklanınca detayları (malzeme+adım) getir
             titleEl.onclick = async () => {
               let instrDiv = li.querySelector('.instructions');
               if (instrDiv) {
@@ -185,33 +184,49 @@
               const detJson = await detRes.json();
               const meal    = detJson.meals[0];
 
-              // Malzemeler + ölçüler
-              const ingrList = [];
-              for (let n = 1; n <= 20; n++) {
+              // Tüm malzemeler + ölçüleri
+              const allIngr = [];
+              for (let n=1; n<=20; n++) {
                 const name = meal[`strIngredient${n}`];
                 const mea  = meal[`strMeasure${n}`];
                 if (name && name.trim()) {
-                  ingrList.push(`${name.trim()} – ${mea.trim()}`);
+                  allIngr.push({ name: name.trim(), measure: mea.trim() });
                 }
               }
+              // Kullanılabilir / Eksik hesaplama
+              const userSet = new Set(ingList.map(i=>i.toLowerCase()));
+              const used    = allIngr.filter(i=> userSet.has(i.name.toLowerCase()));
+              const missed  = allIngr.filter(i=> !userSet.has(i.name.toLowerCase()));
 
-              // Adımlar
+              // Adımları parçalara ayır
               const steps = meal.strInstructions
                 .split(/\r?\n/)
-                .filter(l => l.trim());
+                .filter(l=>l.trim());
+
+              // Hepsini Türkçeye çevir
+              const usedTr    = await Promise.all(used.map(i=> toTurkish(i.name)));
+              const missedTr  = await Promise.all(missed.map(i=> toTurkish(i.name)));
+              const stepsTr   = await Promise.all(steps.map(s=> toTurkish(s)));
 
               // Render
               instrDiv.innerHTML = `
-                <strong>Malzemeler:</strong>
-                <ul>${ingrList.map(i => `<li>${i}</li>`).join('')}</ul>
-                <strong>Yapılış:</strong>
-                <ol>${steps.map(s => `<li>${s}</li>`).join('')}</ol>
+                <strong>Kullanılabilir Malzemeler:</strong>
+                <ul>
+                  ${used.map((u,idx)=>`<li>${usedTr[idx]} – ${u.measure}</li>`).join('')}
+                </ul>
+                <strong>Eksik Malzemeler:</strong>
+                <ul>
+                  ${missed.map((u,idx)=>`<li>${missedTr[idx]} – ${u.measure}</li>`).join('')}
+                </ul>
+                <hr>
+                <strong>Yapılış Adımları:</strong>
+                <ol>${stepsTr.map(s=>`<li>${s}</li>`).join('')}</ol>
               `;
             };
           }
         } catch (err) {
           console.error(err);
-          msgDiv.textContent = 'Bir hata oluştu, lütfen tekrar dene.';
+          msgDiv.textContent = 'Bir hata oluştu, lütfen tekrar deneyiniz.';
         }
       });
     });
