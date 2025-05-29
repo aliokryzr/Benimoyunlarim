@@ -35,7 +35,7 @@
       text-shadow:0 0 8px var(--clr-accent); text-align:center;
     }
 
-    /* -------- Ana Menü -------- */
+ 
     #mainMenu {
       display:flex; flex-direction:column; align-items:center; gap:1rem;
       width:90vw; max-width:360px; margin-bottom:2rem;
@@ -82,7 +82,7 @@
       font-family:var(--font-heading); color:#ffb700; margin-left:auto;
     }
 
-    /* İletişim – Ana Menü */
+
     .contact-email.start {
       margin-top:20px; width:100%; text-align:center;
       font-family:'Georgia', serif;
@@ -97,7 +97,7 @@
       text-decoration:none; margin-left:4px;
     }
 
-    /* -------- Oyun & Canvas -------- */
+ 
     #gameContainer {
       display:none; width:100%; max-width:760px;
       display:flex; gap:1.5rem; align-items:flex-start;
@@ -144,7 +144,7 @@
     }
     #restartButton:hover { background:var(--clr-accent-dark); color:#fff; }
 
-    /* -------- Skor Paneli -------- */
+
     #scorePanel {
       background:var(--clr-panel-bg);
       border:3px solid var(--clr-accent);
@@ -191,7 +191,7 @@
       color:#ff9f1a; font-family:var(--font-heading); font-size:1.1rem;
     }
 
-    /* İletişim – Oyun Ekranı */
+ 
     #contactEmail {
       margin-top:20px; width:100%; text-align:center;
       font-family:'Georgia', serif;
@@ -206,9 +206,9 @@
       text-decoration:none; margin-left:4px;
     }
 
-    /* -------- Mobil Touch Kontroller -------- */
+
     .touch-controls {
-      display:none; /* masaüstünde gizle */
+      display:none; 
     }
     #fixedScoreBox {
       display:none;
@@ -221,7 +221,7 @@
       canvas { max-width:98vw; height:auto; }
     }
     @media (max-width:700px) {
-      /* Touch kontrolleri ve sabit skor sadece mobilde göster */
+  
       .touch-controls {
         display:flex; position:fixed; left:50%; bottom:10px;
         transform:translateX(-50%); flex-direction:column;
@@ -253,7 +253,7 @@
         letter-spacing:1px; user-select:none;
       }
 
-      /* Eskisi gibi her zaman skor paneli görünür */
+
       #scorePanel {
         display:flex !important;
       }
