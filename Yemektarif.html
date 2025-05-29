@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>🍳 Yemek Tarifi Önerileri 🍳</title>
+  <title>Tarif Öneri Uygulaması</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Georgia, serif; }
     body { background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
     .container, .results-frame {
-      background: #161b22; border-radius: 8px;
+      background: #161b22;
+      border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-      width: 100%; max-width: 600px; margin-bottom: 1.5rem;
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 1.5rem;
     }
     .container { padding: 2rem; }
     .container h1 { margin-bottom: 1rem; font-size: 1.8rem; text-align: center; color: #58a6ff; }
@@ -58,7 +61,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>🍳 Yemek Tarifi Önerileri 🍳</h1>
+    <h1>Tarif Öneri Botu 🍳</h1>
     <p>Elindeki malzemeleri virgülle ayırıp yaz:</p>
     <input type="text" id="ingredients" placeholder="örn: patates, yumurta, un">
     <button id="searchBtn">Tarif Ara</button>
@@ -76,26 +79,34 @@
     document.addEventListener('DOMContentLoaded', () => {
       const apiKey = '117f4267981845d5800cb8de69f44e23';
 
-      // Dinamik çeviri API’si (LibreTranslate)
-      async function libreTranslate(text, source, target) {
-        try {
-          const res = await fetch('https://libretranslate.de/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ q: text, source, target, format: 'text' })
-          });
-          const json = await res.json();
-          return json.translatedText;
-        } catch {
-          return text;
-        }
+      // Basit Türkçe→İngilizce haritası
+      const translationMap = {
+        patates: 'potato',
+        yumurta: 'egg',
+        un: 'flour',
+        süt: 'milk',
+        yulaf: 'oats',
+        çilek: 'strawberry',
+        mango: 'mango'
+      };
+
+      // Türkçe girdiyi İngilizce'ye çevir
+      function toEnglish(ing) {
+        return translationMap[ing.toLowerCase()] || ing;
       }
-      const toEnglish = txt => libreTranslate(txt, 'tr', 'en');
-      const toTurkish = txt => libreTranslate(txt, 'en', 'tr');
+      // Her metni MyMemory ile Türkçeye çevir
+      function toTurkish(text) {
+        return fetch(
+          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|tr`
+        )
+        .then(r => r.json())
+        .then(j => j.responseData.translatedText)
+        .catch(() => text);
+      }
 
       const searchBtn = document.getElementById('searchBtn');
-      const ingInput  = document.getElementById('ingredients');
-      const msgDiv    = document.getElementById('message');
+      const ingInput = document.getElementById('ingredients');
+      const msgDiv = document.getElementById('message');
       const ulResults = document.getElementById('results');
       const resultsContainer = document.getElementById('results-container');
 
@@ -103,124 +114,144 @@
         const raw = ingInput.value.trim();
         if (!raw) return alert('Lütfen en az bir malzeme giriniz!');
 
-        const ingList = raw.split(',').map(s => s.trim()).filter(Boolean);
+        // Malzemeleri İngilizce sorguya hazırla
+        const ingList = raw.split(',')
+          .map(s => s.trim())
+          .filter(Boolean);
+        const query = ingList.map(toEnglish).join(',');
 
-        // Başlangıç: çeviri mesajı
+        // Ön hazırlık
         resultsContainer.style.display = 'none';
+        msgDiv.textContent = 'Tarif aranıyor… ⏳';
         ulResults.innerHTML = '';
-        msgDiv.textContent = 'Malzemeler otomatik olarak İngilizceye çevriliyor… ⏳';
 
-        let enIngredients;
         try {
-          enIngredients = await Promise.all(ingList.map(toEnglish));
-        } catch {
-          return alert('Malzemeler çevirilirken hata oluştu.');
-        }
+          const res = await fetch(
+            `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(query)}&number=5&apiKey=${apiKey}`
+          );
+          if (!res.ok) throw new Error(res.status);
+          const data = await res.json();
 
-        const suggestions = ingList.map((tr, i) => `${tr} → ${enIngredients[i]}`).join(', ');
-        msgDiv.innerHTML = `Çeviri önerileri: ${suggestions}<br>Tarif aranıyor…`;
-
-        setTimeout(async () => {
-          try {
-            const query = encodeURIComponent(enIngredients.join(','));
-            const res = await fetch(
-              `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${query}&number=5&apiKey=${apiKey}`
-            );
-            if (!res.ok) throw new Error(res.status);
-            const data = await res.json();
-
-            resultsContainer.style.display = 'block';
-            if (!data.length) {
-              msgDiv.textContent = 'Bu malzemelerle tarif bulunamadı 😕';
-              return;
-            }
-            msgDiv.textContent = `Bulunan ${data.length} tarif:`;
-
-            for (let i = 0; i < data.length; i++) {
-              const t = data[i];
-              const li = document.createElement('li');
-
-              // Başlık
-              const titleEl = document.createElement('div');
-              titleEl.className = 'recipe-title';
-              titleEl.dataset.id = t.id;
-              titleEl.textContent = `${i+1}. ${t.title}`;
-              toTurkish(t.title).then(tr => {
-                titleEl.textContent = `${i+1}. ${tr}`;
-              });
-              li.appendChild(titleEl);
-
-              // Malzemeler (Türkçe)
-              const usedTr   = await Promise.all(t.usedIngredients.map(u => toTurkish(u.name)));
-              const missedTr = await Promise.all(t.missedIngredients.map(u => toTurkish(u.name)));
-
-              const ingsDiv = document.createElement('div');
-              ingsDiv.className = 'ings';
-              [['Kullanılabilir:', t.usedIngredients, usedTr],
-               ['Eksik:',          t.missedIngredients, missedTr]
-              ].forEach(([lbl, arr, names]) => {
-                const block = document.createElement('div');
-                const strong = document.createElement('strong');
-                strong.textContent = lbl;
-                block.appendChild(strong);
-                const ul = document.createElement('ul');
-                arr.forEach((u,j) => {
-                  const liU = document.createElement('li');
-                  liU.textContent = `${names[j]} (${u.amount} ${u.unit})`;
-                  ul.appendChild(liU);
-                });
-                block.appendChild(ul);
-                ingsDiv.appendChild(block);
-              });
-              li.appendChild(ingsDiv);
-              li.appendChild(document.createElement('hr'));
-
-              // Talimatlar (tıklayınca aç/kapa)
-              titleEl.onclick = async () => {
-                let instrDiv = li.querySelector('.instructions');
-                if (instrDiv) {
-                  instrDiv.style.display = instrDiv.style.display === 'block' ? 'none' : 'block';
-                  return;
-                }
-                instrDiv = document.createElement('div');
-                instrDiv.className = 'instructions';
-                instrDiv.textContent = 'Yükleniyor…';
-                li.appendChild(instrDiv);
-
-                try {
-                  let info = await fetch(
-                    `https://api.spoonacular.com/recipes/${t.id}/analyzedInstructions?apiKey=${apiKey}`
-                  ).then(r => r.json());
-                  let steps = info[0]?.steps?.map(s => s.step) || [];
-
-                  if (!steps.length) {
-                    const info2 = await fetch(
-                      `https://api.spoonacular.com/recipes/${t.id}/information?includeNutrition=false&apiKey=${apiKey}`
-                    ).then(r => r.json());
-                    steps = info2.analyzedInstructions[0]?.steps?.map(s => s.step) || [];
-                    if (!steps.length && info2.instructions) {
-                      instrDiv.innerHTML = info2.instructions;
-                      return;
-                    }
-                  }
-
-                  if (steps.length) {
-                    const trs = await Promise.all(steps.map(s => toTurkish(s)));
-                    instrDiv.innerHTML = '<ol>' + trs.map(st => `<li>${st}</li>`).join('') + '</ol>';
-                  } else {
-                    instrDiv.textContent = 'Tarif adımları bulunamadı.';
-                  }
-                } catch {
-                  instrDiv.textContent = 'Adımlar yüklenirken hata oluştu.';
-                }
-              };
-
-              ulResults.appendChild(li);
-            }
-          } catch {
-            msgDiv.textContent = 'Bir hata oluştu, lütfen konsolu kontrol edin.';
+          resultsContainer.style.display = 'block';
+          if (!data.length) {
+            msgDiv.textContent = 'Bu malzemelerle tarif bulunamadı 😕';
+            return;
           }
-        }, 2500);
+          msgDiv.textContent = `Bulunan ${data.length} tarif:`;
+
+          for (let i = 0; i < data.length; i++) {
+            const t = data[i];
+
+            // Malzeme isimlerini Türkçeleştir
+            const usedTr = await Promise.all(
+              t.usedIngredients.map(u => toTurkish(u.name))
+            );
+            const missedTr = await Promise.all(
+              t.missedIngredients.map(u => toTurkish(u.name))
+            );
+
+            // Liste elemanı oluştur
+            const li = document.createElement('li');
+
+            // Başlık ve Türkçeleştirme
+            const titleEl = document.createElement('div');
+            titleEl.className = 'recipe-title';
+            titleEl.dataset.id = t.id;
+            titleEl.textContent = `${i+1}. ${t.title}`;
+            toTurkish(t.title).then(tr => {
+              titleEl.textContent = `${i+1}. ${tr}`;
+            });
+            li.appendChild(titleEl);
+
+            // Malzeme panosu (yalnızca Türkçe)
+            const ingsDiv = document.createElement('div');
+            ingsDiv.className = 'ings';
+
+            const usedBlock = document.createElement('div');
+            const su = document.createElement('strong');
+            su.textContent = 'Kullanılabilir:';
+            usedBlock.appendChild(su);
+            const ulU = document.createElement('ul');
+            t.usedIngredients.forEach((u, idx) => {
+              const liU = document.createElement('li');
+              liU.textContent = `${usedTr[idx]} (${u.amount} ${u.unit})`;
+              ulU.appendChild(liU);
+            });
+            usedBlock.appendChild(ulU);
+
+            const missedBlock = document.createElement('div');
+            const sm = document.createElement('strong');
+            sm.textContent = 'Eksik:';
+            missedBlock.appendChild(sm);
+            const ulM = document.createElement('ul');
+            t.missedIngredients.forEach((u, idx) => {
+              const liM = document.createElement('li');
+              liM.textContent = `${missedTr[idx]} (${u.amount} ${u.unit})`;
+              ulM.appendChild(liM);
+            });
+            missedBlock.appendChild(ulM);
+
+            ingsDiv.appendChild(usedBlock);
+            ingsDiv.appendChild(missedBlock);
+            li.appendChild(ingsDiv);
+            li.appendChild(document.createElement('hr'));
+
+            // Başlığa tıklayınca adımları çek ve Türkçeleştir
+            titleEl.onclick = async () => {
+              let instrDiv = li.querySelector('.instructions');
+              if (instrDiv) {
+                instrDiv.style.display =
+                  instrDiv.style.display === 'block' ? 'none' : 'block';
+                return;
+              }
+              instrDiv = document.createElement('div');
+              instrDiv.className = 'instructions';
+              instrDiv.textContent = 'Yükleniyor…';
+              li.appendChild(instrDiv);
+
+              try {
+                // Önce analyzedInstructions
+                let info = await fetch(
+                  `https://api.spoonacular.com/recipes/${t.id}/analyzedInstructions?apiKey=${apiKey}`
+                ).then(r => r.json());
+                let steps = info[0]?.steps?.map(s => s.step) || [];
+
+                // Fallback /information
+                if (!steps.length) {
+                  const info2 = await fetch(
+                    `https://api.spoonacular.com/recipes/${t.id}/information?includeNutrition=false&apiKey=${apiKey}`
+                  ).then(r => r.json());
+                  steps =
+                    info2.analyzedInstructions[0]?.steps?.map(s => s.step) ||
+                    [];
+                  if (!steps.length && info2.instructions) {
+                    instrDiv.innerHTML = info2.instructions;
+                    return;
+                  }
+                }
+
+                if (steps.length) {
+                  const trs = await Promise.all(steps.map(s => toTurkish(s)));
+                  instrDiv.innerHTML =
+                    '<ol>' +
+                    trs.map(st => `<li>${st}</li>`).join('') +
+                    '</ol>';
+                } else {
+                  instrDiv.textContent = 'Tarif adımları bulunamadı.';
+                }
+              } catch (e) {
+                console.error(e);
+                instrDiv.textContent = 'Adımlar yüklenirken hata oluştu.';
+              }
+            };
+
+            ulResults.appendChild(li);
+          }
+        } catch (err) {
+          console.error(err);
+          resultsContainer.style.display = 'block';
+          msgDiv.textContent = 'Bir hata oluştu, lütfen konsolu kontrol edin.';
+        }
       }
 
       searchBtn.addEventListener('click', searchRecipes);
