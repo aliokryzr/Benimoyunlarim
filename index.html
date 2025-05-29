@@ -7,7 +7,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-    /* Genel stiller */
+ 
     * {
       box-sizing: border-box;
     }
@@ -116,21 +116,21 @@ canvas {
       z-index: 1;
       position: relative;
 
-      /* Yeni eklenen: sol ve sağ bölümü tam ortalamak için */
-      align-items: center; /* dikey ortalama */
+
+      align-items: center; 
     }
 
     .intro {
-      font-size: 0.9em; /* Yazı boyutu bir seviye küçük */
-      background: rgba(10, 10, 10, 0.85); /* Yarı saydam koyu zemin */
+      font-size: 0.9em;
+      background: rgba(10, 10, 10, 0.85); 
       padding: 25px 30px;
       border-radius: 14px;
-      box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), /* neon dış parlama */
-                  inset 0 0 10px 2px rgba(0, 128, 255, 0.4); /* iç parlama */
+      box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), 
+                  inset 0 0 10px 2px rgba(0, 128, 255, 0.4); 
       border: 1.5px solid rgba(0, 255, 255, 0.7);
-      color: #d0f0ff; /* açık, okunabilir yazı rengi */
+      color: #d0f0ff; 
       line-height: 1.65;
-      text-shadow: 0 0 5px rgba(0, 255, 255, 0.3); /* yazıya hafif parıltı */
+      text-shadow: 0 0 5px rgba(0, 255, 255, 0.3); 
       transition: box-shadow 0.3s ease;
     }
 
@@ -151,7 +151,7 @@ canvas {
       border: 1.5px solid rgba(0, 255, 255, 0.7);
       box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.6), inset 0 0 10px 2px rgba(0, 128, 255, 0.4);
       color: #d0f0ff;
-      max-width: 340px; /* genişlik biraz artırıldı */
+      max-width: 340px; 
       font-size: 0.95em;
       line-height: 1.5;
       text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
@@ -175,7 +175,7 @@ canvas {
     .game-list a {
       text-decoration: none;
       color: #a0eaff;
-      display: block; /* link tüm satırı kaplasın */
+      display: block; 
       padding: 10px 15px;
       border-radius: 8px;
       background: rgba(0, 255, 255, 0.1);
@@ -284,7 +284,7 @@ canvas {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // Firebase config
+
   const firebaseConfig = {
     apiKey: "xxx",
     authDomain: "xxx.firebaseapp.com",
@@ -295,11 +295,11 @@ canvas {
     appId: "xxx"
   };
 
-  // Initialize Firebase
+
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Ziyaretçi sayısını çek ve göster
+
   const visitorCountSpan = document.getElementById('visitor-count');
   const visitorRef = db.ref('ziyaretciSayisi');
 
