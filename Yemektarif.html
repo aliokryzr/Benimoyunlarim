@@ -8,12 +8,9 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Georgia, serif; }
     body { background: #0d1117; color: #c9d1d9; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
     .container, .results-frame {
-      background: #161b22;
-      border-radius: 8px;
+      background: #161b22; border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 1.5rem;
+      width: 100%; max-width: 600px; margin-bottom: 1.5rem;
     }
     .container { padding: 2rem; }
     .container h1 { margin-bottom: 1rem; font-size: 1.8rem; text-align: center; color: #58a6ff; }
@@ -79,12 +76,23 @@
     document.addEventListener('DOMContentLoaded', () => {
       const apiKey = '117f4267981845d5800cb8de69f44e23';
 
-      const translateAPI = (text, from, to) =>
-        fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`)
-          .then(r => r.json())
-          .then(j => j.responseData.translatedText)
-          .catch(() => text);
-
+      // Genel çeviri fonksiyonu: uyarı mesajlarını orijinaline döndürür
+      async function translateAPI(text, from, to) {
+        try {
+          const res = await fetch(
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`
+          );
+          const json = await res.json();
+          const tr = json.responseData.translatedText;
+          // Eğer MyMemory uyarısı geldiyse, kendi metnimizi döndür
+          if (typeof tr === 'string' && tr.startsWith('MYMEMORY WARNING')) {
+            return text;
+          }
+          return tr;
+        } catch {
+          return text;
+        }
+      }
       const translateTurToEng = txt => translateAPI(txt, 'tr', 'en');
       const translateEngToTur = txt => translateAPI(txt, 'en', 'tr');
 
@@ -100,12 +108,12 @@
 
         const ingList = raw.split(',').map(s => s.trim()).filter(Boolean);
 
-        // 0) Başlangıçta veri tabanı sorgulama mesajı
+        // 0) Hemen bildirim ver
         resultsContainer.style.display = 'none';
         ulResults.innerHTML = '';
         msgDiv.textContent = 'Uygun malzemeler ile ilgili veri tabanı sorgulanıyor… ⏳';
 
-        // 1) Çeviri aşaması
+        // 1) Malzemeleri çevir
         let enIngredients;
         try {
           enIngredients = await Promise.all(ingList.map(translateTurToEng));
