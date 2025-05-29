@@ -79,7 +79,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       const apiKey = '117f4267981845d5800cb8de69f44e23';
 
-      // Genel çeviri fonksiyonu (MyMemory)
       const translateAPI = (text, from, to) =>
         fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`)
           .then(r => r.json())
@@ -101,24 +100,23 @@
 
         const ingList = raw.split(',').map(s => s.trim()).filter(Boolean);
 
-        // 1) Tarama aşaması
+        // 0) Başlangıçta veri tabanı sorgulama mesajı
         resultsContainer.style.display = 'none';
         ulResults.innerHTML = '';
-        msgDiv.textContent = 'Malzemeler otomatik olarak İngilizceye çevriliyor… ⏳';
+        msgDiv.textContent = 'Uygun malzemeler ile ilgili veri tabanı sorgulanıyor… ⏳';
 
+        // 1) Çeviri aşaması
         let enIngredients;
         try {
           enIngredients = await Promise.all(ingList.map(translateTurToEng));
-        } catch (e) {
-          console.error(e);
+        } catch {
           return alert('Malzemeler çevirilirken bir hata oluştu.');
         }
 
-        // Önerileri göster
-        const suggest = enIngredients.map((en, i) => `${ingList[i]} → ${en}`).join(', ');
-        msgDiv.innerHTML = `Çeviri önerileri: ${suggest}<br>Tarif aranıyor…`;
+        const suggestions = enIngredients.map((en, i) => `${ingList[i]} → ${en}`).join(', ');
+        msgDiv.innerHTML = `Çeviri önerileri: ${suggestions}<br>Tarif aranıyor…`;
 
-        // 2) Bekleme süresi (2.5s) ve tarif sorgusu
+        // 2) Kısa bekleme ve tarif sorgusu
         setTimeout(async () => {
           try {
             const query = enIngredients.join(',');
@@ -144,13 +142,12 @@
               titleEl.className = 'recipe-title';
               titleEl.dataset.id = t.id;
               titleEl.textContent = `${i+1}. ${t.title}`;
-              // Türkçeye çevir
               translateEngToTur(t.title).then(tr => {
                 titleEl.textContent = `${i+1}. ${tr}`;
               });
               li.appendChild(titleEl);
 
-              // Malzemeler
+              // Malzemeler (Türkçe)
               const usedTr = await Promise.all(t.usedIngredients.map(u => translateEngToTur(u.name)));
               const missedTr = await Promise.all(t.missedIngredients.map(u => translateEngToTur(u.name)));
 
@@ -175,7 +172,7 @@
               li.appendChild(ingsDiv);
               li.appendChild(document.createElement('hr'));
 
-              // Tıklanınca adımları getir
+              // Başlığa tıklayınca adımlar
               titleEl.onclick = async () => {
                 let instrDiv = li.querySelector('.instructions');
                 if (instrDiv) {
@@ -188,19 +185,16 @@
                 li.appendChild(instrDiv);
 
                 try {
-                  // Önce analyzedInstructions
                   let info = await fetch(
                     `https://api.spoonacular.com/recipes/${t.id}/analyzedInstructions?apiKey=${apiKey}`
                   ).then(r => r.json());
                   let steps = info[0]?.steps?.map(s => s.step) || [];
 
-                  // Fallback /information
                   if (!steps.length) {
                     const info2 = await fetch(
                       `https://api.spoonacular.com/recipes/${t.id}/information?includeNutrition=false&apiKey=${apiKey}`
                     ).then(r => r.json());
                     steps = info2.analyzedInstructions[0]?.steps?.map(s => s.step) || [];
-                    // HTML talimat varsa doğrudan kullan
                     if (!steps.length && info2.instructions) {
                       instrDiv.innerHTML = info2.instructions;
                       return;
@@ -213,17 +207,14 @@
                   } else {
                     instrDiv.textContent = 'Tarif adımları bulunamadı.';
                   }
-                } catch (e) {
-                  console.error(e);
+                } catch {
                   instrDiv.textContent = 'Adımlar yüklenirken hata oluştu.';
                 }
               };
 
               ulResults.appendChild(li);
             }
-
-          } catch (err2) {
-            console.error(err2);
+          } catch {
             resultsContainer.style.display = 'block';
             msgDiv.textContent = 'Bir hata oluştu, lütfen konsolu kontrol edin.';
           }
