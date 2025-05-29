@@ -11,7 +11,7 @@
     .container{padding:2rem}
     .container h1{margin-bottom:1rem;font-size:1.8rem;text-align:center;color:#58a6ff}
     .container p{margin-bottom:0.5rem}
-    .container input{width:100%;padding:0.6rem;margin:0 0 0.8rem;border:1px solid #30363d;border-radius:4px;font-size:1rem;background:#0d1117;color:#c9d1d9}
+    .container input{width:100%;padding:0.6rem;margin-bottom:0.8rem;border:1px solid #30363d;border-radius:4px;font-size:1rem;background:#0d1117;color:#c9d1d9}
     .container button{width:100%;padding:0.7rem;background:#238636;color:#f0f6fc;border:none;border-radius:4px;cursor:pointer;font-size:1rem}
     .container button:hover{background:#2ea043}
     .contact{margin-top:0.5rem;text-align:center;color:#8b949e;font-size:0.9rem}
@@ -61,7 +61,7 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', ()=> {
+    document.addEventListener('DOMContentLoaded', () => {
       const staticMap = {
         domates:'tomato', sogan:'onion', biber:'pepper',
         patates:'potatoes', tavuk:'chicken', yumurta:'eggs',
@@ -82,7 +82,7 @@
         const k=normalize(tr);
         return staticMap[k]||await translate(tr,'tr','en');
       }
-      async function toTur(en){return await translate(en,'en','tr');}
+      async function toTur(en){ return await translate(en,'en','tr'); }
       const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
       const btn=document.getElementById('searchBtn'),
@@ -92,21 +92,23 @@
             ul=document.getElementById('results'),
             rc=document.getElementById('results-container');
 
-      btn.addEventListener('click',async ()=>{
+      btn.onclick=async ()=>{
         const raw=inp.value.trim();
-        if(!raw)return alert('Malzeme giriniz!');
+        if(!raw)return alert('Lütfen malzeme giriniz!');
         const list=raw.split(',').map(s=>s.trim()).filter(Boolean);
 
         warn.textContent='Veri tabanında belirtilen malzemeler aranıyor… ⏳';
         await sleep(1500);
         warn.textContent='';
 
+        // Türkçe→İngilizce
         const enList=await Promise.all(list.map(toEng));
+
         msg.textContent='Tarifler getiriliyor… ⏳';
         ul.innerHTML=''; rc.style.display='none';
 
         try{
-          // tüm filter sorguları
+          // Filter sorguları
           const arrays=await Promise.all(enList.map(async ing=>{
             const r=await fetch(
               `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ing)}`
@@ -114,16 +116,17 @@
             const j=await r.json();
             return j.meals||[];
           }));
-          // union ranking
-          const mapCount={};
+          // Union + match count
+          const counts={}, id2meal={};
           arrays.forEach(arr=>{
             arr.forEach(m=>{
-              mapCount[m.idMeal]=mapCount[m.idMeal]?mapCount[m.idMeal]+1:1;
+              counts[m.idMeal]=(counts[m.idMeal]||0)+1;
+              id2meal[m.idMeal]=m;
             });
           });
-          const ranked=Object.entries(mapCount)
-            .sort((a,b)=>b[1]-a[1])
-            .map(([id,count])=>({id,count,meal:arrays[0].find(m=>m.idMeal===id)||{strMeal:'',idMeal:id}}));
+          const ranked=Object.entries(counts)
+            .sort(([,a],[,b])=>b-a)
+            .map(([id])=>id2meal[id]);
 
           rc.style.display='block';
           if(!ranked.length){
@@ -133,76 +136,81 @@
           msg.textContent=`Bulunan ${ranked.length} tarif:`;
 
           for(let i=0;i<ranked.length;i++){
-            const {meal:m}=ranked[i];
+            const m=ranked[i];
             const li=document.createElement('li');
-            // başlık
+
+            // Başlık
             const h=document.createElement('div');
             h.className='recipe-title';
             h.textContent=`${i+1}. ${m.strMeal}`;
             toTur(m.strMeal).then(tr=>h.textContent=`${i+1}. ${tr}`);
-            li.appendChild(h);
+            li.append(h);
 
-            // ingredients lookup
+            // Detayları hemen çek (malzemeler için)
             const det=await fetch(
               `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`
             ).then(r=>r.json()).then(j=>j.meals[0]);
+
+            // Tüm malzemeler
             const all=[];
             for(let n=1;n<=20;n++){
               const nm=det[`strIngredient${n}`]?.trim(),
                     ms=det[`strMeasure${n}`]?.trim();
-              if(nm) all.push({name:nm,measure:ms});
+              if(nm)all.push({name:nm,measure:ms});
             }
+            // Kullanılabilir/Eksik
             const uSet=new Set(list.map(x=>normalize(x)));
             const used=all.filter(x=>uSet.has(normalize(x.name)));
             const missed=all.filter(x=>!uSet.has(normalize(x.name)));
+            // Türkçeye çevir
+            const usedTr   =await Promise.all(used.map(x=>toTur(x.name)));
+            const missedTr =await Promise.all(missed.map(x=>toTur(x.name)));
 
-            // göster ingredient sütunları
-            const ings=document.createElement('div');
-            ings.className='ings';
-            ['Kullanılabilir:',used,await Promise.all(used.map(x=>toTur(x.name)))],
-            ['Eksik:',missed,await Promise.all(missed.map(x=>toTur(x.name)))]
-            .forEach(([lbl,arr,trArr])=>{
+            // İki sütun
+            const box=document.createElement('div');
+            box.className='ings';
+            [
+              ['Kullanılabilir Malzemeler:', used, usedTr],
+              ['Eksik Malzemeler:'      , missed, missedTr]
+            ].forEach(([lbl,arr,trArr])=>{
               const col=document.createElement('div');
-              const s=document.createElement('strong'); s.textContent=lbl;
-              col.appendChild(s);
-              const ul2=document.createElement('ul');
+              const st=document.createElement('strong'); st.textContent=lbl;
+              col.append(st);
+              const listEl=document.createElement('ul');
               arr.forEach((u,j)=>{
-                const li2=document.createElement('li');
-                li2.textContent=`${trArr[j]} (${u.measure})`;
-                ul2.appendChild(li2);
+                const item=document.createElement('li');
+                item.textContent=`${trArr[j]} (${u.measure})`;
+                listEl.append(item);
               });
-              col.appendChild(ul2);
-              ings.appendChild(col);
+              col.append(listEl);
+              box.append(col);
             });
-            li.appendChild(ings);
+            li.append(box);
+            li.append(document.createElement('hr'));
 
-            // hr ve placeholder for instructions
-            li.appendChild(document.createElement('hr'));
-            ul.appendChild(li);
-
-            // click to toggle instructions
+            // Başlığa tıklandığında sadece adımları göster
             h.onclick=async ()=>{
-              let box=li.querySelector('.instructions');
-              if(box){
-                box.style.display=box.style.display==='block'?'none':'block';
+              let ins=li.querySelector('.instructions');
+              if(ins){
+                ins.style.display=ins.style.display==='block'?'none':'block';
                 return;
               }
-              box=document.createElement('div');
-              box.className='instructions';
-              box.textContent='Yükleniyor…';
-              li.appendChild(box);
-
-              // adımlar çevir
+              ins=document.createElement('div');
+              ins.className='instructions';
+              ins.textContent='Adımlar yükleniyor…';
+              li.append(ins);
               const steps=det.strInstructions.split(/\r?\n/).filter(l=>l.trim());
               const trSteps=await Promise.all(steps.map(s=>toTur(s)));
-              box.innerHTML='<ol>'+trSteps.map(s=>`<li>${s}</li>`).join('')+'</ol>';
+              ins.innerHTML= '<ol>'+trSteps.map(s=>`<li>${s}</li>`).join('')+'</ol>';
             };
+
+            ul.append(li);
           }
         }catch(e){
           console.error(e);
           msg.textContent='Hata oluştu, tekrar deneyin.';
         }
-      });
+      };
     });
   </script>
 </body>
