@@ -31,13 +31,9 @@
     .container button:hover { background: #2ea043; }
     .contact { margin-top: 0.5rem; text-align: center; color: #8b949e; font-size: 0.9rem; }
     .contact a { color: #58a6ff; text-decoration: none; }
-
     #warning {
-      margin-top: 0.5rem;
-      text-align: center;
-      color: #f0ad4e;
-      font-size: 0.9rem;
-      min-height: 1.2em;
+      margin-top: 0.5rem; text-align: center;
+      color: #f0ad4e; font-size: 0.9rem; min-height: 1.2em;
     }
 
     .results-frame { display: none; padding: 2rem; }
@@ -74,7 +70,6 @@
     <input type="text" id="ingredients" placeholder="örn: domates, soğan, patates">
     <button id="searchBtn">Tarif Ara</button>
     <p class="contact">İletişim: <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a></p>
-
     <p id="warning"></p>
   </div>
 
@@ -87,40 +82,38 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const apiKey = '117f4267981845d5800cb8de69f44e23';
-
+      // Google Translate (TR→EN & EN→TR) için hızlı client-side çağrı
       async function toEnglish(text) {
         try {
           const res = await fetch(
             `https://translate.googleapis.com/translate_a/single?client=gtx&sl=tr&tl=en&dt=t&q=${encodeURIComponent(text)}`
           );
-          const data = await res.json();
-          return data[0].map(item => item[0]).join('') || text;
+          const arr = await res.json();
+          return arr[0].map(item => item[0]).join('') || text;
         } catch {
           return text;
         }
       }
-
       async function toTurkish(text) {
         try {
-          const googleRes = await fetch(
+          const res = await fetch(
             `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=tr&dt=t&q=${encodeURIComponent(text)}`
           );
-          const googleData = await googleRes.json();
-          return googleData[0].map(item => item[0]).join('') || text;
+          const arr = await res.json();
+          return arr[0].map(item => item[0]).join('') || text;
         } catch {
           return text;
         }
       }
 
       function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise(r => setTimeout(r, ms));
       }
 
       const searchBtn = document.getElementById('searchBtn');
-      const ingInput = document.getElementById('ingredients');
-      const warningP = document.getElementById('warning');
-      const msgDiv = document.getElementById('message');
+      const ingInput  = document.getElementById('ingredients');
+      const warningP  = document.getElementById('warning');
+      const msgDiv    = document.getElementById('message');
       const ulResults = document.getElementById('results');
       const resultsContainer = document.getElementById('results-container');
 
@@ -128,85 +121,52 @@
         const raw = ingInput.value.trim();
         if (!raw) return alert('Lütfen en az bir malzeme giriniz!');
 
-
+        // 1) TR→EN çeviri
         const ingList = raw.split(',').map(s => s.trim()).filter(Boolean);
-        const enList = await Promise.all(ingList.map(toEnglish));
-        const query = enList.join(',');
+        const enList  = await Promise.all(ingList.map(toEnglish));
+        const query   = enList.join(',');
 
- 
-        warningP.textContent = 'Veri tabanında belirtilen malzemeler aranıyor... Biraz zaman alabilir.';
-  
+        // 2) Uyarı mesaji ve kısa bekleme
+        warningP.textContent = 'Veri tabanı belirtilen malzemeler aranıyor... Biraz zaman alabilir.';
         await sleep(5000);
+        warningP.textContent = '';
 
-  
-        warningP.textContent = ''; 
+        // 3) TheMealDB filter endpoint
         resultsContainer.style.display = 'none';
         msgDiv.textContent = 'Tarif aranıyor… ⏳';
         ulResults.innerHTML = '';
 
         try {
-          const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(query)}&number=5&apiKey=${apiKey}`;
-          const res = await fetch(url);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
+          const res   = await fetch(
+            `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(query)}`
+          );
+          const json  = await res.json();
+          const meals = json.meals;
 
           resultsContainer.style.display = 'block';
-          if (!data.length) {
+          if (!meals) {
             msgDiv.textContent = 'Bu malzemelerle tarif bulunamadı 😕';
             return;
           }
-          msgDiv.textContent = `Bulunan ${data.length} tarif:`;
+          msgDiv.textContent = `Bulunan ${meals.length} tarif:`;
 
-          for (let i = 0; i < data.length; i++) {
-            const t = data[i];
-            const recipeTitle = t.title || t.name || 'Başlık yok';
-            const usedTr = await Promise.all(t.usedIngredients.map(u => toTurkish(u.name || '')));
-            const missedTr = await Promise.all(t.missedIngredients.map(u => toTurkish(u.name || '')));
-
+          for (let i = 0; i < meals.length; i++) {
+            const m  = meals[i];
             const li = document.createElement('li');
+
+            // Başlık
             const titleEl = document.createElement('div');
-            titleEl.className = 'recipe-title';
-            titleEl.dataset.id = t.id;
-            titleEl.textContent = `${i+1}. ${recipeTitle}`;
-            toTurkish(recipeTitle).then(tr => {
+            titleEl.className   = 'recipe-title';
+            titleEl.dataset.id  = m.idMeal;
+            titleEl.textContent = `${i+1}. ${m.strMeal}`;
+            toTurkish(m.strMeal).then(tr => {
               titleEl.textContent = `${i+1}. ${tr}`;
             });
             li.appendChild(titleEl);
-
-            const ingsDiv = document.createElement('div');
-            ingsDiv.className = 'ings';
-
-            const usedBlock = document.createElement('div');
-            usedBlock.appendChild(Object.assign(document.createElement('strong'), { textContent: 'Kullanılabilir:' }));
-            const ulU = document.createElement('ul');
-            t.usedIngredients.forEach((u, idx) => {
-              const amt = u.measures?.metric?.amount ?? u.amount ?? '';
-              const unt = u.measures?.metric?.unitShort ?? u.unit ?? '';
-              const name = usedTr[idx] || u.name || '';
-              const liU = document.createElement('li');
-              liU.textContent = `${name} (${amt} ${unt})`;
-              ulU.appendChild(liU);
-            });
-            usedBlock.appendChild(ulU);
-
-            const missedBlock = document.createElement('div');
-            missedBlock.appendChild(Object.assign(document.createElement('strong'), { textContent: 'Eksik:' }));
-            const ulM = document.createElement('ul');
-            t.missedIngredients.forEach((u, idx) => {
-              const amt = u.measures?.metric?.amount ?? u.amount ?? '';
-              const unt = u.measures?.metric?.unitShort ?? u.unit ?? '';
-              const name = missedTr[idx] || u.name || '';
-              const liM = document.createElement('li');
-              liM.textContent = `${name} (${amt} ${unt})`;
-              ulM.appendChild(liM);
-            });
-            missedBlock.appendChild(ulM);
-
-            ingsDiv.appendChild(usedBlock);
-            ingsDiv.appendChild(missedBlock);
-            li.appendChild(ingsDiv);
             li.appendChild(document.createElement('hr'));
+            ulResults.appendChild(li);
 
+            // Tıklayınca detayları (malzeme + adım) getir
             titleEl.onclick = async () => {
               let instrDiv = li.querySelector('.instructions');
               if (instrDiv) {
@@ -215,40 +175,43 @@
               }
               instrDiv = document.createElement('div');
               instrDiv.className = 'instructions';
-              instrDiv.textContent = 'Yükleniyor…';
+              instrDiv.textContent = 'Detaylar yükleniyor…';
               li.appendChild(instrDiv);
 
-              try {
-                let info = await fetch(`https://api.spoonacular.com/recipes/${t.id}/analyzedInstructions?apiKey=${apiKey}`)
-                  .then(r => r.json());
-                let steps = info[0]?.steps?.map(s => s.step) || [];
+              // lookup endpoint
+              const detRes = await fetch(
+                `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`
+              );
+              const detJson = await detRes.json();
+              const meal    = detJson.meals[0];
 
-                if (!steps.length) {
-                  const info2 = await fetch(`https://api.spoonacular.com/recipes/${t.id}/information?includeNutrition=false&apiKey=${apiKey}`)
-                    .then(r => r.json());
-                  steps = info2.analyzedInstructions[0]?.steps?.map(s => s.step) || [];
-                  if (!steps.length && info2.instructions) {
-                    instrDiv.innerHTML = await toTurkish(info2.instructions);
-                    return;
-                  }
+              // Malzemeler + ölçüler
+              const ingrList = [];
+              for (let n = 1; n <= 20; n++) {
+                const name = meal[`strIngredient${n}`];
+                const mea  = meal[`strMeasure${n}`];
+                if (name && name.trim()) {
+                  ingrList.push(`${name.trim()} – ${mea.trim()}`);
                 }
-
-                if (steps.length) {
-                  const trs = await Promise.all(steps.map(s => toTurkish(s)));
-                  instrDiv.innerHTML = '<ol>' + trs.map(st => `<li>${st}</li>`).join('') + '</ol>';
-                } else {
-                  instrDiv.textContent = 'Tarif adımları bulunamadı.';
-                }
-              } catch {
-                instrDiv.textContent = 'Adımlar yüklenirken hata oluştu.';
               }
-            };
 
-            ulResults.appendChild(li);
+              // Adımlar
+              const steps = meal.strInstructions
+                .split(/\r?\n/)
+                .filter(l => l.trim());
+
+              // Render
+              instrDiv.innerHTML = `
+                <strong>Malzemeler:</strong>
+                <ul>${ingrList.map(i => `<li>${i}</li>`).join('')}</ul>
+                <strong>Yapılış:</strong>
+                <ol>${steps.map(s => `<li>${s}</li>`).join('')}</ol>
+              `;
+            };
           }
         } catch (err) {
-          resultsContainer.style.display = 'block';
-          msgDiv.textContent = `Hata oluştu: ${err.message}`;
+          console.error(err);
+          msgDiv.textContent = 'Bir hata oluştu, lütfen tekrar dene.';
         }
       });
     });
