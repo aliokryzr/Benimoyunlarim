@@ -94,7 +94,7 @@
         return translationMap[ing.toLowerCase()] || ing;
       }
 
-      // LibreTranslate ile Türkçeye çevir
+      // LibreTranslate ile çeviri
       function toTurkish(text) {
         return fetch('https://libretranslate.com/translate', {
           method: 'POST',
@@ -144,6 +144,7 @@
 
           for (let i = 0; i < data.length; i++) {
             const t = data[i];
+            const recipeTitle = t.title || t.name;
             const usedTr = await Promise.all(t.usedIngredients.map(u => toTurkish(u.name)));
             const missedTr = await Promise.all(t.missedIngredients.map(u => toTurkish(u.name)));
 
@@ -151,8 +152,8 @@
             const titleEl = document.createElement('div');
             titleEl.className = 'recipe-title';
             titleEl.dataset.id = t.id;
-            titleEl.textContent = `${i+1}. ${t.title}`;
-            toTurkish(t.title).then(tr => {
+            titleEl.textContent = `${i+1}. ${recipeTitle}`;
+            toTurkish(recipeTitle).then(tr => {
               titleEl.textContent = `${i+1}. ${tr}`;
             });
             li.appendChild(titleEl);
@@ -166,8 +167,10 @@
             usedBlock.appendChild(su);
             const ulU = document.createElement('ul');
             t.usedIngredients.forEach((u, idx) => {
+              const amt = u.measures?.metric?.amount ?? u.amount;
+              const unt = u.measures?.metric?.unitShort ?? u.unit;
               const liU = document.createElement('li');
-              liU.textContent = `${usedTr[idx]} (${u.amount} ${u.unit})`;
+              liU.textContent = `${usedTr[idx]} (${amt} ${unt})`;
               ulU.appendChild(liU);
             });
             usedBlock.appendChild(ulU);
@@ -178,8 +181,10 @@
             missedBlock.appendChild(sm);
             const ulM = document.createElement('ul');
             t.missedIngredients.forEach((u, idx) => {
+              const amt = u.measures?.metric?.amount ?? u.amount;
+              const unt = u.measures?.metric?.unitShort ?? u.unit;
               const liM = document.createElement('li');
-              liM.textContent = `${missedTr[idx]} (${u.amount} ${u.unit})`;
+              liM.textContent = `${missedTr[idx]} (${amt} ${unt})`;
               ulM.appendChild(liM);
             });
             missedBlock.appendChild(ulM);
