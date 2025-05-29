@@ -54,158 +54,161 @@
   </div>
 
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const staticMap = {
-      domates:'tomato', sogan:'onion', biber:'pepper',
-      patates:'potatoes', tavuk:'chicken', yumurta:'eggs',
-      un:'flour', sut:'milk', yulaf:'oats', cilek:'strawberries',
-      makarna:'pasta', salca:'tomato paste'
-    };
-    const normalize = t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-    async function translate(t,sl,tl){
-      try{
-        const r=await fetch(
-          `https://translate.googleapis.com/translate_a/single?client=gtx`+
-          `&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(t)}`
-        );
-        const a=await r.json();
-        return a[0].map(i=>i[0]).join('')||t;
-      } catch { return t; }
-    }
-    async function toEng(tr){
-      const k=normalize(tr);
-      return staticMap[k]||await translate(tr,'tr','en');
-    }
-    async function toTur(en){ return await translate(en,'en','tr'); }
-    const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-
-    const btn = document.getElementById('searchBtn'),
-          inp = document.getElementById('ingredients'),
-          warn= document.getElementById('warning'),
-          msg = document.getElementById('message'),
-          ul  = document.getElementById('results'),
-          rc  = document.getElementById('results-container');
-
-    btn.onclick = async () => {
-      const raw = inp.value.trim();
-      if(!raw) return alert('Lütfen malzeme giriniz!');
-      const list = raw.split(',').map(s=>s.trim()).filter(Boolean);
-
-      // 1) Çeviri & userSetEng oluştur
-      warn.textContent = 'Veri tabanında belirtilen malzemeler aranıyor… ⏳';
-      const enList = await Promise.all(list.map(toEng));
-      const userSetEng = new Set(enList.map(e=>normalize(e)));
-      await sleep(1500);
-      warn.textContent = '';
-
-      // 2) Başlangıç mesajı
-      msg.textContent = 'Tarifler getiriliyor… ⏳';
-      ul.innerHTML=''; rc.style.display='none';
-
-      try {
-        // 3) filter sorguları
-        const arrays = await Promise.all(enList.map(async ing => {
-          const r = await fetch(
-            `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ing)}`
+    document.addEventListener('DOMContentLoaded', () => {
+      const staticMap = {
+        domates:'tomato', sogan:'onion', biber:'pepper',
+        patates:'potatoes', tavuk:'chicken', yumurta:'eggs',
+        un:'flour', sut:'milk', yulaf:'oats', cilek:'strawberries',
+        makarna:'pasta', salca:'tomato paste'
+      };
+      const normalize = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+      async function translate(t,sl,tl){
+        try{
+          const r=await fetch(
+            `https://translate.googleapis.com/translate_a/single?client=gtx`+
+            `&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(t)}`
           );
-          const j = await r.json();
-          return j.meals||[];
-        }));
-        // 4) Union + match count
-        const counts={}, id2meal={};
-        arrays.forEach(arr=>{
-          arr.forEach(m=>{
-            counts[m.idMeal]=(counts[m.idMeal]||0)+1;
-            id2meal[m.idMeal]=m;
-          });
-        });
-        const ranked = Object.keys(counts)
-          .sort((a,b)=>counts[b]-counts[a])
-          .map(id=>id2meal[id]);
-
-        rc.style.display='block';
-        if(!ranked.length){
-          msg.textContent='Bu malzemelerle tarif bulunamadı 😕';
-          return;
-        }
-        msg.textContent = `Bulunan ${ranked.length} tarif:`;
-
-        // 5) Listele
-        for(let i=0;i<ranked.length;i++){
-          const m = ranked[i];
-          const li = document.createElement('li');
-          // başlık
-          const h = document.createElement('div');
-          h.className='recipe-title';
-          h.textContent=`${i+1}. ${m.strMeal}`;
-          toTur(m.strMeal).then(tr=>h.textContent=`${i+1}. ${tr}`);
-          li.appendChild(h);
-
-          // detayları çek (malzemeler)
-          const det = await fetch(
-            `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`
-          ).then(r=>r.json()).then(j=>j.meals[0]);
-
-          // tüm malzemeler
-          const all=[];
-          for(let n=1;n<=20;n++){
-            const nm=det[`strIngredient${n}`]?.trim(),
-                  ms=det[`strMeasure${n}`]?.trim();
-            if(nm) all.push({name:nm,measure:ms});
-          }
-          // kullanılabilir/eksik
-          const used   = all.filter(x=>userSetEng.has(normalize(x.name)));
-          const missed = all.filter(x=>!userSetEng.has(normalize(x.name)));
-          const usedTr   = await Promise.all(used.map(x=>toTur(x.name)));
-          const missedTr = await Promise.all(missed.map(x=>toTur(x.name)));
-
-          // sütunlu malzeme kutuları
-          const box = document.createElement('div');
-          box.className='ings';
-          [
-            ['Kullanılabilir Malzemeler:', used, usedTr],
-            ['Eksik Malzemeler:'      , missed, missedTr]
-          ].forEach(([lbl,arr,trArr])=>{
-            const col=document.createElement('div');
-            const st=document.createElement('strong'); st.textContent=lbl;
-            col.appendChild(st);
-            const ul2=document.createElement('ul');
-            arr.forEach((u,j)=>{
-              const li2=document.createElement('li');
-              li2.textContent=`${trArr[j]} (${u.measure})`;
-              ul2.appendChild(li2);
-            });
-            col.appendChild(ul2);
-            box.appendChild(col);
-          });
-          li.appendChild(box);
-          li.appendChild(document.createElement('hr'));
-
-          // 6) tıklayınca adımlar
-          h.onclick = async () => {
-            let ins = li.querySelector('.instructions');
-            if(ins){
-              ins.style.display = ins.style.display==='block'?'none':'block';
-              return;
-            }
-            ins = document.createElement('div');
-            ins.className='instructions';
-            ins.textContent='Adımlar yükleniyor…';
-            li.appendChild(ins);
-
-            const steps = det.strInstructions.split(/\r?\n/).filter(l=>l.trim());
-            const trSteps = await Promise.all(steps.map(s=>toTur(s)));
-            ins.innerHTML = '<ol>' + trSteps.map(s=>`<li>${s}</li>`).join('') + '</ol>';
-          };
-
-          ul.appendChild(li);
-        }
-      } catch(e) {
-        console.error(e);
-        msg.textContent='Hata oluştu, tekrar deneyin.';
+          const a=await r.json();
+          return a[0].map(i=>i[0]).join('')||t;
+        }catch{return t;}
       }
-    };
-  });
+      async function toEng(tr){
+        const k=normalize(tr);
+        return staticMap[k]||await translate(tr,'tr','en');
+      }
+      async function toTur(en){ return await translate(en,'en','tr'); }
+      const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+      const searchBtn = document.getElementById('searchBtn'),
+            ingInput  = document.getElementById('ingredients'),
+            warningP  = document.getElementById('warning'),
+            msgDiv    = document.getElementById('message'),
+            ulResults = document.getElementById('results'),
+            rc        = document.getElementById('results-container');
+
+      searchBtn.addEventListener('click', async () => {
+        const raw = ingInput.value.trim();
+        if (!raw) return alert('Lütfen en az bir malzeme giriniz!');
+        const list = raw.split(',').map(s=>s.trim()).filter(Boolean);
+
+        // Uyarı ve çeviri
+        warningP.textContent = 'Veri tabanında belirtilen malzemeler aranıyor… ⏳';
+        const enList = await Promise.all(list.map(toEng));
+        await sleep(1500);
+        warningP.textContent = '';
+
+        // Başlangıç mesajı
+        msgDiv.textContent = 'Tarifler getiriliyor… ⏳';
+        ulResults.innerHTML = '';
+        rc.style.display = 'none';
+
+        try {
+          // 1) filter sorguları
+          const arrays = await Promise.all(enList.map(async ing => {
+            const res = await fetch(
+              `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ing)}`
+            );
+            const j = await res.json();
+            return j.meals || [];
+          }));
+
+          // 2) Union + match count ve sıralama
+          const counts = {}, id2meal = {};
+          arrays.forEach(arr => {
+            arr.forEach(m => {
+              counts[m.idMeal] = (counts[m.idMeal] || 0) + 1;
+              id2meal[m.idMeal] = m;
+            });
+          });
+          const ranked = Object.entries(counts)
+            .map(([id,count]) => ({ meal: id2meal[id], count }))
+            .sort((a,b) => b.count - a.count);
+
+          rc.style.display = 'block';
+          if (!ranked.length) {
+            msgDiv.textContent = 'Bu malzemelerle tarif bulunamadı 😕';
+            return;
+          }
+          msgDiv.textContent = `Bulunan ${ranked.length} tarif:`;
+
+          // 3) Listele
+          for (let i = 0; i < ranked.length; i++) {
+            const { meal: m, count } = ranked[i];
+            const li = document.createElement('li');
+
+            // Başlık
+            const titleEl = document.createElement('div');
+            titleEl.className = 'recipe-title';
+            titleEl.textContent = `${i+1}. ${m.strMeal} (${count} eşleşme)`;
+            toTur(m.strMeal).then(tr => {
+              titleEl.textContent = `${i+1}. ${tr} (${count} eşleşme)`;
+            });
+            li.appendChild(titleEl);
+
+            // 4) Malzemeleri çek
+            const det = await fetch(
+              `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`
+            ).then(r=>r.json()).then(j=>j.meals[0]);
+            const all = [];
+            for (let n = 1; n <= 20; n++) {
+              const name = det[`strIngredient${n}`]?.trim();
+              const measure = det[`strMeasure${n}`]?.trim();
+              if (name) all.push({ name, measure });
+            }
+
+            // 5) Kullanılabilir / Eksik
+            const userSetEng = new Set(enList.map(e=>normalize(e)));
+            const used   = all.filter(x => userSetEng.has(normalize(x.name)));
+            const missed = all.filter(x => !userSetEng.has(normalize(x.name)));
+            const usedTr   = await Promise.all(used.map(x=>toTur(x.name)));
+            const missedTr = await Promise.all(missed.map(x=>toTur(x.name)));
+
+            // 6) Sütunlu malzemeler
+            const box = document.createElement('div');
+            box.className = 'ings';
+            [['Kullanılabilir Malzemeler:', used, usedTr],
+             ['Eksik Malzemeler:'      , missed, missedTr]
+            ].forEach(([lbl,arr,trArr])=>{
+              const col = document.createElement('div');
+              const st = document.createElement('strong');
+              st.textContent = lbl;
+              col.appendChild(st);
+              const ul2 = document.createElement('ul');
+              arr.forEach((u,j)=>{
+                const li2 = document.createElement('li');
+                li2.textContent = `${trArr[j]} (${u.measure})`;
+                ul2.appendChild(li2);
+              });
+              col.appendChild(ul2);
+              box.appendChild(col);
+            });
+            li.appendChild(box);
+            li.appendChild(document.createElement('hr'));
+
+            // 7) Adımları göster
+            titleEl.onclick = async () => {
+              let instr = li.querySelector('.instructions');
+              if (instr) {
+                instr.style.display = instr.style.display==='block'?'none':'block';
+                return;
+              }
+              instr = document.createElement('div');
+              instr.className = 'instructions';
+              instr.textContent = 'Adımlar yükleniyor…';
+              li.appendChild(instr);
+              const steps = det.strInstructions.split(/\r?\n/).filter(l=>l.trim());
+              const trSteps = await Promise.all(steps.map(s=>toTur(s)));
+              instr.innerHTML = '<ol>' + trSteps.map(s=>`<li>${s}</li>`).join('') + '</ol>';
+            };
+
+            ulResults.appendChild(li);
+          }
+        } catch (e) {
+          console.error(e);
+          msgDiv.textContent = 'Hata oluştu, tekrar deneyin.';
+        }
+      });
+    });
   </script>
 </body>
 </html>
