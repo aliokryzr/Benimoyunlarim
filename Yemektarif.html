@@ -76,25 +76,35 @@
     document.addEventListener('DOMContentLoaded', () => {
       const apiKey = '117f4267981845d5800cb8de69f44e23';
 
-      // Genel çeviri fonksiyonu: uyarı mesajlarını orijinaline döndürür
-      async function translateAPI(text, from, to) {
+      const staticMap = {
+        patates: 'potato', yumurta: 'egg', un: 'flour', süt: 'milk',
+        yulaf: 'oats', çilek: 'strawberry', mango: 'mango',
+        domates: 'tomato', jambon: 'ham', 'krem peynir': 'cream cheese',
+        sarımsak: 'garlic', soğan: 'onion', peynir: 'cheese'
+      };
+
+      async function libreTranslate(text, source, target) {
         try {
-          const res = await fetch(
-            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`
-          );
+          const res = await fetch('https://libretranslate.de/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ q: text, source, target, format: 'text' })
+          });
           const json = await res.json();
-          const tr = json.responseData.translatedText;
-          // Eğer MyMemory uyarısı geldiyse, kendi metnimizi döndür
-          if (typeof tr === 'string' && tr.startsWith('MYMEMORY WARNING')) {
-            return text;
-          }
-          return tr;
+          return json.translatedText;
         } catch {
           return text;
         }
       }
-      const translateTurToEng = txt => translateAPI(txt, 'tr', 'en');
-      const translateEngToTur = txt => translateAPI(txt, 'en', 'tr');
+
+      async function toEnglish(ing) {
+        const key = ing.trim().toLowerCase();
+        if (staticMap[key]) return staticMap[key];
+        return await libreTranslate(key, 'tr', 'en');
+      }
+      async function toTurkish(txt) {
+        return await libreTranslate(txt, 'en', 'tr');
+      }
 
       const searchBtn = document.getElementById('searchBtn');
       const ingInput = document.getElementById('ingredients');
@@ -108,33 +118,30 @@
 
         const ingList = raw.split(',').map(s => s.trim()).filter(Boolean);
 
-        // 0) Hemen bildirim ver
-        resultsContainer.style.display = 'none';
+        // hemen göster ve uyarı
+        resultsContainer.style.display = 'block';
         ulResults.innerHTML = '';
         msgDiv.textContent = 'Uygun malzemeler ile ilgili veri tabanı sorgulanıyor… ⏳';
 
-        // 1) Malzemeleri çevir
         let enIngredients;
         try {
-          enIngredients = await Promise.all(ingList.map(translateTurToEng));
+          enIngredients = await Promise.all(ingList.map(toEnglish));
         } catch {
-          return alert('Malzemeler çevirilirken bir hata oluştu.');
+          return alert('Malzemeler çevirilirken hata oluştu.');
         }
 
-        const suggestions = enIngredients.map((en, i) => `${ingList[i]} → ${en}`).join(', ');
+        const suggestions = ingList.map((tr, i) => `${tr} → ${enIngredients[i]}`).join(', ');
         msgDiv.innerHTML = `Çeviri önerileri: ${suggestions}<br>Tarif aranıyor…`;
 
-        // 2) Kısa bekleme ve tarif sorgusu
         setTimeout(async () => {
           try {
-            const query = enIngredients.join(',');
+            const query = encodeURIComponent(enIngredients.join(','));
             const res = await fetch(
-              `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(query)}&number=5&apiKey=${apiKey}`
+              `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${query}&number=5&apiKey=${apiKey}`
             );
             if (!res.ok) throw new Error(res.status);
             const data = await res.json();
 
-            resultsContainer.style.display = 'block';
             if (!data.length) {
               msgDiv.textContent = 'Bu malzemelerle tarif bulunamadı 😕';
               return;
@@ -145,42 +152,38 @@
               const t = data[i];
               const li = document.createElement('li');
 
-              // Başlık
               const titleEl = document.createElement('div');
               titleEl.className = 'recipe-title';
               titleEl.dataset.id = t.id;
               titleEl.textContent = `${i+1}. ${t.title}`;
-              translateEngToTur(t.title).then(tr => {
+              toTurkish(t.title).then(tr => {
                 titleEl.textContent = `${i+1}. ${tr}`;
               });
               li.appendChild(titleEl);
 
-              // Malzemeler (Türkçe)
-              const usedTr = await Promise.all(t.usedIngredients.map(u => translateEngToTur(u.name)));
-              const missedTr = await Promise.all(t.missedIngredients.map(u => translateEngToTur(u.name)));
+              const usedTr = await Promise.all(t.usedIngredients.map(u => toTurkish(u.name)));
+              const missedTr = await Promise.all(t.missedIngredients.map(u => toTurkish(u.name)));
 
               const ingsDiv = document.createElement('div');
               ingsDiv.className = 'ings';
-              ['Kullanılabilir:', 'Eksik:'].forEach((lbl, idx) => {
-                const block = document.createElement('div');
-                const strong = document.createElement('strong');
-                strong.textContent = lbl;
-                block.appendChild(strong);
-                const ul = document.createElement('ul');
-                const arr = idx === 0 ? t.usedIngredients : t.missedIngredients;
-                const names = idx === 0 ? usedTr : missedTr;
-                arr.forEach((u, j) => {
-                  const liU = document.createElement('li');
-                  liU.textContent = `${names[j]} (${u.amount} ${u.unit})`;
-                  ul.appendChild(liU);
+              [['Kullanılabilir:', t.usedIngredients, usedTr], ['Eksik:', t.missedIngredients, missedTr]]
+                .forEach(([lbl, arr, names]) => {
+                  const block = document.createElement('div');
+                  const strong = document.createElement('strong');
+                  strong.textContent = lbl;
+                  block.appendChild(strong);
+                  const ul = document.createElement('ul');
+                  arr.forEach((u, j) => {
+                    const liU = document.createElement('li');
+                    liU.textContent = `${names[j]} (${u.amount} ${u.unit})`;
+                    ul.appendChild(liU);
+                  });
+                  block.appendChild(ul);
+                  ingsDiv.appendChild(block);
                 });
-                block.appendChild(ul);
-                ingsDiv.appendChild(block);
-              });
               li.appendChild(ingsDiv);
               li.appendChild(document.createElement('hr'));
 
-              // Başlığa tıklayınca adımlar
               titleEl.onclick = async () => {
                 let instrDiv = li.querySelector('.instructions');
                 if (instrDiv) {
@@ -210,7 +213,7 @@
                   }
 
                   if (steps.length) {
-                    const trs = await Promise.all(steps.map(s => translateEngToTur(s)));
+                    const trs = await Promise.all(steps.map(s => toTurkish(s)));
                     instrDiv.innerHTML = '<ol>' + trs.map(st => `<li>${st}</li>`).join('') + '</ol>';
                   } else {
                     instrDiv.textContent = 'Tarif adımları bulunamadı.';
@@ -223,11 +226,9 @@
               ulResults.appendChild(li);
             }
           } catch {
-            resultsContainer.style.display = 'block';
             msgDiv.textContent = 'Bir hata oluştu, lütfen konsolu kontrol edin.';
           }
         }, 2500);
-
       }
 
       searchBtn.addEventListener('click', searchRecipes);
