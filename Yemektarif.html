@@ -90,17 +90,24 @@
         mango: 'mango'
       };
 
-      // Türkçe girdiyi İngilizce'ye çevir
       function toEnglish(ing) {
         return translationMap[ing.toLowerCase()] || ing;
       }
-      // Her metni MyMemory ile Türkçeye çevir
+
+      // LibreTranslate ile Türkçeye çevir
       function toTurkish(text) {
-        return fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|tr`
-        )
+        return fetch('https://libretranslate.com/translate', {
+          method: 'POST',
+          body: JSON.stringify({
+            q: text,
+            source: 'en',
+            target: 'tr',
+            format: 'text'
+          }),
+          headers: { 'Content-Type': 'application/json' }
+        })
         .then(r => r.json())
-        .then(j => j.responseData.translatedText)
+        .then(j => j.translatedText)
         .catch(() => text);
       }
 
@@ -114,13 +121,9 @@
         const raw = ingInput.value.trim();
         if (!raw) return alert('Lütfen en az bir malzeme giriniz!');
 
-        // Malzemeleri İngilizce sorguya hazırla
-        const ingList = raw.split(',')
-          .map(s => s.trim())
-          .filter(Boolean);
+        const ingList = raw.split(',').map(s => s.trim()).filter(Boolean);
         const query = ingList.map(toEnglish).join(',');
 
-        // Ön hazırlık
         resultsContainer.style.display = 'none';
         msgDiv.textContent = 'Tarif aranıyor… ⏳';
         ulResults.innerHTML = '';
@@ -141,19 +144,10 @@
 
           for (let i = 0; i < data.length; i++) {
             const t = data[i];
+            const usedTr = await Promise.all(t.usedIngredients.map(u => toTurkish(u.name)));
+            const missedTr = await Promise.all(t.missedIngredients.map(u => toTurkish(u.name)));
 
-            // Malzeme isimlerini Türkçeleştir
-            const usedTr = await Promise.all(
-              t.usedIngredients.map(u => toTurkish(u.name))
-            );
-            const missedTr = await Promise.all(
-              t.missedIngredients.map(u => toTurkish(u.name))
-            );
-
-            // Liste elemanı oluştur
             const li = document.createElement('li');
-
-            // Başlık ve Türkçeleştirme
             const titleEl = document.createElement('div');
             titleEl.className = 'recipe-title';
             titleEl.dataset.id = t.id;
@@ -163,7 +157,6 @@
             });
             li.appendChild(titleEl);
 
-            // Malzeme panosu (yalnızca Türkçe)
             const ingsDiv = document.createElement('div');
             ingsDiv.className = 'ings';
 
@@ -196,12 +189,10 @@
             li.appendChild(ingsDiv);
             li.appendChild(document.createElement('hr'));
 
-            // Başlığa tıklayınca adımları çek ve Türkçeleştir
             titleEl.onclick = async () => {
               let instrDiv = li.querySelector('.instructions');
               if (instrDiv) {
-                instrDiv.style.display =
-                  instrDiv.style.display === 'block' ? 'none' : 'block';
+                instrDiv.style.display = instrDiv.style.display === 'block' ? 'none' : 'block';
                 return;
               }
               instrDiv = document.createElement('div');
@@ -210,20 +201,16 @@
               li.appendChild(instrDiv);
 
               try {
-                // Önce analyzedInstructions
                 let info = await fetch(
                   `https://api.spoonacular.com/recipes/${t.id}/analyzedInstructions?apiKey=${apiKey}`
                 ).then(r => r.json());
                 let steps = info[0]?.steps?.map(s => s.step) || [];
 
-                // Fallback /information
                 if (!steps.length) {
                   const info2 = await fetch(
                     `https://api.spoonacular.com/recipes/${t.id}/information?includeNutrition=false&apiKey=${apiKey}`
                   ).then(r => r.json());
-                  steps =
-                    info2.analyzedInstructions[0]?.steps?.map(s => s.step) ||
-                    [];
+                  steps = info2.analyzedInstructions[0]?.steps?.map(s => s.step) || [];
                   if (!steps.length && info2.instructions) {
                     instrDiv.innerHTML = info2.instructions;
                     return;
@@ -232,10 +219,7 @@
 
                 if (steps.length) {
                   const trs = await Promise.all(steps.map(s => toTurkish(s)));
-                  instrDiv.innerHTML =
-                    '<ol>' +
-                    trs.map(st => `<li>${st}</li>`).join('') +
-                    '</ol>';
+                  instrDiv.innerHTML = '<ol>' + trs.map(st => `<li>${st}</li>`).join('') + '</ol>';
                 } else {
                   instrDiv.textContent = 'Tarif adımları bulunamadı.';
                 }
