@@ -31,7 +31,7 @@
     .container button:hover { background: #2ea043; }
     .contact { margin-top: 0.5rem; text-align: center; color: #8b949e; font-size: 0.9rem; }
     .contact a { color: #58a6ff; text-decoration: none; }
-    /* Yeni uyarı satırı */
+
     #warning {
       margin-top: 0.5rem;
       text-align: center;
@@ -74,7 +74,7 @@
     <input type="text" id="ingredients" placeholder="örn: domates, soğan, patates">
     <button id="searchBtn">Tarif Ara</button>
     <p class="contact">İletişim: <a href="mailto:Ali@Siber.NET">Ali@Siber.NET</a></p>
-    <!-- Uyarı mesajı buraya gelecek -->
+
     <p id="warning"></p>
   </div>
 
@@ -128,17 +128,17 @@
         const raw = ingInput.value.trim();
         if (!raw) return alert('Lütfen en az bir malzeme giriniz!');
 
-        // TR→EN çevir ve sorgu oluştur
+
         const ingList = raw.split(',').map(s => s.trim()).filter(Boolean);
         const enList = await Promise.all(ingList.map(toEnglish));
         const query = enList.join(',');
 
-        // Uyarıyı göster
+ 
         warningP.textContent = 'Veri tabanında belirtilen malzemeler aranıyor... Biraz zaman alabilir.';
-        // 5 saniye bekle
+  
         await sleep(5000);
 
-        // Arama mesajına geçiş
+  
         warningP.textContent = ''; 
         resultsContainer.style.display = 'none';
         msgDiv.textContent = 'Tarif aranıyor… ⏳';
