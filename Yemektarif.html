@@ -61,7 +61,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Tarif Öneri Botu 🍳</h1>
+    <h1>🍳 Yemek Tarifi Önerileri 🍳</h1>
     <p>Elindeki malzemeleri virgülle ayırıp yaz:</p>
     <input type="text" id="ingredients" placeholder="örn: patates, yumurta, un">
     <button id="searchBtn">Tarif Ara</button>
@@ -79,7 +79,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       const apiKey = '117f4267981845d5800cb8de69f44e23';
 
-      // Basit Türkçe→İngilizce haritası
       const translationMap = {
         patates: 'potato',
         yumurta: 'egg',
@@ -89,26 +88,34 @@
         çilek: 'strawberry',
         mango: 'mango'
       };
-
       function toEnglish(ing) {
         return translationMap[ing.toLowerCase()] || ing;
       }
 
-      // LibreTranslate ile çeviri
-      function toTurkish(text) {
-        return fetch('https://libretranslate.com/translate', {
-          method: 'POST',
-          body: JSON.stringify({
-            q: text,
-            source: 'en',
-            target: 'tr',
-            format: 'text'
-          }),
-          headers: { 'Content-Type': 'application/json' }
-        })
-        .then(r => r.json())
-        .then(j => j.translatedText)
-        .catch(() => text);
+      // Yeni toTurkish: önce Google Translate API, başarısızsa LibreTranslate.de
+      async function toTurkish(text) {
+        // Google Translate ücretsiz endpoint
+        try {
+          const googleRes = await fetch(
+            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=tr&dt=t&q=${encodeURIComponent(text)}`
+          );
+          const googleData = await googleRes.json();
+          return googleData[0].map(item => item[0]).join('');
+        } catch (e1) {
+          // Fallback LibreTranslate.de
+          try {
+            const res2 = await fetch('https://libretranslate.de/translate', {
+              method: 'POST',
+              body: JSON.stringify({ q: text, source: 'en', target: 'tr', format: 'text' }),
+              headers: { 'Content-Type': 'application/json' }
+            });
+            const j2 = await res2.json();
+            return j2.translatedText;
+          } catch (e2) {
+            console.warn('Çeviri hatası:', e2);
+            return text;
+          }
+        }
       }
 
       const searchBtn = document.getElementById('searchBtn');
@@ -129,10 +136,9 @@
         ulResults.innerHTML = '';
 
         try {
-          const res = await fetch(
-            `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(query)}&number=5&apiKey=${apiKey}`
-          );
-          if (!res.ok) throw new Error(res.status);
+          const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(query)}&number=5&apiKey=${apiKey}`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
 
           resultsContainer.style.display = 'block';
@@ -144,18 +150,12 @@
 
           for (let i = 0; i < data.length; i++) {
             const t = data[i];
-            const recipeTitle = t.title ?? t.name ?? t.originalName ?? 'Başlık yok';
+            const recipeTitle = t.title || t.name || 'Başlık yok';
             const usedTr = await Promise.all(
-              t.usedIngredients.map(u => {
-                const nm = u.name ?? u.originalName ?? '';
-                return toTurkish(nm);
-              })
+              t.usedIngredients.map(u => toTurkish(u.name || ''))
             );
             const missedTr = await Promise.all(
-              t.missedIngredients.map(u => {
-                const nm = u.name ?? u.originalName ?? '';
-                return toTurkish(nm);
-              })
+              t.missedIngredients.map(u => toTurkish(u.name || ''))
             );
 
             const li = document.createElement('li');
@@ -172,14 +172,12 @@
             ingsDiv.className = 'ings';
 
             const usedBlock = document.createElement('div');
-            const su = document.createElement('strong');
-            su.textContent = 'Kullanılabilir:';
-            usedBlock.appendChild(su);
+            usedBlock.appendChild(Object.assign(document.createElement('strong'), { textContent: 'Kullanılabilir:' }));
             const ulU = document.createElement('ul');
             t.usedIngredients.forEach((u, idx) => {
               const amt = u.measures?.metric?.amount ?? u.amount ?? '';
               const unt = u.measures?.metric?.unitShort ?? u.unit ?? '';
-              const name = usedTr[idx] || u.name ?? u.originalName ?? '';
+              const name = usedTr[idx] || u.name || '';
               const liU = document.createElement('li');
               liU.textContent = `${name} (${amt} ${unt})`;
               ulU.appendChild(liU);
@@ -187,14 +185,12 @@
             usedBlock.appendChild(ulU);
 
             const missedBlock = document.createElement('div');
-            const sm = document.createElement('strong');
-            sm.textContent = 'Eksik:';
-            missedBlock.appendChild(sm);
+            missedBlock.appendChild(Object.assign(document.createElement('strong'), { textContent: 'Eksik:' }));
             const ulM = document.createElement('ul');
             t.missedIngredients.forEach((u, idx) => {
               const amt = u.measures?.metric?.amount ?? u.amount ?? '';
               const unt = u.measures?.metric?.unitShort ?? u.unit ?? '';
-              const name = missedTr[idx] || u.name ?? u.originalName ?? '';
+              const name = missedTr[idx] || u.name || '';
               const liM = document.createElement('li');
               liM.textContent = `${name} (${amt} ${unt})`;
               ulM.appendChild(liM);
@@ -229,7 +225,8 @@
                   ).then(r => r.json());
                   steps = info2.analyzedInstructions[0]?.steps?.map(s => s.step) || [];
                   if (!steps.length && info2.instructions) {
-                    instrDiv.innerHTML = info2.instructions;
+                    const translatedHtml = await toTurkish(info2.instructions);
+                    instrDiv.innerHTML = translatedHtml;
                     return;
                   }
                 }
@@ -251,7 +248,7 @@
         } catch (err) {
           console.error(err);
           resultsContainer.style.display = 'block';
-          msgDiv.textContent = 'Bir hata oluştu, lütfen konsolu kontrol edin.';
+          msgDiv.textContent = `Hata oluştu: ${err.message}`;
         }
       }
 
